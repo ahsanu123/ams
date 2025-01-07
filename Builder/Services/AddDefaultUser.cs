@@ -13,7 +13,14 @@ public static class AddDefaultUserBuilder
         var roleManager = scope.ServiceProvider.GetService<RoleManager<Role>>();
         var userManager = scope.ServiceProvider.GetService<UserManager<User>>();
 
-        var users = new List<string>() { "pak lurah", "mas sinin", "mas tresno", "mas misbah" };
+        var users = new List<string>()
+        {
+            "pak lurah",
+            "mas sinin",
+            "mas tresno",
+            "mas misbah",
+            "admin",
+        };
 
         if (roleManager == null || userManager == null)
             throw new ArgumentNullException("Role Manager or User Manager was Null!!");
@@ -33,8 +40,11 @@ public static class AddDefaultUserBuilder
                 throw new Exception("User in db is Null");
 
             var alreadyInrole = await userManager.IsInRoleAsync(userInDb, RoleConstant.Buyer);
-            if (!alreadyInrole)
+            if (!alreadyInrole && username != "admin")
                 await userManager.AddToRoleAsync(userInDb, RoleConstant.Buyer);
+
+            if (!alreadyInrole && username == "admin")
+                await userManager.AddToRoleAsync(userInDb, RoleConstant.LocalSuperAdmin);
         }
 
         return builder;

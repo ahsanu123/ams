@@ -68,7 +68,7 @@ export default function AMSAdminPage({
   )
 
   const isPaidForThisDate = (date: string) => {
-    const ispaid = monthlyInformation.find((item) =>
+    const ispaid = monthlyInformation?.find((item) =>
       utilToDate(item.takenTime!).getDate() === parseInt(date)
     )
     return ispaid?.paid
@@ -114,15 +114,6 @@ export default function AMSAdminPage({
     )
   }
 
-  const AdminInformation = (
-    <details>
-      <summary>Admin Information</summary>
-      <ul>
-        <li>Strikethrough text mean <s>bill</s> was paid</li>
-      </ul>
-    </details>
-  )
-
   return (
     <>
       <h2>AMS Admin Page</h2>
@@ -160,9 +151,9 @@ export default function AMSAdminPage({
             onSubmit={() => getMontlyUserInformation(selectedUser)}
           />
           <hr />
-          <UserBillInformation />
         </>
       )}
+      <UserBillInformation />
     </>
   )
 }

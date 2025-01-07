@@ -2,14 +2,14 @@ import GridButton from "./GridButton"
 
 interface ListUserProps {
   users: string[],
-  handleOnUserSelected: (username: string) => void
+  handleOnUserSelected: (username: string) => void,
 }
 
 export default function ListUser(props: ListUserProps) {
 
   const {
     users,
-    handleOnUserSelected
+    handleOnUserSelected,
   } = props
 
   // change to use loader 

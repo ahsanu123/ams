@@ -1,7 +1,5 @@
-using AMS.AppIdentity;
 using AMS.Model;
 using FluentMigrator;
-using Microsoft.AspNetCore.Identity;
 
 namespace AMS.InternalMigration;
 
@@ -18,6 +16,7 @@ public class ModelMigrationList : MigrationBase
         typeof(UserToken),
         typeof(AmpasModel),
         typeof(AmpasPrice),
+        typeof(Production),
         typeof(CampaignModel),
     };
 

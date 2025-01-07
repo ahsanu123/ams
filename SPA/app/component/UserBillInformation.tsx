@@ -3,6 +3,7 @@ import "./UserBillInformation.css"
 import { AmpasDailyService, LocalAccountService, type AmpasSummary } from "../api/generated"
 import { AmpasSummaryDurationEnum, defaultClient } from "../api/constant"
 import { formatAsRupiah } from "../utility/format-as-rupiah"
+import { useLocation } from "react-router"
 
 export async function clientLoader() {
   const summaries: AmpasSummary[] = []

@@ -14,6 +14,7 @@ public static class ServiceCollections
 
         services.AddTransient<ICampaignRepository, CampaignRepository>();
         services.AddScoped<IAmpasRepository, AmpasRepository>();
+        services.AddScoped<IProductionRepository, ProductionRepositoy>();
 
         return services;
     }
