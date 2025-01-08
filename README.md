@@ -1,42 +1,26 @@
+<p>
+  <a href="">
+    <img alt="npm version" src="https://badgen.net/github/commits/ahsanu123/ams/">
+  </a>
+  <a href="">
+    <img alt="npm" src="https://badgen.net/github/contributors/ahsanu123/ams/">
+  </a>
+  <a href="">
+    <img alt="npm" src="https://badgen.net/github/branches/ahsanu123/ams/">
+  </a>
+  <a href="https://github.com/ahsanu123/ams/blob/main/LICENSE">
+    <img alt="licence" src="https://badgen.net/github/license/ahsanu123/ams/">
+  </a>
+</p>
+
+<p align="center">
+  <img src="./ams-logo.svg" style="width: 400px;"/> <br/>
+</p>
+
 # 💩 Introduction
 
-AMS - Ampas Management System is personal project for **personal use** for managing ampas selling.
+AMS - Ampas Management System is personal project for **personal use** for managing soybean dregs selling.
 
-## 🧻 Personal Note 
-
-<details>
-  <summary>Expand</summary>
-
-```mermaid
-classDiagram 
-
-note for IAuthorizationService "AuthorizationService 
-is Using AuthorizationHandler
-to handle Requirement described 
-by AuthorizationRequirement"
-
-note for IAuthorizationHandler "register handler service 
-with builder.Services.AddSingleton<IAuthorizationHandler, MinimumAgeHandler>();"
-
-IAuthorizationService --> IAuthorizationHandler
-IAuthorizationService --> IAuthorizationRequirement
-
-IAuthorizationHandler --> IAuthorizationRequirement
-
-class IAuthorizationService{
-    AuthorizeAsync()
-}
-
-class IAuthorizationRequirement{
-    Object ListRequirement
-}
-
-class IAuthorizationHandler{
-    HandleRequirementAsync(IAuthorizationRequirement Requirement)
-    HandleAsync(AuthorizationHandlerContext context)
-}
-```
-</details>
  
 ## ⚓ Reference 
 
