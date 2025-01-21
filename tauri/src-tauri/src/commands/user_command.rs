@@ -5,6 +5,6 @@ pub fn greet(name: &str) -> String {
 
 #[tauri::command]
 pub async fn hello(name: String) -> String {
-    let str = String::from(["hello from ", &name].concat());
+    let str = String::from(["hello from? ", &name].concat());
     str
 }

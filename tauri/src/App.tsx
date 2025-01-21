@@ -21,6 +21,11 @@ function App() {
   return (
     <>
       <h2>{greetMsg}</h2>
+      <button
+        onClick={() => greet()}
+      >
+        clickme!!
+      </button>
       <Calendar />
     </>
   );
