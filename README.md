@@ -21,6 +21,9 @@
 
 AMS - Ampas Management System is personal project for **personal use** for managing soybean dregs selling.
 
+## 🌳 Project Log
+
+- 21 januari 2025, running browser on raspberry pi zero 2 was to slow, even you don't start dotnet backend yet. after searching tauri seem solve this, but with consequence changing backend into tauri (rust).
  
 ## ⚓ Reference 
 
