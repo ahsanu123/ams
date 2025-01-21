@@ -24,5 +24,10 @@ serde = { version = "1", features = ["derive"] }
 serde_json = "1"
 sqlx = "0.8.3"
 sea-query = "0.32.1"
-sea-query-binder = {   version = "0",   features = [   "sqlx-sqlite",    "with-chrono",    "with-json",       "with-time",  ] }
+sea-query-binder = {version = "0",   features = [   "sqlx-sqlite",    "with-chrono",    "with-json",       "with-time",  ] }
+# tauri-invoke-http = "2.0.0-rc.1"
 
+# enable custom protocol for tauri-invoke-http 
+# [features]
+# default = [ "custom-protocol" ]
+# custom-protocol = [ "tauri/custom-protocol" ]
