@@ -3,22 +3,24 @@
 import 'sakura.css';
 import "./App.css";
 import { Calendar } from "./component";
+import { useEffect, useState } from 'react';
+import { invoke } from '@tauri-apps/api/core';
 
 function App() {
-  // const [greetMsg, setGreetMsg] = useState("");
-  // const [name, setName] = useState("");
-  //
-  // async function greet() {
-  //   // Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
-  //   setGreetMsg(await invoke("greet", { name }));
-  // }
+  const [greetMsg, setGreetMsg] = useState("");
+
+  async function greet() {
+    const message = await invoke("hello", { name: "another world" }) as string;
+    setGreetMsg(message);
+  }
+
+  useEffect(() => {
+    greet()
+  }, []);
 
   return (
     <>
-      <h2>jjj</h2>
-      <p>
-        check
-      </p>
+      <h2>{greetMsg}</h2>
       <Calendar />
     </>
   );
