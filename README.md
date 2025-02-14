@@ -13,11 +13,7 @@
   </a>
 </p>
 
-<p align="center">
-  <img src="./ams-logo.svg" style="width: 400px;"/> <br/>
-</p>
-
-# 💩 Introduction
+#  Introduction
 
 AMS - Ampas Management System is personal project for **personal use** for managing soybean dregs selling.
 

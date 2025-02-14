@@ -1,6 +1,7 @@
 use sea_query::{
     ColumnDef, Expr, Func, Iden, InsertStatement, OnConflict, Order, PostgresQueryBuilder, Query,
-    QueryBuilder, QueryStatementBuilder, SqliteQueryBuilder, Table,
+    QueryBuilder, QueryStatementBuilder, SchemaStatementBuilder, SqliteQueryBuilder, Table,
+    TableCreateStatement,
 };
 use sea_query::{QueryStatementWriter, SqliteQueryBuilder};
 use sea_query_binder::SqlxBinder;
@@ -19,14 +20,16 @@ pub struct SqlConnection {
 pub trait SqlxHelper {
     async fn execute_query_async(&self, statement: impl SqlxBinder);
     async fn query_async<T>(&self, statement: impl SqlxBinder) -> T;
+    async fn query_single_async<T>(&self, statement: impl SqlxBinder) -> Option<T>;
+    async fn migrate_table(&self, table_statement: impl SchemaStatementBuilder);
 }
 
-pub struct SqlHelper {
+pub struct SqlConnectionProvider {
     pub db_pool: Pool<Database>,
     pub sql_connection: SqlConnection,
 }
 
-impl SqlHelper {
+impl SqlConnectionProvider {
     pub async fn create_connection(&self, sql_connection: SqlConnection) -> Pool<Database> {
         match sql_connection.database_type {
             DatabaseType::Postgresql => todo!(),
@@ -40,18 +43,17 @@ impl SqlHelper {
         }
     }
 
-    pub fn get_builder(database_type: DatabaseType) {
-        match database_type {
+    pub fn get_builder(&self) {
+        match self.sql_connection.database_type {
             DatabaseType::Postgresql => PostgresQueryBuilder,
             DatabaseType::Sqlite => SqliteQueryBuilder,
         }
     }
 }
 
-impl SqlxHelper for SqlHelper {
+impl SqlxHelper for SqlConnectionProvider {
     async fn execute_query_async(&self, statement: impl SqlxBinder) {
-        let (sql, value) =
-            statement.build_sqlx(Self::get_builder(self.sql_connection.database_type));
+        let (sql, value) = statement.build_sqlx(self.get_builder());
 
         // TODO: Not Complete yet
         let row = sqlx::query_with(&sql, value)
@@ -63,9 +65,20 @@ impl SqlxHelper for SqlHelper {
     async fn query_async<T>(&self, statement: impl SqlxBinder) -> T {
         todo!()
     }
+
+    async fn query_single_async<T>(&self, statement: impl SqlxBinder) -> Option<T> {
+        todo!()
+    }
+
+    async fn migrate_table(&self, table_statement: impl SchemaStatementBuilder) {
+        let buider = self.get_builder();
+        let sql = table_statement.build(builder);
+
+        sqlx::query(&sql).execute(self.db_pool).await;
+    }
 }
 
-impl Default for SqlHelper {
+impl Default for SqlConnectionProvider {
     fn default() -> Self {
         let default_sql_connection = SqlConnection {
             connection_string: "sqlite::memory:".into(),
