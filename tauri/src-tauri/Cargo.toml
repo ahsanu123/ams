@@ -25,6 +25,8 @@ serde_json = "1"
 sqlx = "0.8.3"
 sea-query = "0.32.1"
 sea-query-binder = {version = "0",   features = [   "sqlx-sqlite",    "with-chrono",    "with-json",       "with-time",  ] }
+chrono = "0.4.39"
+
 # tauri-invoke-http = "2.0.0-rc.1"
 
 # enable custom protocol for tauri-invoke-http 

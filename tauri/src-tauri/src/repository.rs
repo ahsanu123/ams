@@ -1,5 +1,3 @@
-mod product_repository;
-mod user_repository;
-
-pub use product_repository::*;
-pub use user_repository::*;
+pub mod product_repository;
+pub mod production_repository;
+pub mod user_repository;
