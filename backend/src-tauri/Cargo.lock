@@ -63,7 +63,6 @@ dependencies = [
  "tauri-build",
  "tauri-plugin-opener",
  "tokio",
- "tokio-macros",
 ]
 
 [[package]]
@@ -4518,8 +4517,11 @@ dependencies = [
  "bytes",
  "libc",
  "mio",
+ "parking_lot",
  "pin-project-lite",
+ "signal-hook-registry",
  "socket2",
+ "tokio-macros",
  "windows-sys 0.52.0",
 ]
 
