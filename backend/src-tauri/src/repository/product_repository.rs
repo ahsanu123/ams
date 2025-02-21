@@ -94,7 +94,10 @@ mod test {
     use sea_query_binder::SqlxBinder;
     use sqlx::{Pool, Sqlite, SqlitePool};
 
-    use crate::helper::sql_connection_helper::create_connection;
+    use crate::{
+        helper::sql_connection_helper::create_connection,
+        repository::crud_repository_trait::IntoValueAndColumnTrait,
+    };
 
     use super::*;
 
@@ -127,18 +130,21 @@ mod test {
         let pool = create_connection().await;
         create_table(&pool).await;
 
+        let product = Product {
+            id: 0,
+            user_id: 1,
+            paid: false,
+            production_date: NaiveDate::from_ymd_opt(2025, 5, 1).unwrap(),
+            taken_date: NaiveDate::from_ymd_opt(2025, 5, 12).unwrap(),
+            price: 11000.0,
+            amount: 2,
+            description: "taking dregs from storage".into(),
+        };
+
         let (sql, values) = Query::insert()
             .into_table(ProductTable::Table)
-            .columns([
-                ProductTable::UserId,
-                ProductTable::Paid,
-                ProductTable::ProductionDate,
-                ProductTable::TakenDate,
-                ProductTable::Price,
-                ProductTable::Amount,
-                ProductTable::Description,
-            ])
-            .values_panic([
+            .columns(Product::columns())
+            .values_panic(vec![
                 1.into(),
                 false.into(),
                 NaiveDate::from_ymd_opt(2025, 5, 1).unwrap().into(),
