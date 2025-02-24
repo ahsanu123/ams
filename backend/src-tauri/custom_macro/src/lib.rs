@@ -1,7 +1,6 @@
 use convert_case::{Case, Casing};
 use proc_macro::TokenStream;
 use quote::quote;
-use sea_query::Iden;
 use syn::{parse_macro_input, spanned::Spanned, Data, DeriveInput, Field, Ident, Type};
 
 #[proc_macro_derive(GenerateTableEnum)]
