@@ -1,7 +1,10 @@
-use dotenvy;
-use std::sync::OnceLock;
+use dotenvy::{self, dotenv};
+use once_cell::sync::Lazy;
 
-pub static ENV_VAR: OnceLock<EnvironmentVariable> = OnceLock::new();
+pub static ENV_VAR: Lazy<EnvironmentVariable> = Lazy::new(|| {
+    dotenv().ok();
+    EnvironmentVariable::new()
+});
 
 pub struct EnvironmentVariable {
     pub sqlite_connection_string: String,
@@ -11,8 +14,21 @@ pub struct EnvironmentVariable {
 impl EnvironmentVariable {
     fn new() -> Self {
         Self {
-            sqlite_connection_string: dotenvy::var("sqlite_connection_string").unwrap(),
-            postgres_connection_string: dotenvy::var("postgres_connecttion_string").unwrap(),
+            sqlite_connection_string: dotenvy::var("sqlite_connection_string")
+                .expect("sqlite connection must provided!!!"),
+            postgres_connection_string: dotenvy::var("postgres_connection_string")
+                .expect("postgresql connection must provided!!!"),
         }
+    }
+}
+
+#[cfg(test)]
+mod test {
+    use super::*;
+
+    #[test]
+    fn check_env_variable() {
+        println!("{}", ENV_VAR.sqlite_connection_string);
+        println!("{}", ENV_VAR.postgres_connection_string);
     }
 }

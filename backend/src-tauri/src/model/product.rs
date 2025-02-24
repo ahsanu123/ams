@@ -1,10 +1,14 @@
 use chrono::NaiveDate;
 use custom_macro::GenerateTableEnum;
-use sea_query::{ColumnDef, Iden, IntoValueTuple, Table, TableCreateStatement, Value};
+use sea_query::{
+    ColumnDef, Iden, IntoValueTuple, SchemaBuilder, SqliteQueryBuilder, Table,
+    TableCreateStatement, Value,
+};
 
-use crate::repository::crud_repository_trait::IntoValueAndColumnTrait;
-
-// use crate::migration::migration_trait::MigrationAble;
+use crate::{
+    migration::migration_trait::MigrationAble,
+    repository::crud_repository_trait::IntoValueAndColumnTrait,
+};
 
 #[derive(GenerateTableEnum)]
 pub struct Product {
@@ -50,36 +54,45 @@ impl IntoIterator for Product {
     }
 }
 
-//============================================
-// let (sql, values) = Query::insert()
-//     .into_table(ProductTable::Table)
-//     .columns(Product::columns()) // Dynamically fetch columns
-//     .values_panic(product.into_values())
-// .build_sqlx(SqliteQueryBuilder);
+impl MigrationAble for Product {
+    fn get_up_migration(builder: impl SchemaBuilder) -> String {
+        Table::create()
+            .table(ProductTable::Table)
+            .if_not_exists()
+            .col(
+                ColumnDef::new(ProductTable::Id)
+                    .integer()
+                    .not_null()
+                    .auto_increment()
+                    .primary_key(),
+            )
+            .col(ColumnDef::new(ProductTable::UserId).integer())
+            .col(ColumnDef::new(ProductTable::Paid).boolean())
+            .col(ColumnDef::new(ProductTable::ProductionDate).date_time())
+            .col(ColumnDef::new(ProductTable::TakenDate).date_time())
+            .col(ColumnDef::new(ProductTable::Price).double())
+            .col(ColumnDef::new(ProductTable::Amount).integer())
+            .col(ColumnDef::new(ProductTable::Description).text())
+            .build(builder)
+    }
 
-// impl MigrationAble for Product {
-//     fn get_up_migration() -> TableCreateStatement {
-//         Table::create()
-//             .table(ProductTable::Table)
-//             .if_not_exists()
-//             .col(
-//                 ColumnDef::new(ProductTable::Id)
-//                     .integer()
-//                     .not_null()
-//                     .auto_increment()
-//                     .primary_key(),
-//             )
-//             .col(ColumnDef::new(ProductTable::UserId).integer())
-//             .col(ColumnDef::new(ProductTable::Paid).boolean())
-//             .col(ColumnDef::new(ProductTable::ProductionDate).date_time())
-//             .col(ColumnDef::new(ProductTable::TakenDate).date_time())
-//             .col(ColumnDef::new(ProductTable::Price).double())
-//             .col(ColumnDef::new(ProductTable::Amount).integer())
-//             .col(ColumnDef::new(ProductTable::Description).text())
-//             .clone()
-//     }
-//
-//     fn get_down_migration() -> bool {
-//         todo!()
-//     }
-// }
+    fn get_down_migration(builder: impl SchemaBuilder) -> String {
+        Table::drop().table(ProductTable::Table).build(builder)
+    }
+}
+
+#[cfg(test)]
+mod test {
+
+    use sea_query::PostgresQueryBuilder;
+
+    use super::*;
+    #[test]
+    fn test_product_up_migration() {
+        let productSqlite = Product::get_up_migration(SqliteQueryBuilder);
+        let productPostgresql = Product::get_up_migration(PostgresQueryBuilder);
+
+        println!("Sqlite -> \n{productSqlite}");
+        println!("Postgresql -> \n{productPostgresql}");
+    }
+}

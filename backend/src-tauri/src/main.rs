@@ -5,7 +5,7 @@
 
 mod helper;
 // mod initialization;
-// mod migration;
+mod migration;
 mod model;
 mod repository;
 
