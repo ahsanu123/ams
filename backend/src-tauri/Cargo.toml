@@ -19,6 +19,10 @@ proc-macro = true
 tauri-build = { version = "2", features = [] }
 
 [dependencies]
+
+syn = { version = "2.0", features = ["derive"] }
+quote = "1.0"
+
 tauri = { version = "2", features = [] }
 tauri-plugin-opener = "2"
 serde = { version = "1", features = ["derive"] }

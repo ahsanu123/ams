@@ -1,5 +1,6 @@
 use chrono::NaiveDate;
-use custom_macro::GenerateTableEnum;
+use custom_macro::{GenerateDieselTable, GenerateTableEnum};
+use diesel::prelude::*;
 use diesel::{prelude::Queryable, Selectable};
 use sea_query::{
     ColumnDef, Iden, IntoValueTuple, SchemaBuilder, SqliteQueryBuilder, Table,
@@ -11,8 +12,9 @@ use crate::{
     repository::crud_repository_trait::IntoValueAndColumnTrait,
 };
 
-#[derive(GenerateTableEnum, Queryable, Selectable)]
-// #[diesel(table_name = product_table)]
+// #[derive(GenerateTableEnum, GenerateDieselTable, Queryable, Selectable, Insertable, Default)]
+// #[diesel(table_name = product)]
+#[derive(GenerateTableEnum)]
 pub struct Product {
     pub id: u32,
     pub user_id: u32,
