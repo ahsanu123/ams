@@ -4,7 +4,7 @@ use crate::{
 };
 use sqlx;
 
-use super::migration_trait::MigrationAble;
+use super::migration_trait::Migrationable;
 
 // pub fn migrate_up() {
 //     let conn = SqlConnectionProvider::default();

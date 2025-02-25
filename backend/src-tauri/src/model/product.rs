@@ -1,16 +1,18 @@
 use chrono::NaiveDate;
 use custom_macro::GenerateTableEnum;
+use diesel::{prelude::Queryable, Selectable};
 use sea_query::{
     ColumnDef, Iden, IntoValueTuple, SchemaBuilder, SqliteQueryBuilder, Table,
     TableCreateStatement, Value,
 };
 
 use crate::{
-    migration::migration_trait::MigrationAble,
+    migration::migration_trait::Migrationable,
     repository::crud_repository_trait::IntoValueAndColumnTrait,
 };
 
-#[derive(GenerateTableEnum)]
+#[derive(GenerateTableEnum, Queryable, Selectable)]
+// #[diesel(table_name = product_table)]
 pub struct Product {
     pub id: u32,
     pub user_id: u32,
@@ -22,39 +24,7 @@ pub struct Product {
     pub description: String,
 }
 
-impl IntoValueAndColumnTrait<ProductTable, Product> for Product {
-    fn columns() -> Vec<ProductTable> {
-        vec![
-            ProductTable::UserId,
-            ProductTable::Paid,
-            ProductTable::ProductionDate,
-            ProductTable::TakenDate,
-            ProductTable::Price,
-            ProductTable::Amount,
-            ProductTable::Description,
-        ]
-    }
-}
-
-impl IntoIterator for Product {
-    type Item = Value;
-    type IntoIter = std::vec::IntoIter<Self::Item>;
-
-    fn into_iter(self) -> Self::IntoIter {
-        vec![
-            self.user_id.into(),
-            self.paid.into(),
-            self.production_date.into(),
-            self.taken_date.into(),
-            self.price.into(),
-            self.amount.into(),
-            self.description.into(),
-        ]
-        .into_iter()
-    }
-}
-
-impl MigrationAble for Product {
+impl Migrationable for Product {
     fn get_up_migration(builder: impl SchemaBuilder) -> String {
         Table::create()
             .table(ProductTable::Table)
@@ -84,9 +54,9 @@ impl MigrationAble for Product {
 #[cfg(test)]
 mod test {
 
+    use super::*;
     use sea_query::PostgresQueryBuilder;
 
-    use super::*;
     #[test]
     fn test_product_up_migration() {
         let productSqlite = Product::get_up_migration(SqliteQueryBuilder);
@@ -95,4 +65,7 @@ mod test {
         println!("Sqlite -> \n{productSqlite}");
         println!("Postgresql -> \n{productPostgresql}");
     }
+
+    #[test]
+    fn test_insert_product() {}
 }
