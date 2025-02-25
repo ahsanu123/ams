@@ -5,4 +5,5 @@ pub mod product;
 pub mod production;
 pub mod report;
 pub mod summary_information;
+pub mod taking_record;
 pub mod user;
