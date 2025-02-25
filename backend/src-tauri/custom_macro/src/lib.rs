@@ -49,6 +49,24 @@ pub fn generate_table_enum(input: TokenStream) -> TokenStream {
     }
 }
 
+// TODO: Make Macro to automate create struct without an id
+//
+// #[proc_macro_derive(GenerateNoIdStruct)]
+// pub fn generate_no_id_struct(input: TokenStream) -> TokenStream {
+//     let input = parse_macro_input!(input as DeriveInput);
+//     let struct_name = input.ident;
+//
+//     let no_id_struct_name = String::from(struct_name.to_string() + "NoId");
+//     let new_struct_name = syn::Ident::new(&no_id_struct_name, struct_name.span());
+//
+//     let mut field_mappings = Vec::new();
+//
+//     if let Data::Struct(data_struct) = input.data {
+//
+//     }
+//
+// }
+
 // TODO:    Make macro to convert struct into diesel table! macro
 //          and make good understanding on how this macro work
 
@@ -58,7 +76,8 @@ pub fn diesel_table_derive(input: TokenStream) -> TokenStream {
     let struct_name = input.ident;
 
     // Convert struct name to lowercase to use as the table name
-    let table_name = syn::Ident::new(&struct_name.to_string().to_lowercase(), struct_name.span());
+    let table_struct_name = String::from(struct_name.to_string().to_lowercase() + "_table");
+    let table_name = syn::Ident::new(&table_struct_name, struct_name.span());
 
     let mut field_mappings = Vec::new();
 
@@ -105,7 +124,8 @@ pub fn diesel_table_derive(input: TokenStream) -> TokenStream {
         }
     };
 
-    println!("{}", output.to_string());
+    // remove comment to debug
+    // println!("{}", output.to_string());
     output.into()
 }
 
@@ -133,7 +153,7 @@ mod test {
         let token_stream = diesel_table_derive(input.into());
         let output = token_stream.to_string();
 
-        eprintln!("{}", output.to_string());
+        println!("{}", output.to_string());
     }
 }
 

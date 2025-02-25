@@ -1,8 +1,6 @@
-use diesel::{Connection, SqliteConnection};
-
-use crate::helper;
-
 use super::environment_variable::ENV_VAR;
+use crate::helper;
+use diesel::{Connection, SqliteConnection};
 
 // TODO: add argument to choose what database to use
 

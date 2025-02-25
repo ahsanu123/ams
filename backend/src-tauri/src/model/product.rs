@@ -1,28 +1,32 @@
+use crate::migration::migration_trait::Migrationable;
 use chrono::NaiveDate;
 use custom_macro::{GenerateDieselTable, GenerateTableEnum};
 use diesel::prelude::*;
 use diesel::{prelude::Queryable, Selectable};
-use sea_query::{
-    ColumnDef, Iden, IntoValueTuple, SchemaBuilder, SqliteQueryBuilder, Table,
-    TableCreateStatement, Value,
-};
+use sea_query::{ColumnDef, Iden, SchemaBuilder, SqliteQueryBuilder, Table};
 
-use crate::{
-    migration::migration_trait::Migrationable,
-    repository::crud_repository_trait::IntoValueAndColumnTrait,
-};
-
-// #[derive(GenerateTableEnum, GenerateDieselTable, Queryable, Selectable, Insertable, Default)]
-// #[diesel(table_name = product)]
-#[derive(GenerateTableEnum)]
-pub struct Product {
-    pub id: u32,
-    pub user_id: u32,
+#[derive(Insertable)]
+#[diesel(table_name = product_table)]
+pub struct ProductNoId {
+    pub user_id: i32,
     pub paid: bool,
     pub production_date: NaiveDate,
     pub taken_date: NaiveDate,
     pub price: f64,
-    pub amount: u32,
+    pub amount: i32,
+    pub description: String,
+}
+
+#[derive(GenerateTableEnum, GenerateDieselTable, Insertable, Selectable)]
+#[diesel(table_name = product_table)]
+pub struct Product {
+    pub id: i32,
+    pub user_id: i32,
+    pub paid: bool,
+    pub production_date: NaiveDate,
+    pub taken_date: NaiveDate,
+    pub price: f64,
+    pub amount: i32,
     pub description: String,
 }
 
@@ -57,17 +61,34 @@ impl Migrationable for Product {
 mod test {
 
     use super::*;
+    use crate::helper::sql_connection_helper::create_connection;
     use sea_query::PostgresQueryBuilder;
 
     #[test]
     fn test_product_up_migration() {
-        let productSqlite = Product::get_up_migration(SqliteQueryBuilder);
-        let productPostgresql = Product::get_up_migration(PostgresQueryBuilder);
+        let product_sqlite = Product::get_up_migration(SqliteQueryBuilder);
+        let product_postgresql = Product::get_up_migration(PostgresQueryBuilder);
 
-        println!("Sqlite -> \n{productSqlite}");
-        println!("Postgresql -> \n{productPostgresql}");
+        println!("Sqlite -> \n{product_sqlite}");
+        println!("Postgresql -> \n{product_postgresql}");
     }
 
     #[test]
-    fn test_insert_product() {}
+    fn test_insert_product() {
+        let conn = &mut create_connection();
+        let product = ProductNoId {
+            user_id: 2,
+            paid: false,
+            production_date: NaiveDate::from_ymd_opt(2025, 2, 3).unwrap(),
+            taken_date: NaiveDate::from_ymd_opt(2025, 2, 3).unwrap(),
+            price: 11000.0,
+            amount: 2,
+            description: String::from("taken was happen!!"),
+        };
+
+        let _result = diesel::insert_into(super::product_table::table)
+            .values(&product)
+            .execute(conn)
+            .expect("error when inserting data");
+    }
 }
