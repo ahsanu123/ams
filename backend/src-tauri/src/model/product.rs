@@ -17,7 +17,7 @@ pub struct ProductNoId {
     pub description: String,
 }
 
-#[derive(GenerateTableEnum, GenerateDieselTable, Insertable, Selectable)]
+#[derive(GenerateTableEnum, GenerateDieselTable, Selectable)]
 #[diesel(table_name = product_table)]
 pub struct Product {
     pub id: i32,
@@ -53,7 +53,10 @@ impl Migrationable for Product {
     }
 
     fn get_down_migration(builder: impl SchemaBuilder) -> String {
-        Table::drop().table(ProductTable::Table).build(builder)
+        Table::drop()
+            .table(ProductTable::Table)
+            .if_exists()
+            .build(builder)
     }
 }
 
