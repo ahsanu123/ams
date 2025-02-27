@@ -1,3 +1,4 @@
+pub mod book;
 pub mod database_metadata;
 pub mod paid_status;
 pub mod price_history;

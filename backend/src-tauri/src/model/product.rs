@@ -2,8 +2,8 @@ use crate::migration::migration_trait::Migrationable;
 use chrono::NaiveDate;
 use custom_macro::{GenerateDieselTable, GenerateTableEnum};
 use diesel::prelude::*;
-use diesel::{prelude::Queryable, Selectable};
-use sea_query::{ColumnDef, Iden, SchemaBuilder, SqliteQueryBuilder, Table};
+use diesel::Selectable;
+use sea_query::{ColumnDef, Iden, SchemaBuilder, Table};
 
 #[derive(Insertable)]
 #[diesel(table_name = product_table)]
@@ -65,7 +65,7 @@ mod test {
 
     use super::*;
     use crate::helper::sql_connection_helper::create_connection;
-    use sea_query::PostgresQueryBuilder;
+    use sea_query::{PostgresQueryBuilder, SqliteQueryBuilder};
 
     #[test]
     fn test_product_up_migration() {
