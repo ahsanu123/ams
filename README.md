@@ -25,6 +25,7 @@ AMS - Ampas Management System is personal project for **personal use** for manag
 - 21 Januari 2025, running browser on raspberry pi zero 2 was to slow, even you don't start dotnet backend yet. after searching tauri seem solve this, but with consequence changing backend into tauri (rust).
 - 24 Februari 2025, 👷‍♂️ TODO create diesel migration and sea-query table builder combination, create macro to automate sea-query table function creation from struct model
 - 25 Februari 2025, turn out diesel was sync (because its made before async in rust), for current case its ok to use sync.
+- 1 Maret 2025, TODO: Implement DatabaseMetadata function with diesel.
 
 ## 🎏 Usefull Notes 
 
