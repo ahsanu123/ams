@@ -1,10 +1,11 @@
 pub mod book;
 pub mod database_metadata;
+pub mod dreg_price_history;
 pub mod paid_status;
-pub mod price_history;
 pub mod product;
 pub mod production;
 pub mod report;
 pub mod summary_information;
-pub mod taking_record;
+pub mod taking_report;
 pub mod user;
+pub mod user_money_history;

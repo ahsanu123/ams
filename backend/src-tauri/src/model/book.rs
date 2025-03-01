@@ -64,6 +64,7 @@ pub struct Page {
 }
 
 diesel::joinable!(page_table -> book_table(book_id));
+diesel::allow_tables_to_appear_in_same_query!(book_table, page_table);
 
 impl Migrationable for Page {
     fn get_up_migration(builder: impl SchemaBuilder) -> String {
@@ -98,8 +99,6 @@ impl Migrationable for Page {
             .build(builder)
     }
 }
-
-diesel::allow_tables_to_appear_in_same_query!(book_table, page_table,);
 
 #[cfg(test)]
 mod test {

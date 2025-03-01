@@ -1,8 +1,11 @@
+use super::user::*;
 use crate::migration::migration_trait::Migrationable;
 use chrono::NaiveDate;
 use custom_macro::{GenerateDieselTable, GenerateTableEnum};
 use diesel::prelude::*;
 use diesel::Selectable;
+use sea_query::ForeignKey;
+use sea_query::ForeignKeyAction;
 use sea_query::{ColumnDef, Iden, SchemaBuilder, Table};
 
 #[derive(Insertable)]
@@ -30,6 +33,9 @@ pub struct Product {
     pub description: String,
 }
 
+diesel::joinable!(product_table -> user_table(user_id));
+diesel::allow_tables_to_appear_in_same_query!(product_table, user_table);
+
 impl Migrationable for Product {
     fn get_up_migration(builder: impl SchemaBuilder) -> String {
         Table::create()
@@ -49,6 +55,14 @@ impl Migrationable for Product {
             .col(ColumnDef::new(ProductTable::Price).double())
             .col(ColumnDef::new(ProductTable::Amount).integer())
             .col(ColumnDef::new(ProductTable::Description).text())
+            .foreign_key(
+                ForeignKey::create()
+                    .name("FK_ProductToUser")
+                    .from(ProductTable::Table, ProductTable::UserId)
+                    .to(UserTable::Table, UserTable::Id)
+                    .on_delete(ForeignKeyAction::Cascade)
+                    .on_update(ForeignKeyAction::Cascade),
+            )
             .build(builder)
     }
 
