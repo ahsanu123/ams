@@ -1,10 +1,7 @@
 pub trait CrudRepositoryTrait<T> {
-    async fn create(&self, data: &T);
-    async fn read(&self, id: u32);
-    async fn update(&self, data: &T);
-    async fn delete(&self, id: u32);
-}
-
-pub trait IntoValueAndColumnTrait<T, V> {
-    fn columns() -> Vec<T>;
+    fn getAll(&self) -> Result<Vec<T>, String>;
+    fn create(&self, data: &T) -> Result<usize, String>;
+    fn read(&self, id: u32) -> Result<T, String>;
+    fn update(&self, data: &T) -> Result<usize, String>;
+    fn delete(&self, id: u32) -> Result<usize, String>;
 }

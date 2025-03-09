@@ -8,7 +8,7 @@ use sea_query::ForeignKey;
 use sea_query::ForeignKeyAction;
 use sea_query::{ColumnDef, Iden, SchemaBuilder, Table};
 
-#[derive(Insertable)]
+#[derive(Insertable, AsChangeset)]
 #[diesel(table_name = product_table)]
 pub struct ProductNoId {
     pub user_id: i32,
@@ -20,7 +20,40 @@ pub struct ProductNoId {
     pub description: String,
 }
 
-#[derive(GenerateTableEnum, GenerateDieselTable, Selectable)]
+impl From<&Product> for ProductNoId {
+    fn from(value: &Product) -> Self {
+        ProductNoId {
+            user_id: value.user_id,
+            paid: value.paid,
+            production_date: value.production_date,
+            taken_date: value.taken_date,
+            price: value.price,
+            amount: value.amount,
+            description: value.description.clone(),
+        }
+    }
+}
+
+// with as AsChangeset here
+// and optional type
+// we can partially update table value,
+// i think it will get benefit if
+// table have many column,
+// but right now its simple application
+// maybe in future i will implement it :)
+#[derive(AsChangeset)]
+#[diesel(table_name = product_table)]
+pub struct ProductChangeSet {
+    pub user_id: Option<i32>,
+    pub paid: Option<bool>,
+    pub production_date: Option<NaiveDate>,
+    pub taken_date: Option<NaiveDate>,
+    pub price: Option<f64>,
+    pub amount: Option<i32>,
+    pub description: Option<String>,
+}
+
+#[derive(GenerateTableEnum, GenerateDieselTable, Selectable, Queryable, Debug, PartialEq)]
 #[diesel(table_name = product_table)]
 pub struct Product {
     pub id: i32,
