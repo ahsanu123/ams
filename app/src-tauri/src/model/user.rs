@@ -3,11 +3,6 @@ use custom_macro::{GenerateDieselTable, GenerateTableEnum};
 use diesel::prelude::*;
 use sea_query::{ColumnDef, Iden, Table};
 
-// this struct represent entity of user
-// most of operation based on this struct/table.
-// admin is special user, where admin can do many think
-// that normal user can't
-
 #[derive(Insertable)]
 #[diesel(table_name = user_table)]
 pub struct UserNoId {

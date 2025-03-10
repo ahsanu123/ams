@@ -4,6 +4,7 @@ pub mod commands;
 pub mod helper;
 pub mod migration;
 pub mod model;
+pub mod query;
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
