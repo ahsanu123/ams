@@ -3,6 +3,8 @@ import { addMonths } from "date-fns"
 import { getRandomArbitrary } from "../utility/random-arbitrary"
 import "./Calendar.css"
 
+// TODO: Refactor this component, make it more clean 
+
 const TOTAL_DAYS_TO_SHOW = 42
 const DAY_TO_DISPLAY = 7
 
@@ -96,11 +98,12 @@ export function Calendar(props: CalendarProps) {
     onNextMonthClicked?.(newDate)
   }
 
-  const defaultGridComponent = (date: string, amount?: number | string) => {
+  const defaultGridComponent = (date: string, index: number, amount?: number | string) => {
     const includeDash = date.includes("-")
     return (
       <div
         className={`component ${includeDash ? "stripe" : ""}`}
+        key={index}
       >
         <p>
           {(!includeDash && amount)
@@ -142,12 +145,13 @@ export function Calendar(props: CalendarProps) {
       )}
       <div
         className="ams-calendar"
+        key="ams-calendar"
       >
         {days.map((item, index) => (
           <>
             {index < DAY_TO_DISPLAY
               ? (<b>{item}</b>)
-              : (gridComponent ? gridComponent(item) : defaultGridComponent(item, getRandomArbitrary(1, 4).toFixed()))
+              : (gridComponent ? gridComponent(item) : defaultGridComponent(item, index, getRandomArbitrary(1, 4).toFixed()))
             }
           </>
         ))}
