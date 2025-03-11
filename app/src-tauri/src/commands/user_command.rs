@@ -1,10 +1,7 @@
-#[tauri::command]
-pub fn greet(name: &str) -> String {
-    format!("Hello, {}! You've been greeted from Rust!", name)
-}
+use crate::model::user::User;
+use tauri;
 
 #[tauri::command]
-pub async fn hello(name: String) -> String {
-    let str = String::from(["hello from? ", &name].concat());
-    str
+pub async fn user_command_login(user: User) -> Result<bool, String> {
+    todo!()
 }

@@ -74,7 +74,12 @@ flowchart TD
 - 24 Februari 2025, 👷‍♂️ TODO create diesel migration and sea-query table builder combination, create macro to automate sea-query table function creation from struct model
 - 25 Februari 2025, turn out diesel was sync (because its made before async in rust), for current case its ok to use sync.
 - 8 Maret 2025, Create Basic structure of CRUD with Rust in ProductRepository
-- 8 Maret 2025, TODO: Implement DatabaseMetadata function with diesel.
+- 🌳 TODO: Implement DatabaseMetadata function with diesel.
+- 🌳 TODO: create list of needed command for ui
+- 🌳 TODO: create list of response name model for ui
+- 🌳 TODO: create UI mockup
+- 🌳 TODO: create needed query for command
+- 🌳 TODO: create list logic for UI
 
 </details>
 
