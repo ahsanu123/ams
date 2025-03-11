@@ -49,7 +49,11 @@ mod test {
 
     #[test]
     fn test_up_migration() {
-        migration_down();
         migrate_up();
+    }
+
+    #[test]
+    fn test_down_migration() {
+        migration_down();
     }
 }

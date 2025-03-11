@@ -31,6 +31,44 @@ The goal of AMS is to provide a simple, fast, and reliable system tailored speci
 <details>
   <summary>Expand Me!!!</summary>
 
+```mermaid
+flowchart TD
+    UStart(start for user)-->UA
+    UA[user select their name] --> UB[user insert how much they take]
+    UB --> UC[UI get back to dashboard and showing data how much user take]
+
+    AStart(start for admin) --> OpenHiddenMenu 
+    OpenHiddenMenu[open hidden menu button and enter admin password]
+    OpenHiddenMenu --> Menu{what menu does admin click? lets use tab UI}
+
+    Menu --> UserPayment 
+    Menu --> Report 
+    Menu --> ChangeDregPrice
+    UserPayment
+    Report
+    ChangeDregPrice
+
+    UserPayment --> PaymentDescription[
+        admin able to check user bill or 
+        change payment status for some duration 
+        for user
+    ]
+
+    Report --> ReportDescription[
+        admin able to generate report for some duration 
+        including total revenue, total production, 
+        total bill for every user, and detail 
+        table how many user take for each day including
+        date detail
+    ]
+
+    ChangeDregPrice --> ChangeDregPriceDescription[
+        admin able to change dreg price, dreg price 
+        will record on database, and admin able to view all 
+        record of dreg price
+    ]
+
+```
   
 - 21 Januari 2025, running browser on raspberry pi zero 2 was to slow, even you don't start dotnet backend yet. after searching tauri seem solve this, but with consequence changing backend into tauri (rust).
 - 24 Februari 2025, 👷‍♂️ TODO create diesel migration and sea-query table builder combination, create macro to automate sea-query table function creation from struct model
@@ -41,7 +79,7 @@ The goal of AMS is to provide a simple, fast, and reliable system tailored speci
 </details>
 
 
-## 🎏 Usefull Notes 
+## 🎏 Useful Notes 
 
 - running cargo test -> `cargo test test_insert_product -- --nocapture`
 - get expanded macro for debugging -> `cargo expand --lib  model::product`

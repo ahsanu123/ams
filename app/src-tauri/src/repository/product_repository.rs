@@ -15,13 +15,16 @@ pub struct ProductRepository {}
 impl CrudRepositoryTrait<Product> for ProductRepository {
     fn getAll(&self) -> Result<Vec<Product>, String> {
         let conn = &mut create_connection();
-        let product_list = product_table::table.load(conn).expect(&format!(
-            "fail to load list product, {}, {}",
-            file!(),
-            line!()
-        ));
+        let product_list = product_table::table.load(conn);
 
-        Ok(product_list)
+        match product_list {
+            Ok(products) => Ok(products),
+            Err(_) => Err(format!(
+                "fail to load list product, {}, {}",
+                file!(),
+                line!()
+            )),
+        }
     }
 
     fn create(&self, data: &Product) -> Result<usize, String> {
@@ -62,11 +65,7 @@ impl CrudRepositoryTrait<Product> for ProductRepository {
 
         match result {
             Ok(updated_row) => Ok(updated_row),
-            Err(_) => Err(format!(
-                "fail to update product with, {}, {}",
-                file!(),
-                line!()
-            )),
+            Err(_) => Err(format!("fail to update product, {}, {}", file!(), line!())),
         }
     }
 
