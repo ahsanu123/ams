@@ -1,5 +1,5 @@
 import { RoleManagerService, UserManagerService, type IdentityRoleIntKey, type IdentityUserIntKey } from "../api/generated"
-import { authorize, UserClaimTypes, type AuthorizationModel } from "../model/authorization-model"
+import { authorize, UserClaimTypes, type AuthorizationModel } from "../model/authorization-model.ts.bak"
 import { useEffect, useState } from "react"
 import { defaultClient } from "../api/constant"
 import { useNavigate } from "react-router"

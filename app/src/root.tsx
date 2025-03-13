@@ -8,10 +8,7 @@ import {
 } from "react-router";
 import type { Route } from "./+types/root";
 import 'sakura.css'
-
-import { getContacts } from "./data";
-import type { JSX } from "react";
-import { AppRoutes } from "./routes";
+import asmLogo from './svg/ams-icon.svg'
 
 
 // export async function clientLoader() {
@@ -39,7 +36,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>💂</text></svg>" />
+        <link rel="icon" href={asmLogo} type="image/svg+xml" />
         <title>AMS - Ampas Management System</title>
       </head>
       <body>

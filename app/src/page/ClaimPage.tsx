@@ -1,4 +1,4 @@
-import { authorize, UserClaimTypes, type AuthorizationModel, type UserClaims } from "../model/authorization-model"
+import { authorize, UserClaimTypes, type AuthorizationModel, type UserClaims } from "../model/authorization-model.ts.bak"
 
 const authorization: AuthorizationModel = {
   claims: [

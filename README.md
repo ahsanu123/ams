@@ -13,18 +13,20 @@
   </a>
 </p>
 
- <img alt="licence" src="./ams-logo.svg">
- 
+ <img alt="licence" src="./docs/ams-logo.svg">
+  
 # 🥔 Introduction
+Ampas Management System (AMS) is a personal project designed to streamline and manage the selling process of soybean dregs (ampas). It simplifies daily operations by providing an efficient way to track sales and manage records.
 
-Ampas Management System (AMS) is a personal project built to manage the selling of soybean dregs (ampas). The application helps streamline and track the entire selling process.
+AMS is a desktop application built with Tauri, leveraging its lightweight, secure, and cross-platform capabilities for an optimal native experience. The frontend is developed using React Router v7 as a framework, utilizing its modern routing and data APIs for a clean, maintainable client-side architecture—without the complexity of server-side rendering (SSR).
 
-AMS is a desktop application developed using Tauri, leveraging its lightweight, secure, and cross-platform capabilities. On the backend, AMS uses:
+On the backend, AMS uses:
 
-- 🚒 Diesel as a type-safe and efficient query builder.
-- 🐟 Sea-query for handling flexible and easy-to-manage database migrations.
+- 🚒 Diesel, a type-safe and efficient query builder for Rust.
+- 🐟 Sea-query, providing flexible and easy-to-manage database migrations.
+- 🩹 React Router V7, modern routing with Suspense Feature.
 
-The goal of AMS is to provide a simple, fast, and reliable system tailored specifically for personal use in managing daily operations of soybean dregs sales.
+The goal of AMS is to deliver a simple, fast, and reliable system tailored for personal use in managing the daily sales operations of soybean dregs.
 
 ## 🌳 Project Log
 
