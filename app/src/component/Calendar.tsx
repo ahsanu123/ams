@@ -1,7 +1,7 @@
-import { useEffect, useState, type JSX } from "react"
-import { getRandomArbitrary } from "../utility/random-arbitrary"
+import React, { useState, type JSX } from "react"
+import { addMonths } from "date-fns"
 import "./Calendar.css"
-import { addMonths, setDay } from "date-fns"
+import type { ProductRecord } from "model"
 
 const TOTAL_DAYS_TO_SHOW = 42
 const DAY_TO_DISPLAY = 7
@@ -11,6 +11,19 @@ interface CalendarObject {
   month: number,
   date: number,
   totalDays: number,
+}
+
+type DisplayCalendarType = 'HeaderLabel' | 'ShowDate' | 'HiddenDate'
+
+interface CalendarItemCellData {
+  text: string,
+  date?: number,
+  take?: number
+}
+
+interface CalendarItemCell {
+  data: CalendarItemCellData,
+  type: DisplayCalendarType,
 }
 
 const sundayStartdays = [
@@ -23,14 +36,15 @@ const sundayStartdays = [
   "Sabtu",
 ]
 
+// TODO: refactor variable inside this function to use more makesense name
 function generateCalendarObject(currentDate: Date) {
 
   const year = currentDate.getFullYear()
   const month = currentDate.getMonth()
   const date = currentDate.getDate()
-  const day = new Date(year, month, 1).getDay()
+  const dayInWeekIndex = new Date(year, month, 1).getDay()
 
-  const days = [
+  const localDayName = [
     "Minggu",
     "Senin",
     "Selasa",
@@ -40,28 +54,41 @@ function generateCalendarObject(currentDate: Date) {
     "Sabtu",
   ]
 
-  const calendar: CalendarObject = {
+  const calendarObject: CalendarObject = {
     year,
     month,
     date,
     totalDays: new Date(year, month + 1, 0).getDate(),
   }
 
-  const currentDay = days[day]
-  const firstDateIndex = sundayStartdays.findIndex((item) => item === currentDay)
-  for (let i = 0; i < TOTAL_DAYS_TO_SHOW; i++) {
-    if (i < firstDateIndex)
-      days.push("-")
-    else if (i >= firstDateIndex + calendar.totalDays)
-      days.push("-")
-    else
-      days.push((i - firstDateIndex + 1).toString())
-  }
+  const currentDay = localDayName[dayInWeekIndex]
+  const firstSpanDate = sundayStartdays.findIndex((item) => item === currentDay)
 
-  return days
+  const calendarCellToShow = Array.from(Array(TOTAL_DAYS_TO_SHOW).keys())
+  const isHiddenCell = (day: number) => (day < firstSpanDate || day >= (firstSpanDate + calendarObject.totalDays))
+
+  const calendarCells = calendarCellToShow.map<CalendarItemCell>((day) => ({
+    type: isHiddenCell(day) ? 'HiddenDate' : 'ShowDate',
+    data: {
+      text: isHiddenCell(day) ? "hide" : "show",
+      date: isHiddenCell(day) ? undefined : day - firstSpanDate + 1
+    },
+  }));
+
+  const dayName = localDayName.map<CalendarItemCell>((day) => ({
+    type: 'HeaderLabel',
+    data: {
+      text: day
+    }
+  }))
+
+  calendarCells.unshift(...dayName);
+  return calendarCells
 }
 
 interface CalendarProps {
+  // TODO: Map recordData to cellCalendar, 
+  recordData: ProductRecord,
   showNavigator?: boolean
   title?: string,
   gridComponent?: (date: string) => JSX.Element
@@ -72,6 +99,7 @@ interface CalendarProps {
 export default function Calendar(props: CalendarProps) {
 
   const {
+    recordData,
     showNavigator = true,
     title,
     gridComponent,
@@ -80,10 +108,11 @@ export default function Calendar(props: CalendarProps) {
   } = props
 
   const [date, setDate] = useState<Date>(new Date())
-  const [days, setDays] = useState<string[]>(generateCalendarObject(date))
+  const [calendarCells, setDays] = useState<CalendarItemCell[]>(generateCalendarObject(date))
 
   const handleOnPrevMonthClicked = () => {
     const newDate = addMonths(date, -1)
+
     setDate(newDate)
     setDays(generateCalendarObject(newDate))
     onPrevMonthClicked?.(newDate)
@@ -91,39 +120,64 @@ export default function Calendar(props: CalendarProps) {
 
   const handleOnNextMonthClicked = () => {
     const newDate = addMonths(date, 1)
+
     setDate(newDate)
     setDays(generateCalendarObject(newDate))
     onNextMonthClicked?.(newDate)
   }
 
-  const defaultGridComponent = (date: string, amount?: number | string) => {
-    const includeDash = date.includes("-")
+  const gridCellView = (data: CalendarItemCell) => {
     return (
-      <div
-        className={`component ${includeDash ? "stripe" : ""}`}
-      >
-        <p>
-          {(!includeDash && amount)
-            ? `Ambil ${amount}` : "🚧"
-          }
-        </p>
-        <sub>
-          <b>
-            {date}
-          </b>
-        </sub>
-      </div>
+      <>
+        {data.type === 'HeaderLabel' && (
+          <b>{data.data.text}</b>
+        )}
+
+        {data.type === 'HiddenDate' && (
+          <div
+            className="component stripe"
+          >
+            <div
+              className="item-cell"
+            >
+              <p>
+                🚧
+              </p>
+            </div>
+          </div>
+        )}
+
+        {data.type === 'ShowDate' && (
+          <div
+            className="component "
+          >
+            <div
+              className="item-cell"
+            >
+              <p>
+                Ambil
+              </p>
+              <b>
+                2
+              </b>
+              <sub>
+                tanggal {data.data.date}
+              </sub>
+            </div>
+          </div>
+
+        )}
+      </>
     )
+
   }
+
+  const headerText = `🌕 ${date.toLocaleDateString("id-id", { month: 'long' })} ${date.toLocaleDateString("id-id", { year: 'numeric' })} ${title ? ` - ${title}` : ""}`
 
   return (
     <>
       <h5>
-        🌕
-        {date.toLocaleDateString("id-id", { month: 'long' })}
-        {" "}
-        {date.toLocaleDateString("id-id", { year: 'numeric' })}
-        {title ? ` - ${title}` : ""}
+        {headerText}
       </h5>
       {showNavigator && (
         <div>
@@ -140,19 +194,17 @@ export default function Calendar(props: CalendarProps) {
           </button>
         </div>
       )}
+
       <div
         className="ams-calendar"
       >
-        {days.map((item, index) => (
-          <>
-            {index < DAY_TO_DISPLAY
-              ? (<b>{item}</b>)
-              : (gridComponent ? gridComponent(item) : defaultGridComponent(item, getRandomArbitrary(1, 4).toFixed()))
-            }
-          </>
+        {calendarCells.map((cell, index) => (
+          <React.Fragment
+            key={index}
+          >
+            {gridCellView(cell)}
+          </React.Fragment>
         ))}
-
-        <hr />
       </div>
     </>
   )

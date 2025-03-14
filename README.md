@@ -72,9 +72,9 @@ flowchart TD
 
 ```
 
-### 🎻 Old UI For Reference 
+### 🎻 Current UI to Remind
 
-![image](https://github.com/user-attachments/assets/38ffa921-d052-49b8-a414-fbdb21c402bf)
+![image](https://github.com/user-attachments/assets/b1ec2a7a-5bba-48f4-872d-b56e6b3a9929)
 
   
 - 21 Januari 2025, running browser on raspberry pi zero 2 was to slow, even you don't start dotnet backend yet. after searching tauri seem solve this, but with consequence changing backend into tauri (rust).
@@ -87,6 +87,7 @@ flowchart TD
 - 🌳 TODO: create UI mockup
 - 🌳 TODO: create needed query for command
 - 🌳 TODO: create list logic for UI
+- 🌳 TODO: add mobx 
 
 </details>
 
@@ -95,6 +96,8 @@ flowchart TD
 
 - running cargo test -> `cargo test test_insert_product -- --nocapture`
 - get expanded macro for debugging -> `cargo expand --lib  model::product`
+- react router Revalidate for refetching data and route
+- usestate with zustand to update ui only
  
 ## ⚓ Reference 
 

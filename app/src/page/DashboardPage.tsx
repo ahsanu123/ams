@@ -175,80 +175,59 @@ export default function DashboardPage({
   // }, [selectedUser])
 
   return (
-    <div
-      className="dashboard-page"
-    >
-      <header>
+    <>
+      <div
+        className="dashboard-page"
+      >
 
-        <div>
-          <h1> 💾 AMS</h1>
-          <sub>Ampas Management System</sub>
-        </div>
+        <main>
+          {/* {!!monthlyUserBill && ( */}
+          {/*   <sub> 💸 Sejumlah: */}
+          {/*     {" "} */}
+          {/*     <b> */}
+          {/*       {formatAsRupiah(monthlyUserBill.totalTakenPrice!)} */}
+          {/*     </b> */}
+          {/*   </sub> */}
+          {/* )} */}
+          {selectedUser && (
+            <>
+              <h2>
+                {selectedUser}
+                {" - total ambil "}
+                {totalTaken}
+              </h2>
+              <hr />
+            </>
+          )}
 
-        <div>
-          <Clock />
-          <button
-            onClick={() => refreshPage()}
-            style={{
-              border: "0px",
-              backgroundColor: "transparent",
-              top: "10px",
-              float: "right"
-            }}
-          >
-            ⚡
-          </button>
-        </div>
-
-      </header>
-      <hr />
-
-      <main>
-        {/* {!!monthlyUserBill && ( */}
-        {/*   <sub> 💸 Sejumlah: */}
-        {/*     {" "} */}
-        {/*     <b> */}
-        {/*       {formatAsRupiah(monthlyUserBill.totalTakenPrice!)} */}
-        {/*     </b> */}
-        {/*   </sub> */}
-        {/* )} */}
-        {selectedUser && (
-          <>
-            <h2>
-              {selectedUser}
-              {" - total ambil "}
-              {totalTaken}
-            </h2>
-            <hr />
-          </>
-        )}
-
-        {
-          (display === "Date")
-            ? (
-              <>
-                <Calendar
-                  showNavigator={false}
-                  gridComponent={gridElement}
-                  onNextMonthClicked={(date) => undefined}
-                  onPrevMonthClicked={(date) => undefined}
+          {
+            (display === "Date")
+              ? (
+                <>
+                  <Calendar
+                    recordData={[]}
+                    showNavigator
+                    gridComponent={gridElement}
+                    onNextMonthClicked={(date) => undefined}
+                    onPrevMonthClicked={(date) => undefined}
+                  />
+                  <ListUser
+                    users={[]}
+                    handleOnUserSelected={() => console.log("handleOnUserSelected")}
+                  />
+                </>
+              )
+              : (
+                <VirtualKeyboard
+                  title="Masukan Jumlah Ampas"
+                  description="Tekan Jumlah Pada Keyboard Lalu Klik OK"
+                  onOk={() => console.log("handleOnVirtualKeyBoardOk")}
                 />
-                <ListUser
-                  users={[]}
-                  handleOnUserSelected={() => console.log("handleOnUserSelected")}
-                />
-              </>
-            )
-            : (
-              <VirtualKeyboard
-                title="Masukan Jumlah Ampas"
-                description="Tekan Jumlah Pada Keyboard Lalu Klik OK"
-                onOk={() => console.log("handleOnVirtualKeyBoardOk")}
-              />
-            )
-        }
-      </main>
+              )
+          }
+        </main>
 
-    </div>
+      </div>
+    </>
   )
 }

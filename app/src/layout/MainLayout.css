@@ -1,0 +1,23 @@
+header {
+
+  h1,
+  img {
+    margin: 0;
+  }
+
+  .logo-name {
+    display: flex;
+
+    img {
+      margin-right: 10px;
+      margin-bottom: -10px;
+    }
+  }
+
+  .button-transparent {
+    border: 0px;
+    background-color: transparent;
+    top: 10px;
+    float: right;
+  }
+}

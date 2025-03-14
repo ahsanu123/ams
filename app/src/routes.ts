@@ -16,7 +16,7 @@ export enum AppRoutes {
 }
 
 export default [
-  layout("./layout/HomePage.tsx", [
+  layout("./layout/MainLayout.tsx", [
     index("./page/DashboardPage.tsx")
   ]),
   // layout("./layout/PageContainer.tsx", [

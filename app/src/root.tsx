@@ -1,25 +1,14 @@
 import {
-  Form,
-  Link,
   Outlet,
   Scripts,
   ScrollRestoration,
   isRouteErrorResponse,
 } from "react-router";
 import type { Route } from "./+types/root";
-import 'sakura.css'
 import asmLogo from './svg/ams-icon.svg'
+import 'sakura.css'
 
-
-// export async function clientLoader() {
-//   const contacts = await getContacts();
-//   return { contacts };
-// }
-
-export default function Root({
-  loaderData
-}: Route.ComponentProps) {
-  // const { contacts } = loaderData
+export default function Root() {
   return (
     <>
       <Outlet />
