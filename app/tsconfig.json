@@ -1,5 +1,7 @@
 {
   "include": [
+    "src",
+    "test",
     "**/*",
     "**/.server/**/*",
     "**/.client/**/*",
@@ -24,6 +26,11 @@
       "./.react-router/types"
     ],
     "baseUrl": "./src/",
+    "paths": {
+      "@/*": [
+        "*"
+      ],
+    },
     "esModuleInterop": true,
     "verbatimModuleSyntax": true,
     "noEmit": true,

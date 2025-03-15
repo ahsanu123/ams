@@ -13,36 +13,27 @@ interface CalendarObject {
   totalDays: number,
 }
 
-type DisplayCalendarType = 'HeaderLabel' | 'ShowDate' | 'HiddenDate'
+type CellType = 'HeaderLabel' | 'ShowDate' | 'HiddenDate'
 
-interface CalendarItemCellData {
+interface CalendarCellData {
   text: string,
   date?: number,
   take?: number
 }
 
-interface CalendarItemCell {
-  data: CalendarItemCellData,
-  type: DisplayCalendarType,
+interface CalendarCell {
+  data: CalendarCellData,
+  type: CellType,
 }
 
-const sundayStartdays = [
-  "Minggu",
-  "Senin",
-  "Selasa",
-  "Rabu",
-  "Kamis",
-  "Jumat",
-  "Sabtu",
-]
+function generateCalendarObject(inputDate: Date) {
 
-// TODO: refactor variable inside this function to use more makesense name
-function generateCalendarObject(currentDate: Date) {
+  const currentyear = inputDate.getFullYear()
+  const currentMonth = inputDate.getMonth()
+  const currentDate = inputDate.getDate()
 
-  const year = currentDate.getFullYear()
-  const month = currentDate.getMonth()
-  const date = currentDate.getDate()
-  const dayInWeekIndex = new Date(year, month, 1).getDay()
+  const dayInWeekIndex = new Date(currentyear, currentMonth, 1).getDay()
+  const totalDaysOfThisMonth = new Date(currentyear, currentMonth + 1, 0).getDate()
 
   const localDayName = [
     "Minggu",
@@ -55,35 +46,39 @@ function generateCalendarObject(currentDate: Date) {
   ]
 
   const calendarObject: CalendarObject = {
-    year,
-    month,
-    date,
-    totalDays: new Date(year, month + 1, 0).getDate(),
+    year: currentyear,
+    month: currentMonth,
+    date: currentDate,
+    totalDays: totalDaysOfThisMonth
   }
 
-  const currentDay = localDayName[dayInWeekIndex]
-  const firstSpanDate = sundayStartdays.findIndex((item) => item === currentDay)
+  const currentDayName = localDayName[dayInWeekIndex]
+  const dayFromPrevMonth = localDayName.findIndex((item) => item === currentDayName)
 
   const calendarCellToShow = Array.from(Array(TOTAL_DAYS_TO_SHOW).keys())
-  const isHiddenCell = (day: number) => (day < firstSpanDate || day >= (firstSpanDate + calendarObject.totalDays))
+  const isHiddenCell = (day: number) => (
+    day < dayFromPrevMonth
+    ||
+    day >= (dayFromPrevMonth + calendarObject.totalDays)
+  )
 
-  const calendarCells = calendarCellToShow.map<CalendarItemCell>((day) => ({
+  const calendarGrid = calendarCellToShow.map<CalendarCell>((day) => ({
     type: isHiddenCell(day) ? 'HiddenDate' : 'ShowDate',
     data: {
       text: isHiddenCell(day) ? "hide" : "show",
-      date: isHiddenCell(day) ? undefined : day - firstSpanDate + 1
+      date: isHiddenCell(day) ? undefined : day - dayFromPrevMonth + 1
     },
   }));
 
-  const dayName = localDayName.map<CalendarItemCell>((day) => ({
+  const topDayLabel = localDayName.map<CalendarCell>((day) => ({
     type: 'HeaderLabel',
     data: {
       text: day
     }
   }))
 
-  calendarCells.unshift(...dayName);
-  return calendarCells
+  calendarGrid.unshift(...topDayLabel);
+  return calendarGrid
 }
 
 interface CalendarProps {
@@ -108,7 +103,7 @@ export default function Calendar(props: CalendarProps) {
   } = props
 
   const [date, setDate] = useState<Date>(new Date())
-  const [calendarCells, setDays] = useState<CalendarItemCell[]>(generateCalendarObject(date))
+  const [calendarCells, setDays] = useState<CalendarCell[]>(generateCalendarObject(date))
 
   const handleOnPrevMonthClicked = () => {
     const newDate = addMonths(date, -1)
@@ -126,7 +121,7 @@ export default function Calendar(props: CalendarProps) {
     onNextMonthClicked?.(newDate)
   }
 
-  const gridCellView = (data: CalendarItemCell) => {
+  const gridCellView = (data: CalendarCell) => {
     return (
       <>
         {data.type === 'HeaderLabel' && (

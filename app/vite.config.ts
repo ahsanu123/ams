@@ -1,11 +1,13 @@
 import { reactRouter } from "@react-router/dev/vite";
 import { defineConfig } from "vite";
+import tsConfigPaths from 'vite-tsconfig-paths'
 
 const host = process.env.TAURI_DEV_HOST;
 
 export default defineConfig({
   plugins: [
-    reactRouter()
+    reactRouter(),
+    tsConfigPaths() // i think it can replaced with resolve (look vitest.config.ts)
   ],
 
   // Vite options tailored for Tauri development and only applied in `tauri dev` or `tauri build`

@@ -98,6 +98,7 @@ flowchart TD
 - get expanded macro for debugging -> `cargo expand --lib  model::product`
 - react router Revalidate for refetching data and route
 - usestate with zustand to update ui only
+- to run vitest with ui and watch mode `yarn test --ui --watch`
  
 ## ⚓ Reference 
 
