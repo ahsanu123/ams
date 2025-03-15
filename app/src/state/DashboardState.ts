@@ -1,17 +1,27 @@
 import { create } from 'zustand'
 import { immer } from 'zustand/middleware/immer'
 import type { ProductRecord, Product } from 'model'
+import type { ICalendarCell } from '@/utility'
 
 interface ProductStore {
-  products: ProductRecord
-  addProduct: (product: Product) => boolean
-  updateProduct: (id: number, productData: Partial<Product>) => boolean
-  deleteProduct: (id: number) => boolean
+  products: ProductRecord,
+  selectedMonth: Date,
+  productsCell: ICalendarCell[],
+
+  addProduct: (product: Product) => boolean,
+  updateProduct: (id: number, productData: Partial<Product>) => boolean,
+  deleteProduct: (id: number) => boolean,
+
+  setSelectedDate: (date: Date) => void,
+
+  setProductCell: (cellsData: ICalendarCell[]) => void,
 }
 
 export const useProductStore = create<ProductStore>()(
   immer((set) => ({
     products: [],
+    selectedMonth: new Date(),
+    productsCell: [],
 
     addProduct: (product) => {
       set((state) => {
@@ -47,6 +57,18 @@ export const useProductStore = create<ProductStore>()(
       })
 
       return success
+    },
+
+    setSelectedDate: (date) => {
+      set((state) => {
+        state.selectedMonth = date
+      })
+    },
+
+    setProductCell: (cellsData) => {
+      set((state) => {
+        state.productsCell = cellsData
+      })
     }
 
   }))

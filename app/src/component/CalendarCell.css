@@ -1,0 +1,28 @@
+.calendar-cell {
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  display: flex;
+  border: solid 1px gray;
+  border-radius: 2px;
+  min-height: 100px;
+
+  sub {
+    font-size: 0.8em;
+  }
+
+  .center-cell-item {
+    font-weight: bold;
+    padding: 5px 0;
+    background-color: white;
+  }
+}
+
+.stripe {
+  color: white;
+  background: repeating-linear-gradient(45deg,
+      #606dbc,
+      #606dbc 10px,
+      #465298 10px,
+      #465298 20px);
+}

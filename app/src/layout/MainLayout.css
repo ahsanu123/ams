@@ -21,3 +21,7 @@ header {
     float: right;
   }
 }
+
+body {
+  max-width: 55em;
+}

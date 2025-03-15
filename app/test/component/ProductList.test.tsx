@@ -11,10 +11,11 @@ describe("Product List Component Test", () => {
 
   it('product_list_no_product', () => {
     render(<ProductList />)
+    screen.debug()
     expect(screen.getByText("No Product Available")).toBeInTheDocument()
   })
 
-  it('renders products when products exist in the store', () => {
+  it('product_list_with_product', () => {
     useProductStore.setState({
       products: [
         {
@@ -24,14 +25,15 @@ describe("Product List Component Test", () => {
           productionDate: new Date(),
           takenDate: new Date(),
           price: 0,
-          amount: 0,
+          amount: 13,
           description: 'new product added'
         }
       ],
     });
 
     render(<ProductList />);
-    expect(screen.getByText('new product added')).toBeInTheDocument();
+    screen.debug()
+    expect(screen.getByText('take Product: 13')).toBeInTheDocument();
 
   });
 

@@ -4,7 +4,6 @@
   gap: 10px;
 
   .component {
-    padding: 0px 4px;
     border: solid 1px gray;
     border-radius: 3px;
     min-height: 80px;
@@ -12,7 +11,7 @@
     .item-cell {
       display: flex;
       flex-wrap: wrap;
-      min-height: 80px;
+      min-height: 100px;
       justify-content: space-between;
       flex-direction: column;
     }
@@ -28,12 +27,4 @@
     font-size: 1em;
   }
 
-  .stripe {
-    color: white;
-    background: repeating-linear-gradient(45deg,
-        #606dbc,
-        #606dbc 10px,
-        #465298 10px,
-        #465298 20px);
-  }
 }
