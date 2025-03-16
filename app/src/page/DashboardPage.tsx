@@ -3,19 +3,17 @@ import type { Route } from "./+types/DashboardPage";
 import './DashboardPage.css'
 import Calendar from "../component/Calendar";
 import { useMainLayoutStore } from "@/state";
-import { isInsideTauri, viteEnv, whatEnvironmentIs } from "@/commands";
-import { useEffect } from "react";
 
-export async function clientLoader() {
-  // return await whoami()
-  // const users = await LocalAccountService.getLocalAccountListUser({
-  //   client: defaultClient
-  // })
-  //
-  // return {
-  //   users: users.data as string[]
-  // }
-}
+// export async function clientLoader() {
+// return await whoami()
+// const users = await LocalAccountService.getLocalAccountListUser({
+//   client: defaultClient
+// })
+//
+// return {
+//   users: users.data as string[]
+// }
+// }
 
 useMainLayoutStore.setState({
   user: {
@@ -99,9 +97,7 @@ useMainLayoutStore.setState({
   ]
 });
 
-export default function DashboardPage({
-  loaderData
-}: Route.ComponentProps) {
+export default function DashboardPage() {
 
 
   const productRecord = useMainLayoutStore((state) => state.products)

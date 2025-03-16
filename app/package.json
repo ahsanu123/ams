@@ -10,24 +10,25 @@
     "dev:tauri": "cross-env VITE_ENV=tauri react-router dev",
     "start": "cross-env NODE_ENV=production react-router-serve ./build/server/index.js",
     "typecheck": "react-router typegen && tsc",
-    "test": "vitest"
+    "test": "vitest",
+    "serve": "serve ./build/client"
   },
   "dependencies": {
-    "@react-router/node": "^7.0.2",
-    "@react-router/serve": "^7.0.2",
+    "@react-router/node": "^7.3.0",
+    "@react-router/serve": "^7.3.0",
     "@tauri-apps/api": "^2.3.0",
     "date-fns": "^4.1.0",
     "immer": "^10.1.1",
-    "isbot": "^5",
+    "isbot": "^5.1.17",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "react-router": "7.0.2",
+    "react-router": "^7.3.0",
     "react-test-renderer": "^19.0.0",
     "sakura.css": "^1.5.0",
     "zustand": "^5.0.3"
   },
   "devDependencies": {
-    "@react-router/dev": "^7.0.2",
+    "@react-router/dev": "^7.3.0",
     "@tauri-apps/cli": "^2.3.1",
     "@testing-library/dom": "^10.4.0",
     "@testing-library/jest-dom": "^6.6.3",
@@ -40,8 +41,9 @@
     "@vitest/ui": "^3.0.8",
     "cross-env": "^7.0.3",
     "jsdom": "^26.0.0",
+    "serve": "^14.2.4",
     "typescript": "^5.7.2",
-    "vite": "^5.4.11",
+    "vite": "^6.2.2",
     "vite-tsconfig-paths": "^5.1.4",
     "vitest": "^3.0.8"
   },

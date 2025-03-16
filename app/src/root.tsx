@@ -1,4 +1,6 @@
 import {
+  Meta,
+  Links,
   Outlet,
   Scripts,
   ScrollRestoration,
@@ -10,11 +12,7 @@ import './root.css'
 import 'sakura.css'
 
 export default function Root() {
-  return (
-    <>
-      <Outlet />
-    </>
-  );
+  return <Outlet />
 }
 
 // The Layout component is a special export for the root route.
@@ -28,6 +26,8 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href={asmLogo} type="image/svg+xml" />
         <title>AMS - Ampas Management System</title>
+        <Meta />
+        <Links />
       </head>
       <body>
         {children}
