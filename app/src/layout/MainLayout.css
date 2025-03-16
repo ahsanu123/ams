@@ -18,7 +18,7 @@ header {
     position: absolute;
     top: 40px;
     text-align: right;
-    right: calc(((100vw - 55em)/2) + 50px);
+    right: calc(((100vw - 55em)/2) + 30px);
 
     h5 {
       margin: 0;

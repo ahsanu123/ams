@@ -86,7 +86,8 @@ flowchart TD
 - 🌳 TODO: create UI mockup
 - 🌳 TODO: create needed query for command
 - 🌳 TODO: create list logic for UI
-- 🌳 TODO: add mobx 
+- 🌳 TODO: add mobx
+- 🌳 TODO: create password hashing with argon and save to db
 
 </details>
 

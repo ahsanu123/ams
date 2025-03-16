@@ -1,5 +1,5 @@
 import { useState } from "react"
-import "./VirtualKeyboard.css"
+import "./VirtualKeypad.css"
 
 type OkOrHapus = "Hapus" | "Ok"
 const MAX_AMOUNT = 10
@@ -7,58 +7,53 @@ const MAX_AMOUNT = 10
 interface VirtualKeyboardProps {
   title?: string
   description?: string
-  onOk: (amount: number) => void
+  cancelText?: string
+  confirmText?: string
+  inputType?: React.HTMLInputTypeAttribute
+  handleOnConfirm: (value: number) => void
 }
 
-export default function VirtualKeyboard(props: VirtualKeyboardProps) {
+export default function VirtualKeypad(props: VirtualKeyboardProps) {
 
   const {
     title,
     description,
-    onOk
+    cancelText = "Hapus",
+    confirmText = "Ok",
+    inputType = 'number',
+    handleOnConfirm
   } = props
 
-  const [amount, setAmount] = useState<number>(0)
+  const [value, setValue] = useState<number>(0)
   const [warning, setWarning] = useState<string>()
 
   const keypad: (number | string)[] = [
     7, 8, 9, 4, 5, 6, 1, 2, 3, 0,
-    "Hapus", "Ok"
+    cancelText, confirmText
   ]
 
   const handleOnNumberClick = (num: number) => {
-    setWarning(undefined)
-    if (amount === undefined)
-      setAmount((num))
-
-    else if (amount + num > MAX_AMOUNT) return
-
-    else setAmount((amount * 10 + num))
+    setValue((value * 10 + num))
   }
 
   const handleOnCmdButtonClicked = (cmd: OkOrHapus) => {
-    if (amount === undefined) return
+    if (value === undefined) return
 
     if (cmd === 'Hapus') {
-      const amountStr = amount.toString()
+      const amountStr = value.toString()
       const amountNum = parseInt(amountStr.slice(0, -1))
-      setAmount(amountNum || 0)
+      setValue(amountNum || 0)
     }
 
     if (cmd === 'Ok') {
-      console.log(amount)
-      if (amount === 0 || amount === undefined) {
-        setWarning("Jumlah Tidak Boleh Nol/0")
-      }
-      else
-        onOk(amount)
+      handleOnConfirm(value)
     }
 
   }
 
   return (
     <div
-      className="virtual-keyboard-container"
+      className="virtual-keypad-container"
     >
       {
         !!warning
@@ -71,20 +66,19 @@ export default function VirtualKeyboard(props: VirtualKeyboardProps) {
           )
           : (
             <>
-              <h5>⭐{title}</h5>
+              <h5>{title}</h5>
               <sub>{description}</sub>
             </>
           )
       }
 
-
       <input
-        type="number"
-        value={amount ?? 0}
+        type={inputType}
+        value={value ?? 0}
         onChange={(event) => handleOnNumberClick(parseInt(event.target.value))}
       />
       <div
-        className="virtual-keyboard"
+        className="virtual-keypad"
       >
         {keypad.map((key, index) => (
           <>
@@ -93,7 +87,7 @@ export default function VirtualKeyboard(props: VirtualKeyboardProps) {
                 <button
                   className="cmd-button"
                   onClick={() => handleOnCmdButtonClicked(key as OkOrHapus)}
-                  key={`virtual-keyboard-cmd-${index}`}
+                  key={`virtual-keypad-cmd-${index}`}
                 >
                   {key}
                 </button>
@@ -101,7 +95,7 @@ export default function VirtualKeyboard(props: VirtualKeyboardProps) {
               : (
                 <button
                   onClick={() => handleOnNumberClick(key)}
-                  key={`virtual-keyboard-btn-${index}`}
+                  key={`virtual-keypad-btn-${index}`}
                 >
                   {key}
                 </button>
