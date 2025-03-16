@@ -74,7 +74,7 @@ flowchart TD
 
 ### 🎻 Current UI to Remind
 
-![image](https://github.com/user-attachments/assets/6c6aefd0-7fb6-483a-9f84-94861e6f396f)
+![image](https://github.com/user-attachments/assets/36abd94e-456f-4e05-9fde-d9b932b1fb49)
   
 - 21 Januari 2025, running browser on raspberry pi zero 2 was to slow, even you don't start dotnet backend yet. after searching tauri seem solve this, but with consequence changing backend into tauri (rust).
 - 24 Februari 2025, 👷‍♂️ TODO create diesel migration and sea-query table builder combination, create macro to automate sea-query table function creation from struct model

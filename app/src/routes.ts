@@ -1,11 +1,13 @@
 import { index, layout, route, type RouteConfig } from "@react-router/dev/routes";
 
+// Order in this enum is matter
 export enum AppRoutes {
   PagePrefix = "/",
 
-  AccoutancyPage = "accoutancy-page",
   ReportPage = "report-page",
-
+  AccoutancyPage = "accoutancy-page",
+  EditDataPage = "edit-data-page",
+  AdminPage = "admin-page"
 }
 
 export default [
@@ -18,17 +20,12 @@ export default [
     }),
     route(`${AppRoutes.PagePrefix}${AppRoutes.ReportPage}`, "./page/ReportPage.tsx", {
       id: AppRoutes.ReportPage
-    })
+    }),
+    route(`${AppRoutes.PagePrefix}${AppRoutes.EditDataPage}`, "./page/EditDataPage.tsx", {
+      id: AppRoutes.EditDataPage
+    }),
+    route(`${AppRoutes.PagePrefix}${AppRoutes.AdminPage}`, "./page/AdminPage.tsx", {
+      id: AppRoutes.AdminPage
+    }),
   ]),
-  // layout("./layout/PageContainer.tsx", [
-  //   route(`${AppRoutes.PagePrefix}${AppRoutes.ClaimPage}`, "./page/ClaimPage.tsx"),
-  //   route(`${AppRoutes.PagePrefix}${AppRoutes.RolePage}`, "./page/RolePage.tsx"),
-  //   route(`${AppRoutes.PagePrefix}${AppRoutes.SignupPage}`, "./page/SignupPage.tsx"),
-  //   route(`${AppRoutes.PagePrefix}${AppRoutes.SigninPage}`, "./page/SigninPage.tsx"),
-  //   route(`${AppRoutes.PagePrefix}${AppRoutes.UserRolePage}/:userName`, "./page/UserRolePage.tsx"),
-  //   route(`${AppRoutes.PagePrefix}${AppRoutes.SuperAdminPage}`, "./page/SuperAdminPage.tsx"),
-  //   route(`${AppRoutes.PagePrefix}${AppRoutes.CampaignManagerPage}`, "./page/CampaignManagerPage.tsx"),
-  //   route(`${AppRoutes.PagePrefix}${AppRoutes.AMSAdminPage}`, "./page/AMSAdminPage.tsx"),
-  //   route(`${AppRoutes.PagePrefix}${AppRoutes.NotAllowedOrNotFound}`, "./page/NotAllowedOrNotFoundPage.tsx"),
-  // ])
 ] satisfies RouteConfig;
