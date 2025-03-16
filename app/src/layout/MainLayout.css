@@ -51,3 +51,10 @@ footer {
   top: 10px;
   float: right;
 }
+
+.button-icon-with-background {
+  margin-top: 5px;
+  border: 0px;
+  background-color: #731651;
+  float: right;
+}

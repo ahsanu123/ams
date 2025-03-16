@@ -1,0 +1,29 @@
+@font-face {
+  font-family: 'Noto Sans';
+  src: url('/fonts/NotoSansAdlam-Regular.otf') format('opentype');
+}
+
+@font-face {
+  font-family: 'Noto Serif';
+  src: url('/fonts/NotoSerifAhom-Regular.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'Noto Color Emoji';
+  src: url('/fonts/NotoColorEmoji.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'roboto';
+  src: url('/fonts/Roboto-Regular.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'Blobmoji';
+  src: url('/fonts/Blobmoji.ttf') format('truetype');
+}
+
+body {
+  font-family: 'roboto', 'Blobmoji', sans-serif;
+  /*font-family: 'Segoe UI'*/
+}

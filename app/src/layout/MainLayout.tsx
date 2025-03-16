@@ -79,16 +79,16 @@ export default function HomePage() {
 
         <div>
           <button
-            className="button-transparent"
+            className="button-icon-with-background"
             onClick={() => onNextPage()}
           >
-            ▶️
+            ➡️
           </button>
           <button
-            className="button-transparent"
+            className="button-icon-with-background"
             onClick={() => onPrevPage()}
           >
-            ◀️
+            ⬅️
           </button>
         </div>
       </footer>

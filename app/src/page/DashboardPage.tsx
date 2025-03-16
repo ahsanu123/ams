@@ -3,6 +3,8 @@ import type { Route } from "./+types/DashboardPage";
 import './DashboardPage.css'
 import Calendar from "../component/Calendar";
 import { useMainLayoutStore } from "@/state";
+import { isInsideTauri, viteEnv, whatEnvironmentIs } from "@/commands";
+import { useEffect } from "react";
 
 export async function clientLoader() {
   // return await whoami()

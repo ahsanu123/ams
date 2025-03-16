@@ -107,7 +107,7 @@ export default function Calendar(props: CalendarProps) {
           </b>
           📍 Total Ambil <b>{totalTake}</b>, {" "}
           💷 Tagihan <b>{formatAsRupiah(unpaidBill)}</b>, {" "}
-          ✅ Terbayar <b>{formatAsRupiah(paidBill)}</b>, {" "}
+          ✔️ Terbayar <b>{formatAsRupiah(paidBill)}</b>, {" "}
         </sub>
       </div>
 

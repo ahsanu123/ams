@@ -6,6 +6,7 @@ import {
 } from "react-router";
 import type { Route } from "./+types/root";
 import asmLogo from './svg/ams-icon.svg'
+import './root.css'
 import 'sakura.css'
 
 export default function Root() {

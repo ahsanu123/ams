@@ -29,7 +29,7 @@ export default function CalendarCellComponent(props: CalendarCellProps) {
           >
             <div>
               <sub>
-                {data.product.paid ? "✅" : "💷"}
+                {data.product.paid ? "✔️" : "💷"}
                 {formatAsRupiah(data.product.price * data.product.amount)}
               </sub>
             </div>

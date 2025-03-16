@@ -4,17 +4,17 @@
   "version": "0.1.0",
   "identifier": "com.ams.app",
   "build": {
-    "beforeDevCommand": "yarn dev",
+    "beforeDevCommand": "yarn dev:tauri",
     "devUrl": "http://localhost:1420",
-    "beforeBuildCommand": "yarn build",
+    "beforeBuildCommand": "yarn build:tauri",
     "frontendDist": "../build/client"
   },
   "app": {
     "windows": [
       {
         "title": "ams",
-        "width": 800,
-        "height": 600
+        "width": 1200,
+        "height": 1000
       }
     ],
     "security": {
