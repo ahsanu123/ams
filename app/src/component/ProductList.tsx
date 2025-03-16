@@ -1,8 +1,8 @@
-import { useProductStore } from "@/state"
+import { useMainLayoutStore } from "@/state"
 
 export const ProductList = () => {
 
-  const products = useProductStore((state) => state.products)
+  const products = useMainLayoutStore((state) => state.products)
 
   if (products.length === 0)
     return <div>No Product Available</div>

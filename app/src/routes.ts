@@ -1,23 +1,24 @@
 import { index, layout, route, type RouteConfig } from "@react-router/dev/routes";
 
 export enum AppRoutes {
-  PagePrefix = "page/",
+  PagePrefix = "/",
 
-  AMSAdminPage = "ams-admin-page",
-  ClaimPage = "claim-page",
-  RolePage = "role-page",
-  SigninPage = "signin-page",
-  SignupPage = "signup-page",
-  ListUserPage = "list-user-page",
-  UserRolePage = "user-role-age",
-  SuperAdminPage = "super-admin-page",
-  CampaignManagerPage = "campaign-manager-page",
-  NotAllowedOrNotFound = "not-allowed-or-not-found",
+  AccoutancyPage = "accoutancy-page",
+  ReportPage = "report-page",
+
 }
 
 export default [
   layout("./layout/MainLayout.tsx", [
-    index("./page/DashboardPage.tsx")
+    index("./page/DashboardPage.tsx", {
+      id: AppRoutes.PagePrefix
+    }),
+    route(`${AppRoutes.PagePrefix}${AppRoutes.AccoutancyPage}`, "./page/AccoutancyPage.tsx", {
+      id: AppRoutes.AccoutancyPage
+    }),
+    route(`${AppRoutes.PagePrefix}${AppRoutes.ReportPage}`, "./page/ReportPage.tsx", {
+      id: AppRoutes.ReportPage
+    })
   ]),
   // layout("./layout/PageContainer.tsx", [
   //   route(`${AppRoutes.PagePrefix}${AppRoutes.ClaimPage}`, "./page/ClaimPage.tsx"),

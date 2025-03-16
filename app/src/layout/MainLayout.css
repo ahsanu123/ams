@@ -14,14 +14,40 @@ header {
     }
   }
 
-  .button-transparent {
-    border: 0px;
-    background-color: transparent;
-    top: 10px;
-    float: right;
+  .user-profile {
+    position: absolute;
+    top: 40px;
+    text-align: right;
+    right: calc(((100vw - 55em)/2) + 50px);
+
+    h5 {
+      margin: 0;
+    }
+
+    sub {
+      display: block;
+    }
   }
+
 }
 
 body {
   max-width: 55em;
+}
+
+footer {
+  sub {
+    margin-top: 10px;
+  }
+
+  display: flex;
+  justify-content: space-between;
+  align-content: center;
+}
+
+.button-transparent {
+  border: 0px;
+  background-color: transparent;
+  top: 10px;
+  float: right;
 }

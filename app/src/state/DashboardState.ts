@@ -1,28 +1,32 @@
 import { create } from 'zustand'
 import { immer } from 'zustand/middleware/immer'
-import type { ProductRecord, Product } from 'model'
-import type { ICalendarCell } from '@/utility'
+import type { ProductRecord, Product, User } from 'model'
+import { AppRoutes } from '@/routes'
 
-interface ProductStore {
+interface MainLayoutStore {
   products: ProductRecord,
-  selectedMonth: Date,
-  productsCell: ICalendarCell[],
-
   addProduct: (product: Product) => boolean,
   updateProduct: (id: number, productData: Partial<Product>) => boolean,
   deleteProduct: (id: number) => boolean,
 
+  selectedMonth: Date,
   setSelectedDate: (date: Date) => void,
 
-  setProductCell: (cellsData: ICalendarCell[]) => void,
+  user?: User,
+  setUser: (user: User) => void,
+
+  currentPage: AppRoutes,
+  pageRoutes: string[],
+  setPage: (pageRoute: AppRoutes) => void,
+  nextPage: () => void,
+  prevPage: () => void,
+
 }
 
-export const useProductStore = create<ProductStore>()(
+export const useMainLayoutStore = create<MainLayoutStore>()(
   immer((set) => ({
-    products: [],
-    selectedMonth: new Date(),
-    productsCell: [],
 
+    products: [],
     addProduct: (product) => {
       set((state) => {
         state.products.push(product)
@@ -59,15 +63,46 @@ export const useProductStore = create<ProductStore>()(
       return success
     },
 
+    selectedMonth: new Date(),
     setSelectedDate: (date) => {
       set((state) => {
         state.selectedMonth = date
       })
     },
 
-    setProductCell: (cellsData) => {
+
+    setUser: (user) => {
       set((state) => {
-        state.productsCell = cellsData
+        state.user = user
+      })
+    },
+
+    currentPage: AppRoutes.PagePrefix,
+    pageRoutes: Object.values(AppRoutes),
+
+    setPage: (pageRoute) => {
+      set((state) => {
+        state.currentPage = pageRoute
+      })
+    },
+
+    nextPage: () => {
+      set((state) => {
+        const currentPageIndex = state.pageRoutes.findIndex((item) => item === state.currentPage)
+        if (currentPageIndex + 1 < state.pageRoutes.length)
+          state.currentPage = state.pageRoutes[currentPageIndex + 1] as AppRoutes
+        else
+          state.currentPage = state.pageRoutes[0] as AppRoutes
+      })
+    },
+
+    prevPage: () => {
+      set((state) => {
+        const currentPageIndex = state.pageRoutes.findIndex((item) => item === state.currentPage)
+        if (currentPageIndex > 0)
+          state.currentPage = state.pageRoutes[currentPageIndex - 1] as AppRoutes
+        else
+          state.currentPage = state.pageRoutes[state.pageRoutes.length - 1] as AppRoutes
       })
     }
 

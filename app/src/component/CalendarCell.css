@@ -5,7 +5,7 @@
   display: flex;
   border: solid 1px gray;
   border-radius: 2px;
-  min-height: 100px;
+  height: 100px;
 
   sub {
     font-size: 0.8em;
@@ -14,8 +14,12 @@
   .center-cell-item {
     font-weight: bold;
     padding: 5px 0;
-    background-color: white;
   }
+
+}
+
+.highlight-current-day {
+  background-color: beige;
 }
 
 .stripe {

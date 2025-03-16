@@ -1,11 +1,11 @@
 import { render, screen } from '@testing-library/react'
 import { describe, expect, it, beforeEach } from 'vitest'
 import { ProductList } from '@/component/ProductList'
-import { useProductStore } from '@/state'
+import { useMainLayoutStore } from '@/state'
 
 describe("Product List Component Test", () => {
 
-  beforeEach(() => useProductStore.setState({
+  beforeEach(() => useMainLayoutStore.setState({
     products: []
   }))
 
@@ -16,7 +16,7 @@ describe("Product List Component Test", () => {
   })
 
   it('product_list_with_product', () => {
-    useProductStore.setState({
+    useMainLayoutStore.setState({
       products: [
         {
           id: 0,

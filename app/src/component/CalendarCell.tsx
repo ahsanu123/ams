@@ -1,50 +1,80 @@
-import type { Product } from "@/model";
 import './CalendarCell.css'
 import { formatAsRupiah } from "@/utility/format-as-rupiah";
-import type { CellType } from "@/utility";
-
-type CalendarCellType = 'stripe'
+import type { ICalendarCell } from "@/utility";
+import { format, isSameDay } from "date-fns";
+import { id } from "date-fns/locale";
 
 interface CalendarCellProps {
-  data?: Product,
-  type: CellType
+  data: ICalendarCell,
 }
 
 export default function CalendarCellComponent(props: CalendarCellProps) {
 
   const {
     data,
-    type
   } = props
 
+  const highlightCurrentDay = data.date && isSameDay(data.date, new Date())
+
   const headerLabelComponent = () => (
-    <b>day</b>
+    <b>{data.headerLabelText}</b>
   )
 
   const showDateComponent = () => (
-    <div
-      className="calendar-cell"
-    >
-      <div>
-        <sub>
-          💷 {formatAsRupiah(11000)}
-        </sub>
-      </div>
+    <>
+      {data.product
+        ? (
+          <div
+            className={`calendar-cell ${highlightCurrentDay ? 'highlight-current-day' : ''}`}
+          >
+            <div>
+              <sub>
+                {data.product.paid ? "✅" : "💷"}
+                {formatAsRupiah(data.product.price * data.product.amount)}
+              </sub>
+            </div>
 
-      <div
-        className="center-cell-item"
-      >
-        <p>
-          Ambil {data?.amount}
-        </p>
-      </div>
+            <div
+              className="center-cell-item"
+            >
+              <p>
+                Ambil {data.product?.amount}
+              </p>
+            </div>
 
-      <div>
-        <sub>
-          {new Date().toLocaleString("uk")}
-        </sub>
-      </div>
-    </div>
+            <div>
+              <sub>
+                {data.date && format(data.date, "dd MMMM yyyy", { locale: id })}
+              </sub>
+            </div>
+          </div>
+
+        )
+        : (
+          <div
+            className={`calendar-cell ${highlightCurrentDay ? 'highlight-current-day' : ''}`}
+          >
+            <div>
+              <sub>
+                <b>Tidak Ambil</b>
+              </sub>
+            </div>
+
+            <div>
+              <b>
+                0️⃣
+              </b>
+            </div>
+
+            <div>
+              <sub>
+                {data.date && format(data.date, "dd MMMM yyyy", { locale: id })}
+              </sub>
+            </div>
+          </div>
+        )
+      }
+    </>
   )
 
   const hiddenDateComponent = () => (
@@ -55,12 +85,12 @@ export default function CalendarCellComponent(props: CalendarCellProps) {
         🚧
       </h4>
       <sub>
-        No Data to Show
+        Disembunyikan
       </sub>
     </div>
   )
 
-  switch (type) {
+  switch (data.type) {
     case 'HeaderLabel':
       return headerLabelComponent()
       break;

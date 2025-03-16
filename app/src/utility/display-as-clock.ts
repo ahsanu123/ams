@@ -12,10 +12,10 @@ const clockAnimation = [
 ]
 export function displayAsClock(date: Date) {
 
-  const dateString = date.toLocaleDateString("en-Us", {
+  const dateString = date.toLocaleDateString("id-id", {
     year: "numeric",
     month: "long",
-    day: "numeric"
+    day: "numeric",
   })
   const dateClock = date.toLocaleTimeString("en-Us", {
     hour12: false
