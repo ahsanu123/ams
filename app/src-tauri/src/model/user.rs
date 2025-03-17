@@ -10,6 +10,7 @@ pub struct UserNoId {
     pub is_active: bool,
     pub money: f64,
     pub bill: f64,
+    pub is_admin: bool,
 }
 
 #[derive(GenerateTableEnum, GenerateDieselTable, Selectable, Queryable, Debug, PartialEq)]
@@ -20,6 +21,7 @@ pub struct User {
     pub is_active: bool,
     pub money: f64,
     pub bill: f64,
+    pub is_admin: bool,
 }
 
 impl From<&User> for UserNoId {
@@ -29,6 +31,7 @@ impl From<&User> for UserNoId {
             is_active: value.is_active,
             money: value.money,
             bill: value.bill,
+            is_admin: value.is_admin,
         }
     }
 }
@@ -49,6 +52,7 @@ impl Migrationable for User {
             .col(ColumnDef::new(UserTable::IsActive).boolean())
             .col(ColumnDef::new(UserTable::Money).float())
             .col(ColumnDef::new(UserTable::Bill).float())
+            .col(ColumnDef::new(UserTable::IsAdmin).boolean())
             .build(builder)
     }
 

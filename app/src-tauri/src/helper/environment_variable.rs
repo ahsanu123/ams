@@ -9,6 +9,7 @@ pub static ENV_VAR: Lazy<EnvironmentVariable> = Lazy::new(|| {
 pub struct EnvironmentVariable {
     pub sqlite_connection_string: String,
     pub postgres_connection_string: String,
+    pub ams_database_version: i32,
 }
 
 impl EnvironmentVariable {
@@ -18,6 +19,10 @@ impl EnvironmentVariable {
                 .expect("sqlite connection must provided!!!"),
             postgres_connection_string: dotenvy::var("postgres_connection_string")
                 .expect("postgresql connection must provided!!!"),
+            ams_database_version: dotenvy::var("ams_database_version")
+                .expect("please provide ams_database_version!!")
+                .parse::<i32>()
+                .expect("cant parse to number"),
         }
     }
 }
@@ -30,5 +35,6 @@ mod test {
     fn check_env_variable() {
         println!("{}", ENV_VAR.sqlite_connection_string);
         println!("{}", ENV_VAR.postgres_connection_string);
+        println!("{}", ENV_VAR.ams_database_version);
     }
 }
