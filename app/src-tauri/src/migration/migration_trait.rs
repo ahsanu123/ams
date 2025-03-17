@@ -1,4 +1,4 @@
-use sea_query::{SchemaBuilder, TableCreateStatement};
+use sea_query::SchemaBuilder;
 
 pub trait Migrationable {
     fn get_up_migration(builder: impl SchemaBuilder) -> String;

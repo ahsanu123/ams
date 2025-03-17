@@ -1,8 +1,5 @@
 use super::environment_variable::ENV_VAR;
-use crate::helper;
 use diesel::{Connection, SqliteConnection};
-
-// TODO: add argument to choose what database to use
 
 pub fn create_connection() -> SqliteConnection {
     let connection_string = &ENV_VAR.sqlite_connection_string;

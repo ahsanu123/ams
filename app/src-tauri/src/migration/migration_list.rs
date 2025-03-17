@@ -1,7 +1,9 @@
-use super::migration_trait::Migrationable;
 use crate::helper::environment_variable::ENV_VAR;
 use crate::helper::sql_connection_helper::create_connection;
-use crate::model::database_metadata::{self, Metadata, MetadataTable};
+use crate::migration::migration_trait::Migrationable;
+use crate::model::admin_user_seeds::{AdminUserSeeds, SeedTrait};
+use crate::model::database_metadata::Metadata;
+use crate::model::user_seeds::UserSeed;
 use crate::model::{product::Product, user::User};
 use diesel::RunQueryDsl;
 use sea_query::SqliteQueryBuilder;
@@ -43,7 +45,13 @@ pub fn create_database_metadata() {
 }
 
 pub fn seed_database() {
-    println!("TODO: create database metadata");
+    let conn = &mut create_connection();
+
+    AdminUserSeeds::default()
+        .seed_db(conn)
+        .expect("cant seed admin");
+
+    UserSeed::default().seed_db(conn).expect("cant seed user");
 }
 
 pub fn setup_database() {
@@ -79,5 +87,10 @@ mod test {
     #[test]
     fn test_setup_database() {
         setup_database();
+    }
+
+    #[test]
+    fn test_seed_database() {
+        seed_database();
     }
 }
