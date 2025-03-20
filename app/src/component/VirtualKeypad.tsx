@@ -1,5 +1,6 @@
 import { useState } from "react"
 import "./VirtualKeypad.css"
+import React from "react"
 
 type OkOrHapus = "Hapus" | "Ok"
 const MAX_AMOUNT = 10
@@ -81,13 +82,14 @@ export default function VirtualKeypad(props: VirtualKeyboardProps) {
         className="virtual-keypad"
       >
         {keypad.map((key, index) => (
-          <>
+          <React.Fragment
+            key={index}
+          >
             {(typeof (key) === 'string')
               ? (
                 <button
                   className="cmd-button"
                   onClick={() => handleOnCmdButtonClicked(key as OkOrHapus)}
-                  key={`virtual-keypad-cmd-${index}`}
                 >
                   {key}
                 </button>
@@ -95,13 +97,12 @@ export default function VirtualKeypad(props: VirtualKeyboardProps) {
               : (
                 <button
                   onClick={() => handleOnNumberClick(key)}
-                  key={`virtual-keypad-btn-${index}`}
                 >
                   {key}
                 </button>
               )
             }
-          </>
+          </React.Fragment>
         ))}
       </div>
     </div>

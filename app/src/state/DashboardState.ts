@@ -2,6 +2,7 @@ import { create } from 'zustand'
 import { immer } from 'zustand/middleware/immer'
 import type { ProductRecord, Product, User } from 'model'
 import { AppRoutes } from '@/routes'
+import { getCookie, type AuthenticationCookieData } from '@/utility'
 
 interface MainLayoutStore {
   products: ProductRecord,
@@ -20,6 +21,9 @@ interface MainLayoutStore {
   setPage: (pageRoute: AppRoutes) => void,
   nextPage: () => void,
   prevPage: () => void,
+
+  isAuthenticationCookieExist: boolean,
+  checkIsAuthenticationCookieExist: () => void,
 
 }
 
@@ -103,6 +107,13 @@ export const useMainLayoutStore = create<MainLayoutStore>()(
           state.currentPage = state.pageRoutes[currentPageIndex - 1] as AppRoutes
         else
           state.currentPage = state.pageRoutes[state.pageRoutes.length - 1] as AppRoutes
+      })
+    },
+
+    isAuthenticationCookieExist: false,
+    checkIsAuthenticationCookieExist: () => {
+      set((state) => {
+        state.isAuthenticationCookieExist = !!getCookie<AuthenticationCookieData>('authentication-session')
       })
     }
 

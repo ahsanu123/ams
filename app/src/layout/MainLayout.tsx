@@ -2,9 +2,11 @@ import Clock from "../component/Clock";
 import { Outlet, useNavigate } from "react-router";
 import amsLogo from "../svg/ams-icon.svg"
 import { useMainLayoutStore } from "@/state";
-import "./MainLayout.css";
 import { formatAsRupiah } from "@/utility/format-as-rupiah";
 import { useEffect } from "react";
+import { getCookie, removeCookie, type AuthenticationCookieData } from "@/utility";
+import { SecretRoutes } from "@/routes";
+import "./MainLayout.css";
 
 export default function HomePage() {
   const navigate = useNavigate();
@@ -13,8 +15,30 @@ export default function HomePage() {
   const onNextPage = useMainLayoutStore(state => state.nextPage)
   const onPrevPage = useMainLayoutStore(state => state.prevPage)
   const currentPage = useMainLayoutStore(state => state.currentPage)
+  const isAuthCookieExist = useMainLayoutStore(state => state.isAuthenticationCookieExist)
+  const checkIfAuthCookieExists = useMainLayoutStore(state => state.checkIsAuthenticationCookieExist)
+
+  const handleOnLogout = () => {
+    removeCookie('authentication-session');
+    checkIfAuthCookieExists()
+  }
+
+  const handleOnNextPage = () => {
+    checkIfAuthCookieExists()
+    if (!isAuthCookieExist)
+      navigate(`${SecretRoutes.AdminGuardPage}`)
+    else onNextPage()
+
+  }
+  const handleOnPrevPage = () => {
+    checkIfAuthCookieExists()
+    if (!isAuthCookieExist)
+      navigate(`${SecretRoutes.AdminGuardPage}`)
+    else onPrevPage()
+  }
 
   useEffect(() => {
+    checkIfAuthCookieExists()
     navigate(currentPage)
   }, [currentPage])
 
@@ -80,16 +104,25 @@ export default function HomePage() {
         <div>
           <button
             className="button-icon-with-background"
-            onClick={() => onNextPage()}
+            onClick={() => handleOnNextPage()}
           >
             ➡️
           </button>
           <button
             className="button-icon-with-background"
-            onClick={() => onPrevPage()}
+            onClick={() => handleOnPrevPage()}
           >
             ⬅️
           </button>
+
+          {isAuthCookieExist && (
+            <button
+              onClick={handleOnLogout}
+              className="button-icon-with-background"
+            >
+              🍛 Logout
+            </button>
+          )}
         </div>
       </footer>
     </>

@@ -1,9 +1,9 @@
-import AdminGuardComponent from "@/component/AdminGuard";
+import AdminGuardComponent from "@/page/AdminGuardPage";
 
-export default function EditDataPage() {
+export default function AdminPage() {
   return (
     <>
-      <AdminGuardComponent />
+      <h2> its admin page</h2>
     </>
   )
 }
