@@ -3,6 +3,7 @@ use crate::helper::sql_connection_helper::create_connection;
 use crate::migration::migration_trait::Migrationable;
 use crate::model::admin_user_seeds::{AdminUserSeeds, SeedTrait};
 use crate::model::database_metadata::Metadata;
+use crate::model::hash::Hash;
 use crate::model::user_seeds::UserSeed;
 use crate::model::{product::Product, user::User};
 use diesel::RunQueryDsl;
@@ -14,6 +15,7 @@ pub fn migrate_up() {
     let up_migrations = [
         Product::get_up_migration(SqliteQueryBuilder),
         User::get_up_migration(SqliteQueryBuilder),
+        Hash::get_up_migration(SqliteQueryBuilder),
     ];
 
     up_migrations.iter().for_each(|item| {
@@ -27,7 +29,8 @@ pub fn migration_down() {
 
     let up_migrations = [
         Product::get_down_migration(SqliteQueryBuilder),
-        User::get_up_migration(SqliteQueryBuilder),
+        User::get_down_migration(SqliteQueryBuilder),
+        Hash::get_down_migration(SqliteQueryBuilder),
     ];
 
     up_migrations.iter().for_each(|item| {

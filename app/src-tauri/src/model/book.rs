@@ -58,9 +58,9 @@ impl Migrationable for Book {
 #[diesel(belongs_to(Book))]
 pub struct Page {
     pub id: i32,
+    pub book_id: i32,
     pub page_number: i32,
     pub content: String,
-    pub book_id: i32,
 }
 
 diesel::joinable!(page_table -> book_table(book_id));
