@@ -6,6 +6,7 @@ import { generateCalendarObject, type ICalendarCell } from "@/utility"
 import { id } from "date-fns/locale"
 import { formatAsRupiah } from "@/utility/format-as-rupiah"
 import "./Calendar.css"
+import UserSelector from "./UserSelector"
 
 interface CalendarProps {
   showNavigator?: boolean
@@ -76,11 +77,7 @@ export default function Calendar(props: CalendarProps) {
         <h5>
           {headerText}
         </h5>
-        <select
-
-        >
-          <option>Pilih Nama Pengguna</option>
-        </select>
+        <UserSelector />
       </div>
       {showNavigator && (
         <div>

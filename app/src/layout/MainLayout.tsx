@@ -17,6 +17,7 @@ export default function HomePage() {
   const currentPage = useMainLayoutStore(state => state.currentPage)
   const isAuthCookieExist = useMainLayoutStore(state => state.isAuthenticationCookieExist)
   const checkIfAuthCookieExists = useMainLayoutStore(state => state.checkIsAuthenticationCookieExist)
+  const isUserSelected = useMainLayoutStore(state => !!user)
 
   const handleOnLogout = () => {
     removeCookie('authentication-session');
@@ -72,22 +73,32 @@ export default function HomePage() {
           </button>
         </div>
 
-        <div
-          className="user-profile"
-        >
-          <h5>
-            🏃 {user && user.username}
-          </h5>
-          <sub>
-            💶 Uang Simpanan : <b>{user && formatAsRupiah(user.money)}</b>
-          </sub>
-          <sub>
-            💷 Total Tagihan Seluruhnya : <b>{user && formatAsRupiah(user.money)}</b> (TODO)
-          </sub>
-          <sub>
-            📍 Total Ambil Tahun {new Date().getFullYear()} : <b>200</b> (TODO)
-          </sub>
-        </div>
+        {isUserSelected && (
+          <div
+            className="user-profile"
+          >
+            <h5>
+              🏃 {user && user.username}
+            </h5>
+            <sub>
+              💶 Uang Simpanan : <b>{user && formatAsRupiah(user.money)}</b>
+            </sub>
+            <sub>
+              💷 Total Tagihan Seluruhnya : <b>{user && formatAsRupiah(user.money)}</b> (TODO)
+            </sub>
+            <sub>
+              📍 Total Ambil Tahun {new Date().getFullYear()} : <b>200</b> (TODO)
+            </sub>
+          </div>
+        )}
+
+        {!isUserSelected && (
+          <div
+            className="user-profile"
+          >
+            <b>Pilih Nama Pengguna</b>
+          </div>
+        )}
 
       </header>
 

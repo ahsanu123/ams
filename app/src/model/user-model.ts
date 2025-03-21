@@ -4,4 +4,5 @@ export interface User {
   isActive: boolean;
   money: number;
   bill: number;
+  isAdmin: boolean;
 }

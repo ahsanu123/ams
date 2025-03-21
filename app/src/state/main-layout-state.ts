@@ -14,7 +14,7 @@ interface MainLayoutStore {
   setSelectedDate: (date: Date) => void,
 
   user?: User,
-  setUser: (user: User) => void,
+  setUser: (user: User | undefined) => void,
 
   currentPage: AppRoutes,
   pageRoutes: string[],
@@ -24,6 +24,9 @@ interface MainLayoutStore {
 
   isAuthenticationCookieExist: boolean,
   checkIsAuthenticationCookieExist: () => void,
+
+  listUser: User[],
+  setListUser: (users: User[]) => void,
 
 }
 
@@ -114,6 +117,13 @@ export const useMainLayoutStore = create<MainLayoutStore>()(
     checkIsAuthenticationCookieExist: () => {
       set((state) => {
         state.isAuthenticationCookieExist = !!getCookie<AuthenticationCookieData>('authentication-session')
+      })
+    },
+
+    listUser: [],
+    setListUser: (users) => {
+      set((state) => {
+        state.listUser = users
       })
     }
 
