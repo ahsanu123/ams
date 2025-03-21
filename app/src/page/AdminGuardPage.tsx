@@ -3,12 +3,14 @@ import './AdminGuardPage.css'
 import VirtualKeypad from '../component/VirtualKeypad'
 import { AppRoutes } from '@/routes';
 import { getCookie, setCookie, type AuthenticationCookieData } from '@/utility';
+import { useMainLayoutStore } from '@/state';
 
 // TODO: right now login is only handled for admin.
 
 export default function AdminGuardComponent() {
   const navigate = useNavigate();
 
+  const currentPage = useMainLayoutStore(state => state.currentPage);
   const handleOnConfirmPassword = (value: number) => {
     // TODO: Replace this logic to request 
     // authentication from rust backend
@@ -21,7 +23,7 @@ export default function AdminGuardComponent() {
       role: 'Admin'
     }
     setCookie('authentication-session', authData)
-    navigate(`${AppRoutes.PagePrefix}`)
+    navigate(currentPage);
   }
   const handleOnClickBack = () => {
     navigate(`${AppRoutes.PagePrefix}`)

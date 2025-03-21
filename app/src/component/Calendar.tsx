@@ -10,6 +10,7 @@ import "./Calendar.css"
 interface CalendarProps {
   showNavigator?: boolean
   title?: string,
+  adminMode?: boolean,
   onPrevMonthClicked?: (date: Date) => void
   onNextMonthClicked?: (date: Date) => void
 }
@@ -18,9 +19,10 @@ export default function Calendar(props: CalendarProps) {
 
   const {
     showNavigator = true,
+    adminMode = false,
     title,
     onPrevMonthClicked,
-    onNextMonthClicked
+    onNextMonthClicked,
   } = props
 
   const products = useMainLayoutStore(state => state.products);
@@ -120,6 +122,7 @@ export default function Calendar(props: CalendarProps) {
           >
             <CalendarCellComponent
               data={cell}
+              adminMode={adminMode}
             />
           </React.Fragment>
         ))}

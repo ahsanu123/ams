@@ -1,9 +1,9 @@
-import AdminGuardComponent from "@/page/AdminGuardPage";
+import Calendar from "@/component/Calendar";
 
 export default function AdminPage() {
   return (
     <>
-      <h2> its admin page</h2>
+      <h2>Admin Page</h2>
     </>
   )
 }
