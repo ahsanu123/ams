@@ -5,6 +5,7 @@ export default function UserSelector() {
 
   const listUser = useMainLayoutStore(state => state.listUser);
   const setUser = useMainLayoutStore(state => state.setUser)
+  const selectedUser = useMainLayoutStore(state => state.user)
 
   const handleOnSelectChange: ChangeEventHandler<HTMLSelectElement> = ({ target }) => {
     const value = parseInt(target.value)
@@ -19,6 +20,7 @@ export default function UserSelector() {
     <>
       <select
         onChange={handleOnSelectChange}
+        value={selectedUser?.id ?? -1}
       >
         <option
           key={-1}

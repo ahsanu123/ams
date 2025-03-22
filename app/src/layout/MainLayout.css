@@ -58,3 +58,8 @@ footer {
   background-color: #731651;
   float: right;
 }
+
+button[disabled] {
+  background-color: gray;
+  cursor: not-allowed;
+}

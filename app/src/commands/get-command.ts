@@ -20,6 +20,12 @@ export const realCommand: InvokeCommand = {
   },
   getUsers: function (): Promise<User[]> {
     throw new Error("Function not implemented.")
+  },
+  getProductPrice: function (): Promise<number> {
+    throw new Error("Function not implemented.")
+  },
+  getAllProductOfThisMonth: function (date: Date): Promise<ProductRecord> {
+    throw new Error("Function not implemented.")
   }
 }
 

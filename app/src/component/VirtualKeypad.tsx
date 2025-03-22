@@ -6,7 +6,8 @@ type OkOrHapus = "Hapus" | "Ok"
 const MAX_AMOUNT = 10
 
 interface VirtualKeyboardProps {
-  title?: string
+  title?: string,
+  defaultValue?: number,
   description?: string
   cancelText?: string
   confirmText?: string
@@ -18,6 +19,7 @@ export default function VirtualKeypad(props: VirtualKeyboardProps) {
 
   const {
     title,
+    defaultValue = 0,
     description,
     cancelText = "Hapus",
     confirmText = "Ok",
@@ -25,12 +27,12 @@ export default function VirtualKeypad(props: VirtualKeyboardProps) {
     handleOnConfirm
   } = props
 
-  const [value, setValue] = useState<number>(0)
+  const [value, setValue] = useState<number>(defaultValue)
   const [warning, setWarning] = useState<string>()
 
   const keypad: (number | string)[] = [
     7, 8, 9, 4, 5, 6, 1, 2, 3, 0,
-    cancelText, confirmText
+    "Hapus", "Ok"
   ]
 
   const handleOnNumberClick = (num: number) => {

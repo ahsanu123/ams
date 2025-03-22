@@ -5,7 +5,7 @@ import { useMainLayoutStore } from "@/state";
 import { formatAsRupiah } from "@/utility/format-as-rupiah";
 import { useEffect } from "react";
 import { getCookie, removeCookie, type AuthenticationCookieData } from "@/utility";
-import { SecretRoutes } from "@/routes";
+import { AppRoutes, SecretRoutes } from "@/routes";
 import "./MainLayout.css";
 
 export default function HomePage() {
@@ -17,11 +17,12 @@ export default function HomePage() {
   const currentPage = useMainLayoutStore(state => state.currentPage)
   const isAuthCookieExist = useMainLayoutStore(state => state.isAuthenticationCookieExist)
   const checkIfAuthCookieExists = useMainLayoutStore(state => state.checkIsAuthenticationCookieExist)
-  const isUserSelected = useMainLayoutStore(state => !!user)
+  const isUserSelected = !!user
 
   const handleOnLogout = () => {
     removeCookie('authentication-session');
     checkIfAuthCookieExists()
+    navigate(`${AppRoutes.PagePrefix}`)
   }
 
   const handleOnNextPage = () => {

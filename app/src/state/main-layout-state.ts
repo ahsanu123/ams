@@ -28,6 +28,12 @@ interface MainLayoutStore {
   listUser: User[],
   setListUser: (users: User[]) => void,
 
+  productPrice: number,
+  setProductPrice: (price: number) => void
+
+  allProductOfThisMonth: ProductRecord,
+  setAllProductOfThisMonth: (products: ProductRecord) => void
+
 }
 
 export const useMainLayoutStore = create<MainLayoutStore>()(
@@ -124,6 +130,20 @@ export const useMainLayoutStore = create<MainLayoutStore>()(
     setListUser: (users) => {
       set((state) => {
         state.listUser = users
+      })
+    },
+
+    productPrice: 0,
+    setProductPrice: (price) => {
+      set((state) => {
+        state.productPrice = price
+      })
+    },
+
+    allProductOfThisMonth: [],
+    setAllProductOfThisMonth: (products) => {
+      set((state) => {
+        state.allProductOfThisMonth = products
       })
     }
 

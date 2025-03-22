@@ -1,33 +1,52 @@
-import { useNavigate } from "react-router"
-import './DashboardPage.css'
 import Calendar from "../component/Calendar";
 import { useMainLayoutStore } from "@/state";
-import { mockCommand } from "@/commands";
+import { getCommand, mockCommand } from "@/commands";
 import type { Route } from "./+types/DashboardPage";
 import { useEffect } from "react";
+import './DashboardPage.css'
 
 export async function clientLoader() {
-  const listUser = await mockCommand.getUsers()
-  const productRecord = await mockCommand.getProductRecord()
+  const command = getCommand();
+
+  const listUser = await command.getUsers()
+  const productRecord = await command.getProductRecord()
+  const productPrice = await command.getProductPrice()
 
   return {
     listUser,
-    productRecord
+    productRecord,
+    productPrice,
   }
 }
-
 
 export default function DashboardPage({
   loaderData
 }: Route.ComponentProps) {
 
-  const { productRecord, listUser } = loaderData
+  const {
+    productRecord,
+    listUser,
+    productPrice,
+  } = loaderData
+
+  const command = getCommand();
+
+  const selectedMonth = useMainLayoutStore(state => state.selectedMonth)
+  const setAllProductOfThisMonth = useMainLayoutStore(state => state.setAllProductOfThisMonth)
+
+  // TODO: Think better way to do this
+  const getAllProduct = async () => {
+    const allProductOfThisMonth = await command.getAllProductOfThisMonth(selectedMonth)
+    setAllProductOfThisMonth(allProductOfThisMonth)
+  }
 
   useEffect(() => {
     useMainLayoutStore.setState({
+      products: productRecord,
       listUser,
-      products: productRecord
+      productPrice,
     })
+    getAllProduct()
   }, [])
 
   return (
@@ -36,11 +55,7 @@ export default function DashboardPage({
         className="dashboard-page"
       >
         <main>
-          <Calendar
-            showNavigator
-            onNextMonthClicked={(date) => undefined}
-            onPrevMonthClicked={(date) => undefined}
-          />
+          <Calendar />
         </main>
 
       </div>

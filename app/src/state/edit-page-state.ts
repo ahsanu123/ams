@@ -7,8 +7,10 @@ interface EditPageStore {
   dialogData?: DialogModel,
   setDialogData: (data: DialogModel) => void,
 
+
   isDialogVisible: boolean,
   setDialogVisibility: (visible: boolean) => void
+
 }
 
 export const useEditPageStore = create<EditPageStore>()(
@@ -28,6 +30,7 @@ export const useEditPageStore = create<EditPageStore>()(
       })
 
     },
+
 
   }))
 )

@@ -11,6 +11,7 @@ export default function AdminGuardComponent() {
   const navigate = useNavigate();
 
   const currentPage = useMainLayoutStore(state => state.currentPage);
+  const setPage = useMainLayoutStore(state => state.setPage)
   const handleOnConfirmPassword = (value: number) => {
     // TODO: Replace this logic to request 
     // authentication from rust backend
@@ -23,9 +24,11 @@ export default function AdminGuardComponent() {
       role: 'Admin'
     }
     setCookie('authentication-session', authData)
-    navigate(currentPage);
+    setPage(AppRoutes.PagePrefix)
+    navigate(`${AppRoutes.PagePrefix}`)
   }
   const handleOnClickBack = () => {
+    setPage(AppRoutes.PagePrefix)
     navigate(`${AppRoutes.PagePrefix}`)
   }
   return (

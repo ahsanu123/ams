@@ -19,7 +19,7 @@ interface CalendarProps {
 export default function Calendar(props: CalendarProps) {
 
   const {
-    showNavigator = true,
+    showNavigator,
     adminMode = false,
     title,
     onPrevMonthClicked,

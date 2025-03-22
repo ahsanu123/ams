@@ -1,0 +1,13 @@
+.admin-page {
+  display: flex;
+  justify-content: space-between;
+  min-height: 750px;
+
+  .left-content {
+    width: 100%;
+  }
+
+  .right-content {
+    width: 100%;
+  }
+}

@@ -74,20 +74,23 @@ flowchart TD
 
 ### 🎻 Current UI to Remind
 
-![image](https://github.com/user-attachments/assets/36abd94e-456f-4e05-9fde-d9b932b1fb49)
+![image](https://github.com/user-attachments/assets/c6b4eeda-bdfc-4d92-b971-1838f062692e)
+![image](https://github.com/user-attachments/assets/2621bcb2-4840-4c7c-899c-2fdb72629f01)
+![image](https://github.com/user-attachments/assets/09b325ff-29b9-4877-9374-c06066753e5a)
+![image](https://github.com/user-attachments/assets/2cf524ac-f182-4dab-ac06-e91ccdbfd5d0)
   
 - 21 Januari 2025, running browser on raspberry pi zero 2 was to slow, even you don't start dotnet backend yet. after searching tauri seem solve this, but with consequence changing backend into tauri (rust).
 - 24 Februari 2025, 👷‍♂️ TODO create diesel migration and sea-query table builder combination, create macro to automate sea-query table function creation from struct model
 - 25 Februari 2025, turn out diesel was sync (because its made before async in rust), for current case its ok to use sync.
 - 8 Maret 2025, Create Basic structure of CRUD with Rust in ProductRepository
-- 🌳 TODO: Implement DatabaseMetadata function with diesel.
+- ✔️ TODO: Implement DatabaseMetadata function with diesel.
 - 🌳 TODO: create list of needed command for ui
 - 🌳 TODO: create list of response name model for ui
 - 🌳 TODO: create UI mockup
 - 🌳 TODO: create needed query for command
 - 🌳 TODO: create list logic for UI
 - ✔️ TODO: add mobx -> Nope use Zustand instead
-- 🌳 TODO: create password hashing with argon and save to db
+- ✔️ TODO: create password hashing with argon and save to db
 
 </details>
 

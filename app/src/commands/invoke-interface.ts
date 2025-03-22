@@ -1,4 +1,4 @@
-import type { ProductRecord, User } from "@/model";
+import type { Product, ProductRecord, User } from "@/model";
 
 // NOTE: 
 // use this key type to call real invoke  
@@ -10,5 +10,7 @@ export type InvokeKeyType =
 export interface InvokeCommand {
   getProductRecord: () => Promise<ProductRecord>,
   getUserById: (id: number) => Promise<User>,
-  getUsers: () => Promise<User[]>
+  getUsers: () => Promise<User[]>,
+  getProductPrice: () => Promise<number>,
+  getAllProductOfThisMonth: (date: Date) => Promise<ProductRecord>
 }
