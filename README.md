@@ -91,6 +91,7 @@ flowchart TD
 - 🌳 TODO: create list logic for UI
 - ✔️ TODO: add mobx -> Nope use Zustand instead
 - ✔️ TODO: create password hashing with argon and save to db
+- 🌳 TODO: create Dockerfile and documentation about cross compile for archlinuxarm in [CrossCompile](./docs/cross_compile.md)
 
 </details>
 
