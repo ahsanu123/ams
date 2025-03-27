@@ -78,11 +78,14 @@ flowchart TD
 ![image](https://github.com/user-attachments/assets/2621bcb2-4840-4c7c-899c-2fdb72629f01)
 ![image](https://github.com/user-attachments/assets/09b325ff-29b9-4877-9374-c06066753e5a)
 ![image](https://github.com/user-attachments/assets/2cf524ac-f182-4dab-ac06-e91ccdbfd5d0)
+![first test on real raspberrypi zero 2w device](./docs/build_alpha_1.jpg)
+![first test on real raspberrypi zero 2w device](./docs/build_alpha_2.jpg)
   
 - 21 Januari 2025, running browser on raspberry pi zero 2 was to slow, even you don't start dotnet backend yet. after searching tauri seem solve this, but with consequence changing backend into tauri (rust).
 - 24 Februari 2025, 👷‍♂️ TODO create diesel migration and sea-query table builder combination, create macro to automate sea-query table function creation from struct model
 - 25 Februari 2025, turn out diesel was sync (because its made before async in rust), for current case its ok to use sync.
 - 8 Maret 2025, Create Basic structure of CRUD with Rust in ProductRepository
+- 27 maret 2025, first trying on real raspberry pi zero 2w device, app is fast enough (compared to aspnet core and spa combination 😄), but authentication cookie still not work now, i think its because tauri permision, need reading more about it in their docs 
 - ✔️ TODO: Implement DatabaseMetadata function with diesel.
 - 🌳 TODO: create list of needed command for ui
 - 🌳 TODO: create list of response name model for ui
@@ -103,6 +106,7 @@ flowchart TD
 - react router Revalidate for refetching data and route
 - usestate with zustand to update ui only
 - to run vitest with ui and watch mode `yarn test --ui --watch`
+- make binary runable -> `sudo chmod +x binaryName`
  
 ## ⚓ Reference 
 
