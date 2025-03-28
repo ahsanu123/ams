@@ -1,7 +1,7 @@
 use crate::migration::migration_trait::Migrationable;
-use custom_macro::{GenerateDieselTable, GenerateTableEnum};
+use ams_macro::{GenerateDieselTable, GenerateTableEnum};
 use diesel::prelude::*;
-use sea_orm::ForeignKeyAction;
+use sea_query::ForeignKeyAction;
 use sea_query::{ColumnDef, ForeignKey, Iden, SchemaBuilder, Table};
 
 #[derive(

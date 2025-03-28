@@ -1,6 +1,6 @@
 use crate::migration::migration_trait::Migrationable;
+use ams_macro::{GenerateDieselTable, GenerateTableEnum};
 use chrono::NaiveDate;
-use custom_macro::{GenerateDieselTable, GenerateTableEnum};
 use diesel::{prelude::Insertable, Selectable};
 use sea_query::{ColumnDef, Iden, Table};
 use std::fmt::{self, *};

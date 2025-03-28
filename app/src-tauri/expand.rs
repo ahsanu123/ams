@@ -1,14 +1,14 @@
 pub mod database_metadata {
+    use ams_macro::{GenerateDieselTable, GenerateTableEnum};
     use chrono::{NaiveDate, Utc};
-    use custom_macro::{GenerateDieselTable, GenerateTableEnum};
     use diesel::{prelude::*, Selectable};
-    use sea_query::{ColumnDef, Iden, Table};
+    use sea_query::{Alias, ColumnDef, Iden, SeaRc, Table, TableRef};
     use crate::{
         helper::sql_connection_helper::create_connection,
         migration::migration_trait::Migrationable,
     };
-    #[diesel(table_name = database_metadata_table)]
-    pub struct DatabaseMetadataNoId {
+    #[diesel(table_name = metadata_table)]
+    pub struct MetadataNoId {
         pub version: i64,
         pub description: String,
     }
@@ -19,114 +19,94 @@ pub mod database_metadata {
         use diesel::internal::derives::insertable::UndecoratedInsertRecord;
         use diesel::prelude::*;
         #[allow(unused_qualifications)]
-        impl Insertable<database_metadata_table::table> for DatabaseMetadataNoId {
+        impl Insertable<metadata_table::table> for MetadataNoId {
             type Values = <(
-                std::option::Option<
-                    diesel::dsl::Eq<database_metadata_table::version, i64>,
-                >,
-                std::option::Option<
-                    diesel::dsl::Eq<database_metadata_table::description, String>,
-                >,
-            ) as Insertable<database_metadata_table::table>>::Values;
+                std::option::Option<diesel::dsl::Eq<metadata_table::version, i64>>,
+                std::option::Option<diesel::dsl::Eq<metadata_table::description, String>>,
+            ) as Insertable<metadata_table::table>>::Values;
             fn values(
                 self,
             ) -> <(
-                std::option::Option<
-                    diesel::dsl::Eq<database_metadata_table::version, i64>,
-                >,
-                std::option::Option<
-                    diesel::dsl::Eq<database_metadata_table::description, String>,
-                >,
-            ) as Insertable<database_metadata_table::table>>::Values {
+                std::option::Option<diesel::dsl::Eq<metadata_table::version, i64>>,
+                std::option::Option<diesel::dsl::Eq<metadata_table::description, String>>,
+            ) as Insertable<metadata_table::table>>::Values {
                 (
+                    std::option::Option::Some(metadata_table::version.eq(self.version)),
                     std::option::Option::Some(
-                        database_metadata_table::version.eq(self.version),
-                    ),
-                    std::option::Option::Some(
-                        database_metadata_table::description.eq(self.description),
+                        metadata_table::description.eq(self.description),
                     ),
                 )
                     .values()
             }
         }
         #[allow(unused_qualifications)]
-        impl<'insert> Insertable<database_metadata_table::table>
-        for &'insert DatabaseMetadataNoId {
+        impl<'insert> Insertable<metadata_table::table> for &'insert MetadataNoId {
             type Values = <(
                 std::option::Option<
-                    diesel::dsl::Eq<database_metadata_table::version, &'insert i64>,
+                    diesel::dsl::Eq<metadata_table::version, &'insert i64>,
                 >,
                 std::option::Option<
-                    diesel::dsl::Eq<
-                        database_metadata_table::description,
-                        &'insert String,
-                    >,
+                    diesel::dsl::Eq<metadata_table::description, &'insert String>,
                 >,
-            ) as Insertable<database_metadata_table::table>>::Values;
+            ) as Insertable<metadata_table::table>>::Values;
             fn values(
                 self,
             ) -> <(
                 std::option::Option<
-                    diesel::dsl::Eq<database_metadata_table::version, &'insert i64>,
+                    diesel::dsl::Eq<metadata_table::version, &'insert i64>,
                 >,
                 std::option::Option<
-                    diesel::dsl::Eq<
-                        database_metadata_table::description,
-                        &'insert String,
-                    >,
+                    diesel::dsl::Eq<metadata_table::description, &'insert String>,
                 >,
-            ) as Insertable<database_metadata_table::table>>::Values {
+            ) as Insertable<metadata_table::table>>::Values {
                 (
+                    std::option::Option::Some(metadata_table::version.eq(&self.version)),
                     std::option::Option::Some(
-                        database_metadata_table::version.eq(&self.version),
-                    ),
-                    std::option::Option::Some(
-                        database_metadata_table::description.eq(&self.description),
+                        metadata_table::description.eq(&self.description),
                     ),
                 )
                     .values()
             }
         }
-        impl UndecoratedInsertRecord<database_metadata_table::table>
-        for DatabaseMetadataNoId {}
+        impl UndecoratedInsertRecord<metadata_table::table> for MetadataNoId {}
     };
-    #[diesel(table_name = database_metadata_table)]
-    pub struct DatabaseMetadata {
+    #[diesel(table_name = metadata_table)]
+    pub struct Metadata {
         pub id: i32,
         pub version: i64,
         pub description: String,
     }
-    pub enum DatabaseMetadataTable {
+    pub enum MetadataTable {
         Id,
         Version,
         Description,
         Table,
     }
     #[automatically_derived]
-    impl ::core::fmt::Debug for DatabaseMetadataTable {
+    impl ::core::fmt::Debug for MetadataTable {
         #[inline]
         fn fmt(&self, f: &mut ::core::fmt::Formatter) -> ::core::fmt::Result {
             ::core::fmt::Formatter::write_str(
                 f,
                 match self {
-                    DatabaseMetadataTable::Id => "Id",
-                    DatabaseMetadataTable::Version => "Version",
-                    DatabaseMetadataTable::Description => "Description",
-                    DatabaseMetadataTable::Table => "Table",
+                    MetadataTable::Id => "Id",
+                    MetadataTable::Version => "Version",
+                    MetadataTable::Description => "Description",
+                    MetadataTable::Table => "Table",
                 },
             )
         }
     }
     #[automatically_derived]
-    impl ::core::clone::Clone for DatabaseMetadataTable {
+    impl ::core::clone::Clone for MetadataTable {
         #[inline]
-        fn clone(&self) -> DatabaseMetadataTable {
+        fn clone(&self) -> MetadataTable {
             *self
         }
     }
     #[automatically_derived]
-    impl ::core::marker::Copy for DatabaseMetadataTable {}
-    impl sea_query::Iden for DatabaseMetadataTable {
+    impl ::core::marker::Copy for MetadataTable {}
+    impl sea_query::Iden for MetadataTable {
         fn prepare(&self, s: &mut dyn ::std::fmt::Write, q: sea_query::Quote) {
             s.write_fmt(format_args!("{0}", q.left())).unwrap();
             self.unquoted(s);
@@ -140,13 +120,13 @@ pub mod database_metadata {
                     s.write_fmt(format_args!("{0}", "description")).unwrap()
                 }
                 Self::Table => {
-                    s.write_fmt(format_args!("{0}", "database_metadata_table")).unwrap()
+                    s.write_fmt(format_args!("{0}", "metadata_table")).unwrap()
                 }
             };
         }
     }
     #[allow(unused_imports, dead_code, unreachable_pub, unused_qualifications)]
-    pub mod databasemetadata_table {
+    pub mod metadata_table {
         use ::diesel;
         pub use self::columns::*;
         use diesel::sql_types::*;
@@ -157,7 +137,7 @@ pub mod database_metadata {
             pub use super::columns::id;
             pub use super::columns::version;
             pub use super::columns::description;
-            pub use super::table as databasemetadata_table;
+            pub use super::table as metadata_table;
         }
         #[allow(non_upper_case_globals, dead_code)]
         /// A tuple of all of the columns on this table
@@ -254,7 +234,7 @@ pub mod database_metadata {
         impl diesel::internal::table_macro::StaticQueryFragment for table {
             type Component = diesel::internal::table_macro::Identifier<'static>;
             const STATIC_COMPONENT: &'static Self::Component = &diesel::internal::table_macro::Identifier(
-                "databasemetadata_table",
+                "metadata_table",
             );
         }
         impl diesel::query_builder::AsQuery for table {
@@ -1523,7 +1503,7 @@ pub mod database_metadata {
             __ST0,
             __ST1,
             __ST2,
-        > Queryable<(__ST0, __ST1, __ST2), __DB> for DatabaseMetadata
+        > Queryable<(__ST0, __ST1, __ST2), __DB> for Metadata
         where
             (i32, i64, String): FromStaticSqlRow<(__ST0, __ST1, __ST2), __DB>,
         {
@@ -1541,19 +1521,19 @@ pub mod database_metadata {
     const _: () = {
         use diesel;
         use diesel::associations::{HasTable, Identifiable};
-        impl HasTable for DatabaseMetadata {
-            type Table = database_metadata_table::table;
+        impl HasTable for Metadata {
+            type Table = metadata_table::table;
             fn table() -> Self::Table {
-                database_metadata_table::table
+                metadata_table::table
             }
         }
-        impl<'ident> Identifiable for &'ident DatabaseMetadata {
+        impl<'ident> Identifiable for &'ident Metadata {
             type Id = (&'ident i32);
             fn id(self) -> Self::Id {
                 (&self.id)
             }
         }
-        impl<'ident> Identifiable for &'_ &'ident DatabaseMetadata {
+        impl<'ident> Identifiable for &'_ &'ident Metadata {
             type Id = (&'ident i32);
             fn id(self) -> Self::Id {
                 (&self.id)
@@ -1564,28 +1544,28 @@ pub mod database_metadata {
     const _: () = {
         use diesel;
         use diesel::expression::Selectable;
-        impl<__DB: diesel::backend::Backend> Selectable<__DB> for DatabaseMetadata {
+        impl<__DB: diesel::backend::Backend> Selectable<__DB> for Metadata {
             type SelectExpression = (
-                database_metadata_table::id,
-                database_metadata_table::version,
-                database_metadata_table::description,
+                metadata_table::id,
+                metadata_table::version,
+                metadata_table::description,
             );
             fn construct_selection() -> Self::SelectExpression {
                 (
-                    database_metadata_table::id,
-                    database_metadata_table::version,
-                    database_metadata_table::description,
+                    metadata_table::id,
+                    metadata_table::version,
+                    metadata_table::description,
                 )
             }
         }
     };
     #[automatically_derived]
-    impl ::core::fmt::Debug for DatabaseMetadata {
+    impl ::core::fmt::Debug for Metadata {
         #[inline]
         fn fmt(&self, f: &mut ::core::fmt::Formatter) -> ::core::fmt::Result {
             ::core::fmt::Formatter::debug_struct_field3_finish(
                 f,
-                "DatabaseMetadata",
+                "Metadata",
                 "id",
                 &self.id,
                 "version",
@@ -1596,54 +1576,54 @@ pub mod database_metadata {
         }
     }
     #[automatically_derived]
-    impl ::core::marker::StructuralPartialEq for DatabaseMetadata {}
+    impl ::core::marker::StructuralPartialEq for Metadata {}
     #[automatically_derived]
-    impl ::core::cmp::PartialEq for DatabaseMetadata {
+    impl ::core::cmp::PartialEq for Metadata {
         #[inline]
-        fn eq(&self, other: &DatabaseMetadata) -> bool {
+        fn eq(&self, other: &Metadata) -> bool {
             self.id == other.id && self.version == other.version
                 && self.description == other.description
         }
     }
-    impl Migrationable for DatabaseMetadata {
+    impl Migrationable for Metadata {
         fn get_up_migration(builder: impl sea_query::SchemaBuilder) -> String {
             Table::create()
-                .table(DatabaseMetadataTable::Table)
+                .table(MetadataTable::Table)
                 .if_not_exists()
                 .col(
-                    ColumnDef::new(DatabaseMetadataTable::Id)
+                    ColumnDef::new(MetadataTable::Id)
                         .integer()
                         .not_null()
                         .auto_increment()
                         .primary_key(),
                 )
-                .col(ColumnDef::new(DatabaseMetadataTable::Version).integer())
-                .col(ColumnDef::new(DatabaseMetadataTable::Description).text())
+                .col(ColumnDef::new(MetadataTable::Version).integer())
+                .col(ColumnDef::new(MetadataTable::Description).text())
                 .build(builder)
         }
         fn get_down_migration(builder: impl sea_query::SchemaBuilder) -> String {
-            Table::drop().table(DatabaseMetadataTable::Table).if_exists().build(builder)
+            Table::drop().table(MetadataTable::Table).if_exists().build(builder)
         }
     }
-    impl DatabaseMetadata {
+    impl Metadata {
         pub fn get_latest_version() -> i32 {
             let conn = &mut create_connection();
-            let latest_db_metadata = database_metadata_table::table
-                .order(database_metadata_table::version.desc())
-                .first::<DatabaseMetadata>(conn);
+            let latest_db_metadata = metadata_table::table
+                .order(metadata_table::version.desc())
+                .first::<Metadata>(conn);
             match latest_db_metadata {
                 Ok(db_metatdata) => db_metatdata.version as i32,
                 Err(_) => 0,
             }
         }
-        pub fn add_migration() {
+        pub fn add_migration_stamp() {
             let conn = &mut create_connection();
             let latest_version = Self::get_latest_version();
-            let new_db_metadata = DatabaseMetadataNoId {
+            let new_db_metadata = MetadataNoId {
                 version: (latest_version + 1) as i64,
                 description: Utc::now().naive_utc().to_string(),
             };
-            let _ = diesel::insert_into(database_metadata_table::table)
+            let _ = diesel::insert_into(metadata_table::table)
                 .values(new_db_metadata)
                 .execute(conn)
                 .expect("Cant Insert to database metadata!!!");

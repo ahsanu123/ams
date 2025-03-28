@@ -1,5 +1,5 @@
+use ams_macro::{GenerateDieselTable, GenerateTableEnum};
 use chrono::{NaiveDate, Utc};
-use custom_macro::{GenerateDieselTable, GenerateTableEnum};
 use diesel::{prelude::*, Selectable};
 use sea_query::{Alias, ColumnDef, Iden, SeaRc, Table, TableRef};
 

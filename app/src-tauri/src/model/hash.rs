@@ -1,6 +1,6 @@
 use super::user::{user_table, UserTable};
 use crate::migration::migration_trait::Migrationable;
-use custom_macro::{GenerateDieselTable, GenerateTableEnum};
+use ams_macro::{GenerateDieselTable, GenerateTableEnum};
 use diesel::prelude::*;
 use sea_query::{ColumnDef, ForeignKey, ForeignKeyAction, Iden, SchemaBuilder, Table};
 

@@ -1,7 +1,7 @@
 use super::user::*;
 use crate::migration::migration_trait::Migrationable;
+use ams_macro::{GenerateDieselTable, GenerateTableEnum};
 use chrono::NaiveDate;
-use custom_macro::{GenerateDieselTable, GenerateTableEnum};
 use diesel::prelude::*;
 use diesel::Selectable;
 use sea_query::ForeignKey;

@@ -107,6 +107,7 @@ flowchart TD
 - usestate with zustand to update ui only
 - to run vitest with ui and watch mode `yarn test --ui --watch`
 - make binary runable -> `sudo chmod +x binaryName`
+- to debug output of macro run `dbg!(variable);`
  
 ## ⚓ Reference 
 
