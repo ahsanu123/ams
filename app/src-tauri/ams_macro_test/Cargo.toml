@@ -1,0 +1,10 @@
+[package]
+name = "ams_macro_test"
+version = "0.1.0"
+edition = "2024"
+
+[lib]
+# proc-macro = true
+
+[dependencies]
+ams_macro = { path = "../ams_macro" }

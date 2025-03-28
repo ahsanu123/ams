@@ -1,3 +1,5 @@
+use core::panic;
+
 use convert_case::{Case, Casing};
 use proc_macro::TokenStream;
 use quote::quote;
@@ -49,23 +51,51 @@ pub fn generate_table_enum(input: TokenStream) -> TokenStream {
     }
 }
 
-// TODO: Make Macro to automate create struct without an id
-//
-// #[proc_macro_derive(GenerateNoIdStruct)]
-// pub fn generate_no_id_struct(input: TokenStream) -> TokenStream {
-//     let input = parse_macro_input!(input as DeriveInput);
-//     let struct_name = input.ident;
-//
-//     let no_id_struct_name = String::from(struct_name.to_string() + "NoId");
-//     let new_struct_name = syn::Ident::new(&no_id_struct_name, struct_name.span());
-//
-//     let mut field_mappings = Vec::new();
-//
-//     if let Data::Struct(data_struct) = input.data {
-//
-//     }
-//
-// }
+#[proc_macro_derive(GenerateNoIdStruct)]
+pub fn generate_no_id_struct(input: TokenStream) -> TokenStream {
+    let input = parse_macro_input!(input as DeriveInput);
+    let struct_name = input.ident;
+
+    let no_id_struct_name = Ident::new(&format!("{}NoId", struct_name), struct_name.span());
+
+    match input.data {
+        Data::Struct(data_struct) => {
+            let fields: Vec<_> = data_struct.fields.into_iter().collect();
+
+            let no_id_fields: Vec<_> = fields
+                .iter()
+                .filter(|field| field.ident.as_ref().unwrap().to_string().to_lowercase() != "id")
+                .collect();
+
+            println!("{:#?}", no_id_fields);
+
+            let quoted_fields = no_id_fields.iter().map(|field| {
+                let field_name = field.ident.as_ref().unwrap();
+                let field_type = &field.ty;
+
+                let pascal_name = syn::Ident::new(
+                    &field_name.to_string().to_case(Case::Snake),
+                    field_name.span(),
+                );
+                quote! {
+                    pub #pascal_name: #field_type
+                }
+            });
+
+            let no_id_struct = quote! {
+                #[derive(Debug, Clone)]
+                pub struct #no_id_struct_name {
+                    #(#quoted_fields),*
+                }
+            };
+
+            TokenStream::from(no_id_struct)
+        }
+        _ => {
+            panic!("GenerateNoIdStruct Only with struct")
+        }
+    }
+}
 
 // TODO:    Make macro to convert struct into diesel table! macro
 //          and make good understanding on how this macro work
@@ -127,34 +157,6 @@ pub fn diesel_table_derive(input: TokenStream) -> TokenStream {
     // remove comment to debug
     // println!("{}", output.to_string());
     output.into()
-}
-
-// TODO: Complete this test to testing macro
-#[cfg(test)]
-mod test {
-
-    use super::*;
-
-    #[test]
-    fn check_diesel_table_macro() {
-        let input = quote! {
-            struct Product {
-                pub id: u32,
-                pub user_id: u32,
-                pub paid: bool,
-                // pub production_date: NaiveDate,
-                // pub taken_date: NaiveDate,
-                pub price: f64,
-                pub amount: u32,
-                pub description: String,
-            }
-        };
-
-        let token_stream = diesel_table_derive(input.into());
-        let output = token_stream.to_string();
-
-        println!("{}", output.to_string());
-    }
 }
 
 // TODO: Complete this macro to generate sea-query table creation

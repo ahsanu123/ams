@@ -103,10 +103,9 @@ impl Migrationable for Page {
 #[cfg(test)]
 mod test {
 
-    use sea_query::SqliteQueryBuilder;
-
     use super::*;
     use crate::helper::sql_connection_helper::create_connection;
+    use sea_query::SqliteQueryBuilder;
 
     #[test]
     fn diesel_relation_test() {
