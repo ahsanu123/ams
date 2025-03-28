@@ -108,6 +108,7 @@ flowchart TD
 - to run vitest with ui and watch mode `yarn test --ui --watch`
 - make binary runable -> `sudo chmod +x binaryName`
 - to debug output of macro run `dbg!(variable);`
+- **quote!** repetition -> [repetition](https://docs.rs/quote/latest/quote/macro.quote.html#interpolation)
  
 ## ⚓ Reference 
 
