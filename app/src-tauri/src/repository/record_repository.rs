@@ -1,7 +1,7 @@
 use crate::helper::sql_connection_helper::create_connection;
-use crate::model::product::{self, product_table, ProductNoId};
+use crate::model::record::{self, record_table, RecordNoId};
 use crate::model::{
-    product::{Product, ProductTable},
+    record::{Record, RecordTable},
     summary_information::SummaryInformation,
     user::User,
 };
@@ -10,12 +10,12 @@ use chrono::NaiveDate;
 use diesel::{AsChangeset, ExpressionMethods, QueryDsl, RunQueryDsl, SelectableHelper};
 use std::vec;
 
-pub struct ProductRepository {}
+pub struct RecordRepository {}
 
-impl CrudRepositoryTrait<Product> for ProductRepository {
-    fn getAll(&self) -> Result<Vec<Product>, String> {
+impl CrudRepositoryTrait<Record> for RecordRepository {
+    fn getAll(&self) -> Result<Vec<Record>, String> {
         let conn = &mut create_connection();
-        let product_list = product_table::table.load(conn);
+        let product_list = record_table::table.load(conn);
 
         match product_list {
             Ok(products) => Ok(products),
@@ -27,10 +27,10 @@ impl CrudRepositoryTrait<Product> for ProductRepository {
         }
     }
 
-    fn create(&self, data: &Product) -> Result<usize, String> {
+    fn create(&self, data: &Record) -> Result<usize, String> {
         let conn = &mut create_connection();
-        let insert_data: ProductNoId = data.into();
-        let result = diesel::insert_into(product_table::table)
+        let insert_data: RecordNoId = data.into();
+        let result = diesel::insert_into(record_table::table)
             .values(insert_data)
             .execute(conn);
 
@@ -40,11 +40,11 @@ impl CrudRepositoryTrait<Product> for ProductRepository {
         }
     }
 
-    fn read(&self, id: u32) -> Result<Product, String> {
+    fn read(&self, id: u32) -> Result<Record, String> {
         let conn = &mut create_connection();
-        let result = product_table::table
-            .filter(product_table::id.eq(id as i32))
-            .first::<Product>(conn);
+        let result = record_table::table
+            .filter(record_table::id.eq(id as i32))
+            .first::<Record>(conn);
 
         match result {
             Ok(product) => Ok(product),
@@ -56,10 +56,10 @@ impl CrudRepositoryTrait<Product> for ProductRepository {
         }
     }
 
-    fn update(&self, data: &Product) -> Result<usize, String> {
+    fn update(&self, data: &Record) -> Result<usize, String> {
         let conn = &mut create_connection();
-        let update_data: ProductNoId = data.into();
-        let update_query = product_table::table.filter(product_table::id.eq(data.id));
+        let update_data: RecordNoId = data.into();
+        let update_query = record_table::table.filter(record_table::id.eq(data.id));
 
         let result = diesel::update(update_query).set(update_data).execute(conn);
 
@@ -71,7 +71,7 @@ impl CrudRepositoryTrait<Product> for ProductRepository {
 
     fn delete(&self, id: u32) -> Result<usize, String> {
         let conn = &mut create_connection();
-        let delete_query = product_table::table.filter(product_table::id.eq(id as i32));
+        let delete_query = record_table::table.filter(record_table::id.eq(id as i32));
 
         let result = diesel::delete(delete_query).execute(conn);
         match result {
@@ -81,7 +81,7 @@ impl CrudRepositoryTrait<Product> for ProductRepository {
     }
 }
 
-impl Default for ProductRepository {
+impl Default for RecordRepository {
     fn default() -> Self {
         Self {}
     }
@@ -94,8 +94,8 @@ mod test {
 
     #[test]
     fn product_repository_create_product() {
-        let product_repo = ProductRepository::default();
-        let new_product = Product {
+        let product_repo = RecordRepository::default();
+        let new_product = Record {
             id: 0, // just random id (it will removed)
             user_id: 1,
             paid: false,
@@ -116,7 +116,7 @@ mod test {
 
     #[test]
     fn product_repository_read_product() {
-        let product_repo = ProductRepository::default();
+        let product_repo = RecordRepository::default();
         let product_with_id_two = product_repo
             .read(2)
             .expect("product with id 2 is not found");
@@ -126,8 +126,8 @@ mod test {
 
     #[test]
     fn product_repository_update_product() {
-        let product_repo = ProductRepository::default();
-        let old_product_data = Product {
+        let product_repo = RecordRepository::default();
+        let old_product_data = Record {
             id: 2, // just random id (it will removed)
             user_id: 1,
             paid: false,
@@ -138,7 +138,7 @@ mod test {
             description: "its old data, will updated soon!!!".into(),
         };
 
-        let new_product_data = Product {
+        let new_product_data = Record {
             id: 2, // just random id (it will removed)
             user_id: 1,
             paid: true,
@@ -170,7 +170,7 @@ mod test {
 
     #[test]
     fn product_repository_delete_product() {
-        let product_repo = ProductRepository::default();
+        let product_repo = RecordRepository::default();
 
         let result = product_repo.delete(3); // trying to delete id 3 (its hardcoded)
         match result {
@@ -185,7 +185,7 @@ mod test {
 
     #[test]
     fn product_repository_get_all_product() {
-        let product_repo = ProductRepository::default();
+        let product_repo = RecordRepository::default();
 
         let products_list = product_repo.getAll().expect("cant get list of product");
         println!("list of product {products_list:#?}");

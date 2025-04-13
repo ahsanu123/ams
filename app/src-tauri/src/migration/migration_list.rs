@@ -3,22 +3,40 @@ use crate::helper::sql_connection_helper::create_connection;
 use crate::migration::migration_trait::Migrationable;
 use crate::model::admin_user_seeds::{AdminUserSeeds, SeedTrait};
 use crate::model::database_metadata::Metadata;
+use crate::model::dreg_price_history::DregPrice;
 use crate::model::hash::Hash;
+use crate::model::money_record::{MoneyRecord, MoneyRecordTable};
 use crate::model::user_seeds::UserSeed;
-use crate::model::{product::Product, user::User};
+use crate::model::{record::Record, user::User};
 use diesel::RunQueryDsl;
 use sea_query::SqliteQueryBuilder;
+
+fn get_migration_list(up_migration: bool) -> Vec<String> {
+    if up_migration {
+        vec![
+            Record::get_up_migration(SqliteQueryBuilder),
+            User::get_up_migration(SqliteQueryBuilder),
+            Hash::get_up_migration(SqliteQueryBuilder),
+            DregPrice::get_up_migration(SqliteQueryBuilder),
+            MoneyRecord::get_up_migration(SqliteQueryBuilder),
+        ]
+    } else if !up_migration {
+        vec![
+            Record::get_down_migration(SqliteQueryBuilder),
+            User::get_down_migration(SqliteQueryBuilder),
+            Hash::get_down_migration(SqliteQueryBuilder),
+            DregPrice::get_down_migration(SqliteQueryBuilder),
+            MoneyRecord::get_down_migration(SqliteQueryBuilder),
+        ]
+    } else {
+        vec![]
+    }
+}
 
 pub fn migrate_up() {
     let conn = &mut create_connection();
 
-    let up_migrations = [
-        Product::get_up_migration(SqliteQueryBuilder),
-        User::get_up_migration(SqliteQueryBuilder),
-        Hash::get_up_migration(SqliteQueryBuilder),
-    ];
-
-    up_migrations.iter().for_each(|item| {
+    get_migration_list(true).iter().for_each(|item| {
         let result = diesel::sql_query(item).execute(conn);
         result.expect("error when migrate up!");
     });
@@ -27,13 +45,7 @@ pub fn migrate_up() {
 pub fn migration_down() {
     let conn = &mut create_connection();
 
-    let up_migrations = [
-        Product::get_down_migration(SqliteQueryBuilder),
-        User::get_down_migration(SqliteQueryBuilder),
-        Hash::get_down_migration(SqliteQueryBuilder),
-    ];
-
-    up_migrations.iter().for_each(|item| {
+    get_migration_list(false).iter().for_each(|item| {
         let result = diesel::sql_query(item).execute(conn);
         result.expect("error when migrate down!");
     });

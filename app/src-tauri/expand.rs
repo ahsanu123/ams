@@ -1,15 +1,21 @@
-pub mod database_metadata {
+pub mod record {
+    use super::user::*;
+    use crate::migration::migration_trait::Migrationable;
     use ams_macro::{GenerateDieselTable, GenerateTableEnum};
-    use chrono::{NaiveDate, Utc};
-    use diesel::{prelude::*, Selectable};
-    use sea_query::{Alias, ColumnDef, Iden, SeaRc, Table, TableRef};
-    use crate::{
-        helper::sql_connection_helper::create_connection,
-        migration::migration_trait::Migrationable,
-    };
-    #[diesel(table_name = metadata_table)]
-    pub struct MetadataNoId {
-        pub version: i64,
+    use chrono::NaiveDate;
+    use diesel::prelude::*;
+    use diesel::Selectable;
+    use sea_query::ForeignKey;
+    use sea_query::ForeignKeyAction;
+    use sea_query::{ColumnDef, Iden, SchemaBuilder, Table};
+    #[diesel(table_name = record_table)]
+    pub struct RecordNoId {
+        pub user_id: i32,
+        pub paid: bool,
+        pub production_date: NaiveDate,
+        pub taken_date: NaiveDate,
+        pub price: f64,
+        pub amount: i32,
         pub description: String,
     }
     #[allow(unused_imports)]
@@ -19,94 +25,309 @@ pub mod database_metadata {
         use diesel::internal::derives::insertable::UndecoratedInsertRecord;
         use diesel::prelude::*;
         #[allow(unused_qualifications)]
-        impl Insertable<metadata_table::table> for MetadataNoId {
+        impl Insertable<record_table::table> for RecordNoId {
             type Values = <(
-                std::option::Option<diesel::dsl::Eq<metadata_table::version, i64>>,
-                std::option::Option<diesel::dsl::Eq<metadata_table::description, String>>,
-            ) as Insertable<metadata_table::table>>::Values;
+                std::option::Option<diesel::dsl::Eq<record_table::user_id, i32>>,
+                std::option::Option<diesel::dsl::Eq<record_table::paid, bool>>,
+                std::option::Option<
+                    diesel::dsl::Eq<record_table::production_date, NaiveDate>,
+                >,
+                std::option::Option<
+                    diesel::dsl::Eq<record_table::taken_date, NaiveDate>,
+                >,
+                std::option::Option<diesel::dsl::Eq<record_table::price, f64>>,
+                std::option::Option<diesel::dsl::Eq<record_table::amount, i32>>,
+                std::option::Option<diesel::dsl::Eq<record_table::description, String>>,
+            ) as Insertable<record_table::table>>::Values;
             fn values(
                 self,
             ) -> <(
-                std::option::Option<diesel::dsl::Eq<metadata_table::version, i64>>,
-                std::option::Option<diesel::dsl::Eq<metadata_table::description, String>>,
-            ) as Insertable<metadata_table::table>>::Values {
+                std::option::Option<diesel::dsl::Eq<record_table::user_id, i32>>,
+                std::option::Option<diesel::dsl::Eq<record_table::paid, bool>>,
+                std::option::Option<
+                    diesel::dsl::Eq<record_table::production_date, NaiveDate>,
+                >,
+                std::option::Option<
+                    diesel::dsl::Eq<record_table::taken_date, NaiveDate>,
+                >,
+                std::option::Option<diesel::dsl::Eq<record_table::price, f64>>,
+                std::option::Option<diesel::dsl::Eq<record_table::amount, i32>>,
+                std::option::Option<diesel::dsl::Eq<record_table::description, String>>,
+            ) as Insertable<record_table::table>>::Values {
                 (
-                    std::option::Option::Some(metadata_table::version.eq(self.version)),
+                    std::option::Option::Some(record_table::user_id.eq(self.user_id)),
+                    std::option::Option::Some(record_table::paid.eq(self.paid)),
                     std::option::Option::Some(
-                        metadata_table::description.eq(self.description),
+                        record_table::production_date.eq(self.production_date),
+                    ),
+                    std::option::Option::Some(
+                        record_table::taken_date.eq(self.taken_date),
+                    ),
+                    std::option::Option::Some(record_table::price.eq(self.price)),
+                    std::option::Option::Some(record_table::amount.eq(self.amount)),
+                    std::option::Option::Some(
+                        record_table::description.eq(self.description),
                     ),
                 )
                     .values()
             }
         }
         #[allow(unused_qualifications)]
-        impl<'insert> Insertable<metadata_table::table> for &'insert MetadataNoId {
+        impl<'insert> Insertable<record_table::table> for &'insert RecordNoId {
             type Values = <(
                 std::option::Option<
-                    diesel::dsl::Eq<metadata_table::version, &'insert i64>,
+                    diesel::dsl::Eq<record_table::user_id, &'insert i32>,
+                >,
+                std::option::Option<diesel::dsl::Eq<record_table::paid, &'insert bool>>,
+                std::option::Option<
+                    diesel::dsl::Eq<record_table::production_date, &'insert NaiveDate>,
                 >,
                 std::option::Option<
-                    diesel::dsl::Eq<metadata_table::description, &'insert String>,
+                    diesel::dsl::Eq<record_table::taken_date, &'insert NaiveDate>,
                 >,
-            ) as Insertable<metadata_table::table>>::Values;
+                std::option::Option<diesel::dsl::Eq<record_table::price, &'insert f64>>,
+                std::option::Option<diesel::dsl::Eq<record_table::amount, &'insert i32>>,
+                std::option::Option<
+                    diesel::dsl::Eq<record_table::description, &'insert String>,
+                >,
+            ) as Insertable<record_table::table>>::Values;
             fn values(
                 self,
             ) -> <(
                 std::option::Option<
-                    diesel::dsl::Eq<metadata_table::version, &'insert i64>,
+                    diesel::dsl::Eq<record_table::user_id, &'insert i32>,
+                >,
+                std::option::Option<diesel::dsl::Eq<record_table::paid, &'insert bool>>,
+                std::option::Option<
+                    diesel::dsl::Eq<record_table::production_date, &'insert NaiveDate>,
                 >,
                 std::option::Option<
-                    diesel::dsl::Eq<metadata_table::description, &'insert String>,
+                    diesel::dsl::Eq<record_table::taken_date, &'insert NaiveDate>,
                 >,
-            ) as Insertable<metadata_table::table>>::Values {
+                std::option::Option<diesel::dsl::Eq<record_table::price, &'insert f64>>,
+                std::option::Option<diesel::dsl::Eq<record_table::amount, &'insert i32>>,
+                std::option::Option<
+                    diesel::dsl::Eq<record_table::description, &'insert String>,
+                >,
+            ) as Insertable<record_table::table>>::Values {
                 (
-                    std::option::Option::Some(metadata_table::version.eq(&self.version)),
+                    std::option::Option::Some(record_table::user_id.eq(&self.user_id)),
+                    std::option::Option::Some(record_table::paid.eq(&self.paid)),
                     std::option::Option::Some(
-                        metadata_table::description.eq(&self.description),
+                        record_table::production_date.eq(&self.production_date),
+                    ),
+                    std::option::Option::Some(
+                        record_table::taken_date.eq(&self.taken_date),
+                    ),
+                    std::option::Option::Some(record_table::price.eq(&self.price)),
+                    std::option::Option::Some(record_table::amount.eq(&self.amount)),
+                    std::option::Option::Some(
+                        record_table::description.eq(&self.description),
                     ),
                 )
                     .values()
             }
         }
-        impl UndecoratedInsertRecord<metadata_table::table> for MetadataNoId {}
+        impl UndecoratedInsertRecord<record_table::table> for RecordNoId {}
     };
-    #[diesel(table_name = metadata_table)]
-    pub struct Metadata {
+    #[allow(unused_imports)]
+    const _: () = {
+        use diesel;
+        use diesel::query_builder::AsChangeset;
+        use diesel::prelude::*;
+        impl AsChangeset for RecordNoId {
+            type Target = record_table::table;
+            type Changeset = <(
+                diesel::dsl::Eq<record_table::user_id, i32>,
+                diesel::dsl::Eq<record_table::paid, bool>,
+                diesel::dsl::Eq<record_table::production_date, NaiveDate>,
+                diesel::dsl::Eq<record_table::taken_date, NaiveDate>,
+                diesel::dsl::Eq<record_table::price, f64>,
+                diesel::dsl::Eq<record_table::amount, i32>,
+                diesel::dsl::Eq<record_table::description, String>,
+            ) as AsChangeset>::Changeset;
+            fn as_changeset(self) -> Self::Changeset {
+                (
+                    record_table::user_id.eq(self.user_id),
+                    record_table::paid.eq(self.paid),
+                    record_table::production_date.eq(self.production_date),
+                    record_table::taken_date.eq(self.taken_date),
+                    record_table::price.eq(self.price),
+                    record_table::amount.eq(self.amount),
+                    record_table::description.eq(self.description),
+                )
+                    .as_changeset()
+            }
+        }
+        impl<'update> AsChangeset for &'update RecordNoId {
+            type Target = record_table::table;
+            type Changeset = <(
+                diesel::dsl::Eq<record_table::user_id, &'update i32>,
+                diesel::dsl::Eq<record_table::paid, &'update bool>,
+                diesel::dsl::Eq<record_table::production_date, &'update NaiveDate>,
+                diesel::dsl::Eq<record_table::taken_date, &'update NaiveDate>,
+                diesel::dsl::Eq<record_table::price, &'update f64>,
+                diesel::dsl::Eq<record_table::amount, &'update i32>,
+                diesel::dsl::Eq<record_table::description, &'update String>,
+            ) as AsChangeset>::Changeset;
+            fn as_changeset(self) -> Self::Changeset {
+                (
+                    record_table::user_id.eq(&self.user_id),
+                    record_table::paid.eq(&self.paid),
+                    record_table::production_date.eq(&self.production_date),
+                    record_table::taken_date.eq(&self.taken_date),
+                    record_table::price.eq(&self.price),
+                    record_table::amount.eq(&self.amount),
+                    record_table::description.eq(&self.description),
+                )
+                    .as_changeset()
+            }
+        }
+    };
+    impl From<&Record> for RecordNoId {
+        fn from(value: &Record) -> Self {
+            RecordNoId {
+                user_id: value.user_id,
+                paid: value.paid,
+                production_date: value.production_date,
+                taken_date: value.taken_date,
+                price: value.price,
+                amount: value.amount,
+                description: value.description.clone(),
+            }
+        }
+    }
+    #[diesel(table_name = record_table)]
+    pub struct RecordChangeSet {
+        pub user_id: Option<i32>,
+        pub paid: Option<bool>,
+        pub production_date: Option<NaiveDate>,
+        pub taken_date: Option<NaiveDate>,
+        pub price: Option<f64>,
+        pub amount: Option<i32>,
+        pub description: Option<String>,
+    }
+    #[allow(unused_imports)]
+    const _: () = {
+        use diesel;
+        use diesel::query_builder::AsChangeset;
+        use diesel::prelude::*;
+        impl AsChangeset for RecordChangeSet {
+            type Target = record_table::table;
+            type Changeset = <(
+                std::option::Option<diesel::dsl::Eq<record_table::user_id, i32>>,
+                std::option::Option<diesel::dsl::Eq<record_table::paid, bool>>,
+                std::option::Option<
+                    diesel::dsl::Eq<record_table::production_date, NaiveDate>,
+                >,
+                std::option::Option<
+                    diesel::dsl::Eq<record_table::taken_date, NaiveDate>,
+                >,
+                std::option::Option<diesel::dsl::Eq<record_table::price, f64>>,
+                std::option::Option<diesel::dsl::Eq<record_table::amount, i32>>,
+                std::option::Option<diesel::dsl::Eq<record_table::description, String>>,
+            ) as AsChangeset>::Changeset;
+            fn as_changeset(self) -> Self::Changeset {
+                (
+                    self.user_id.map(|x| record_table::user_id.eq(x)),
+                    self.paid.map(|x| record_table::paid.eq(x)),
+                    self.production_date.map(|x| record_table::production_date.eq(x)),
+                    self.taken_date.map(|x| record_table::taken_date.eq(x)),
+                    self.price.map(|x| record_table::price.eq(x)),
+                    self.amount.map(|x| record_table::amount.eq(x)),
+                    self.description.map(|x| record_table::description.eq(x)),
+                )
+                    .as_changeset()
+            }
+        }
+        impl<'update> AsChangeset for &'update RecordChangeSet {
+            type Target = record_table::table;
+            type Changeset = <(
+                std::option::Option<
+                    diesel::dsl::Eq<record_table::user_id, &'update i32>,
+                >,
+                std::option::Option<diesel::dsl::Eq<record_table::paid, &'update bool>>,
+                std::option::Option<
+                    diesel::dsl::Eq<record_table::production_date, &'update NaiveDate>,
+                >,
+                std::option::Option<
+                    diesel::dsl::Eq<record_table::taken_date, &'update NaiveDate>,
+                >,
+                std::option::Option<diesel::dsl::Eq<record_table::price, &'update f64>>,
+                std::option::Option<diesel::dsl::Eq<record_table::amount, &'update i32>>,
+                std::option::Option<
+                    diesel::dsl::Eq<record_table::description, &'update String>,
+                >,
+            ) as AsChangeset>::Changeset;
+            fn as_changeset(self) -> Self::Changeset {
+                (
+                    self.user_id.as_ref().map(|x| record_table::user_id.eq(x)),
+                    self.paid.as_ref().map(|x| record_table::paid.eq(x)),
+                    self
+                        .production_date
+                        .as_ref()
+                        .map(|x| record_table::production_date.eq(x)),
+                    self.taken_date.as_ref().map(|x| record_table::taken_date.eq(x)),
+                    self.price.as_ref().map(|x| record_table::price.eq(x)),
+                    self.amount.as_ref().map(|x| record_table::amount.eq(x)),
+                    self.description.as_ref().map(|x| record_table::description.eq(x)),
+                )
+                    .as_changeset()
+            }
+        }
+    };
+    #[diesel(table_name = record_table)]
+    pub struct Record {
         pub id: i32,
-        pub version: i64,
+        pub user_id: i32,
+        pub paid: bool,
+        pub production_date: NaiveDate,
+        pub taken_date: NaiveDate,
+        pub price: f64,
+        pub amount: i32,
         pub description: String,
     }
-    pub enum MetadataTable {
+    pub enum RecordTable {
         Id,
-        Version,
+        UserId,
+        Paid,
+        ProductionDate,
+        TakenDate,
+        Price,
+        Amount,
         Description,
         Table,
     }
     #[automatically_derived]
-    impl ::core::fmt::Debug for MetadataTable {
+    impl ::core::fmt::Debug for RecordTable {
         #[inline]
         fn fmt(&self, f: &mut ::core::fmt::Formatter) -> ::core::fmt::Result {
             ::core::fmt::Formatter::write_str(
                 f,
                 match self {
-                    MetadataTable::Id => "Id",
-                    MetadataTable::Version => "Version",
-                    MetadataTable::Description => "Description",
-                    MetadataTable::Table => "Table",
+                    RecordTable::Id => "Id",
+                    RecordTable::UserId => "UserId",
+                    RecordTable::Paid => "Paid",
+                    RecordTable::ProductionDate => "ProductionDate",
+                    RecordTable::TakenDate => "TakenDate",
+                    RecordTable::Price => "Price",
+                    RecordTable::Amount => "Amount",
+                    RecordTable::Description => "Description",
+                    RecordTable::Table => "Table",
                 },
             )
         }
     }
     #[automatically_derived]
-    impl ::core::clone::Clone for MetadataTable {
+    impl ::core::clone::Clone for RecordTable {
         #[inline]
-        fn clone(&self) -> MetadataTable {
+        fn clone(&self) -> RecordTable {
             *self
         }
     }
     #[automatically_derived]
-    impl ::core::marker::Copy for MetadataTable {}
-    impl sea_query::Iden for MetadataTable {
+    impl ::core::marker::Copy for RecordTable {}
+    impl sea_query::Iden for RecordTable {
         fn prepare(&self, s: &mut dyn ::std::fmt::Write, q: sea_query::Quote) {
             s.write_fmt(format_args!("{0}", q.left())).unwrap();
             self.unquoted(s);
@@ -115,18 +336,25 @@ pub mod database_metadata {
         fn unquoted(&self, s: &mut dyn ::std::fmt::Write) {
             match self {
                 Self::Id => s.write_fmt(format_args!("{0}", "id")).unwrap(),
-                Self::Version => s.write_fmt(format_args!("{0}", "version")).unwrap(),
+                Self::UserId => s.write_fmt(format_args!("{0}", "user_id")).unwrap(),
+                Self::Paid => s.write_fmt(format_args!("{0}", "paid")).unwrap(),
+                Self::ProductionDate => {
+                    s.write_fmt(format_args!("{0}", "production_date")).unwrap()
+                }
+                Self::TakenDate => {
+                    s.write_fmt(format_args!("{0}", "taken_date")).unwrap()
+                }
+                Self::Price => s.write_fmt(format_args!("{0}", "price")).unwrap(),
+                Self::Amount => s.write_fmt(format_args!("{0}", "amount")).unwrap(),
                 Self::Description => {
                     s.write_fmt(format_args!("{0}", "description")).unwrap()
                 }
-                Self::Table => {
-                    s.write_fmt(format_args!("{0}", "metadata_table")).unwrap()
-                }
+                Self::Table => s.write_fmt(format_args!("{0}", "record_table")).unwrap(),
             };
         }
     }
     #[allow(unused_imports, dead_code, unreachable_pub, unused_qualifications)]
-    pub mod metadata_table {
+    pub mod record_table {
         use ::diesel;
         pub use self::columns::*;
         use diesel::sql_types::*;
@@ -135,13 +363,27 @@ pub mod database_metadata {
         /// glob imported for functions which only deal with one table.
         pub mod dsl {
             pub use super::columns::id;
-            pub use super::columns::version;
+            pub use super::columns::user_id;
+            pub use super::columns::paid;
+            pub use super::columns::production_date;
+            pub use super::columns::taken_date;
+            pub use super::columns::price;
+            pub use super::columns::amount;
             pub use super::columns::description;
-            pub use super::table as metadata_table;
+            pub use super::table as record_table;
         }
         #[allow(non_upper_case_globals, dead_code)]
         /// A tuple of all of the columns on this table
-        pub const all_columns: (id, version, description) = (id, version, description);
+        pub const all_columns: (
+            id,
+            user_id,
+            paid,
+            production_date,
+            taken_date,
+            price,
+            amount,
+            description,
+        ) = (id, user_id, paid, production_date, taken_date, price, amount, description);
         #[allow(non_camel_case_types)]
         /// The actual table struct
         ///
@@ -195,7 +437,7 @@ pub mod database_metadata {
             }
         }
         /// The SQL type of all of the columns on this table
-        pub type SqlType = (Integer, BigInt, Text);
+        pub type SqlType = (Integer, Integer, Bool, Date, Date, Double, Integer, Text);
         /// Helper type for representing a boxed query from this table
         pub type BoxedQuery<'a, DB, ST = SqlType> = diesel::internal::table_macro::BoxedSelectStatement<
             'a,
@@ -234,7 +476,7 @@ pub mod database_metadata {
         impl diesel::internal::table_macro::StaticQueryFragment for table {
             type Component = diesel::internal::table_macro::Identifier<'static>;
             const STATIC_COMPONENT: &'static Self::Component = &diesel::internal::table_macro::Identifier(
-                "metadata_table",
+                "record_table",
             );
         }
         impl diesel::query_builder::AsQuery for table {
@@ -248,12 +490,30 @@ pub mod database_metadata {
         }
         impl diesel::Table for table {
             type PrimaryKey = id;
-            type AllColumns = (id, version, description);
+            type AllColumns = (
+                id,
+                user_id,
+                paid,
+                production_date,
+                taken_date,
+                price,
+                amount,
+                description,
+            );
             fn primary_key(&self) -> Self::PrimaryKey {
                 id
             }
             fn all_columns() -> Self::AllColumns {
-                (id, version, description)
+                (
+                    id,
+                    user_id,
+                    paid,
+                    production_date,
+                    taken_date,
+                    price,
+                    amount,
+                    description,
+                )
             }
         }
         impl diesel::associations::HasTable for table {
@@ -651,11 +911,25 @@ pub mod database_metadata {
             };
             impl<__GB> diesel::expression::ValidGrouping<__GB> for star
             where
-                (id, version, description): diesel::expression::ValidGrouping<__GB>,
+                (
+                    id,
+                    user_id,
+                    paid,
+                    production_date,
+                    taken_date,
+                    price,
+                    amount,
+                    description,
+                ): diesel::expression::ValidGrouping<__GB>,
             {
                 type IsAggregate = <(
                     id,
-                    version,
+                    user_id,
+                    paid,
+                    production_date,
+                    taken_date,
+                    price,
+                    amount,
                     description,
                 ) as diesel::expression::ValidGrouping<__GB>>::IsAggregate;
             }
@@ -973,48 +1247,48 @@ pub mod database_metadata {
                 TSM: diesel::internal::table_macro::TablesampleMethod,
             {}
             #[allow(non_camel_case_types, dead_code)]
-            pub struct version;
+            pub struct user_id;
             #[automatically_derived]
             #[allow(non_camel_case_types, dead_code)]
-            impl ::core::fmt::Debug for version {
+            impl ::core::fmt::Debug for user_id {
                 #[inline]
                 fn fmt(&self, f: &mut ::core::fmt::Formatter) -> ::core::fmt::Result {
-                    ::core::fmt::Formatter::write_str(f, "version")
+                    ::core::fmt::Formatter::write_str(f, "user_id")
                 }
             }
             #[automatically_derived]
             #[allow(non_camel_case_types, dead_code)]
-            impl ::core::clone::Clone for version {
+            impl ::core::clone::Clone for user_id {
                 #[inline]
-                fn clone(&self) -> version {
+                fn clone(&self) -> user_id {
                     *self
                 }
             }
             #[automatically_derived]
             #[allow(non_camel_case_types, dead_code)]
-            impl ::core::marker::Copy for version {}
+            impl ::core::marker::Copy for user_id {}
             #[allow(unused_imports)]
             const _: () = {
                 use diesel;
                 use diesel::query_builder::QueryId;
                 #[allow(non_camel_case_types)]
-                impl QueryId for version {
-                    type QueryId = version;
+                impl QueryId for user_id {
+                    type QueryId = user_id;
                     const HAS_STATIC_QUERY_ID: bool = true;
                 }
             };
             #[automatically_derived]
             #[allow(non_camel_case_types, dead_code)]
-            impl ::core::default::Default for version {
+            impl ::core::default::Default for user_id {
                 #[inline]
-                fn default() -> version {
-                    version {}
+                fn default() -> user_id {
+                    user_id {}
                 }
             }
-            impl diesel::expression::Expression for version {
-                type SqlType = BigInt;
+            impl diesel::expression::Expression for user_id {
+                type SqlType = Integer;
             }
-            impl<DB> diesel::query_builder::QueryFragment<DB> for version
+            impl<DB> diesel::query_builder::QueryFragment<DB> for user_id
             where
                 DB: diesel::backend::Backend,
                 diesel::internal::table_macro::StaticQueryFragmentInstance<
@@ -1033,11 +1307,11 @@ pub mod database_metadata {
                         FROM_CLAUSE.walk_ast(__diesel_internal_out.reborrow())?;
                         __diesel_internal_out.push_sql(".");
                     }
-                    __diesel_internal_out.push_identifier("version")
+                    __diesel_internal_out.push_identifier("user_id")
                 }
             }
-            impl diesel::SelectableExpression<super::table> for version {}
-            impl<QS> diesel::AppearsOnTable<QS> for version
+            impl diesel::SelectableExpression<super::table> for user_id {}
+            impl<QS> diesel::AppearsOnTable<QS> for user_id
             where
                 QS: diesel::query_source::AppearsInFromClause<
                     super::table,
@@ -1053,9 +1327,9 @@ pub mod database_metadata {
                     Right,
                     diesel::internal::table_macro::LeftOuter,
                 >,
-            > for version
+            > for user_id
             where
-                version: diesel::AppearsOnTable<
+                user_id: diesel::AppearsOnTable<
                     diesel::internal::table_macro::Join<
                         Left,
                         Right,
@@ -1078,9 +1352,9 @@ pub mod database_metadata {
                     Right,
                     diesel::internal::table_macro::Inner,
                 >,
-            > for version
+            > for user_id
             where
-                version: diesel::AppearsOnTable<
+                user_id: diesel::AppearsOnTable<
                     diesel::internal::table_macro::Join<
                         Left,
                         Right,
@@ -1107,9 +1381,9 @@ pub mod database_metadata {
                 On,
             > diesel::SelectableExpression<
                 diesel::internal::table_macro::JoinOn<Join, On>,
-            > for version
+            > for user_id
             where
-                version: diesel::SelectableExpression<Join>
+                user_id: diesel::SelectableExpression<Join>
                     + diesel::AppearsOnTable<
                         diesel::internal::table_macro::JoinOn<Join, On>,
                     >,
@@ -1120,40 +1394,40 @@ pub mod database_metadata {
                 diesel::internal::table_macro::SelectStatement<
                     diesel::internal::table_macro::FromClause<From>,
                 >,
-            > for version
+            > for user_id
             where
                 From: diesel::query_source::QuerySource,
-                version: diesel::SelectableExpression<From>
+                user_id: diesel::SelectableExpression<From>
                     + diesel::AppearsOnTable<
                         diesel::internal::table_macro::SelectStatement<
                             diesel::internal::table_macro::FromClause<From>,
                         >,
                     >,
             {}
-            impl<__GB> diesel::expression::ValidGrouping<__GB> for version
+            impl<__GB> diesel::expression::ValidGrouping<__GB> for user_id
             where
                 __GB: diesel::expression::IsContainedInGroupBy<
-                    version,
+                    user_id,
                     Output = diesel::expression::is_contained_in_group_by::Yes,
                 >,
             {
                 type IsAggregate = diesel::expression::is_aggregate::Yes;
             }
-            impl diesel::expression::ValidGrouping<()> for version {
+            impl diesel::expression::ValidGrouping<()> for user_id {
                 type IsAggregate = diesel::expression::is_aggregate::No;
             }
-            impl diesel::expression::IsContainedInGroupBy<version> for version {
+            impl diesel::expression::IsContainedInGroupBy<user_id> for user_id {
                 type Output = diesel::expression::is_contained_in_group_by::Yes;
             }
-            impl diesel::query_source::Column for version {
+            impl diesel::query_source::Column for user_id {
                 type Table = super::table;
-                const NAME: &'static str = "version";
+                const NAME: &'static str = "user_id";
             }
-            impl<T> diesel::EqAll<T> for version
+            impl<T> diesel::EqAll<T> for user_id
             where
-                T: diesel::expression::AsExpression<BigInt>,
+                T: diesel::expression::AsExpression<Integer>,
                 diesel::dsl::Eq<
-                    version,
+                    user_id,
                     T::Expression,
                 >: diesel::Expression<SqlType = diesel::sql_types::Bool>,
             {
@@ -1163,10 +1437,10 @@ pub mod database_metadata {
                     self.eq(__diesel_internal_rhs)
                 }
             }
-            impl<Rhs> ::std::ops::Add<Rhs> for version
+            impl<Rhs> ::std::ops::Add<Rhs> for user_id
             where
                 Rhs: diesel::expression::AsExpression<
-                    <<version as diesel::Expression>::SqlType as diesel::sql_types::ops::Add>::Rhs,
+                    <<user_id as diesel::Expression>::SqlType as diesel::sql_types::ops::Add>::Rhs,
                 >,
             {
                 type Output = diesel::internal::table_macro::ops::Add<
@@ -1180,10 +1454,10 @@ pub mod database_metadata {
                     )
                 }
             }
-            impl<Rhs> ::std::ops::Sub<Rhs> for version
+            impl<Rhs> ::std::ops::Sub<Rhs> for user_id
             where
                 Rhs: diesel::expression::AsExpression<
-                    <<version as diesel::Expression>::SqlType as diesel::sql_types::ops::Sub>::Rhs,
+                    <<user_id as diesel::Expression>::SqlType as diesel::sql_types::ops::Sub>::Rhs,
                 >,
             {
                 type Output = diesel::internal::table_macro::ops::Sub<
@@ -1197,10 +1471,10 @@ pub mod database_metadata {
                     )
                 }
             }
-            impl<Rhs> ::std::ops::Div<Rhs> for version
+            impl<Rhs> ::std::ops::Div<Rhs> for user_id
             where
                 Rhs: diesel::expression::AsExpression<
-                    <<version as diesel::Expression>::SqlType as diesel::sql_types::ops::Div>::Rhs,
+                    <<user_id as diesel::Expression>::SqlType as diesel::sql_types::ops::Div>::Rhs,
                 >,
             {
                 type Output = diesel::internal::table_macro::ops::Div<
@@ -1214,10 +1488,10 @@ pub mod database_metadata {
                     )
                 }
             }
-            impl<Rhs> ::std::ops::Mul<Rhs> for version
+            impl<Rhs> ::std::ops::Mul<Rhs> for user_id
             where
                 Rhs: diesel::expression::AsExpression<
-                    <<version as diesel::Expression>::SqlType as diesel::sql_types::ops::Mul>::Rhs,
+                    <<user_id as diesel::Expression>::SqlType as diesel::sql_types::ops::Mul>::Rhs,
                 >,
             {
                 type Output = diesel::internal::table_macro::ops::Mul<
@@ -1233,16 +1507,16 @@ pub mod database_metadata {
             }
             impl diesel::query_source::AppearsInFromClause<
                 diesel::query_builder::Only<super::table>,
-            > for version {
+            > for user_id {
                 type Count = diesel::query_source::Once;
             }
             impl diesel::SelectableExpression<diesel::query_builder::Only<super::table>>
-            for version {}
+            for user_id {}
             impl<
                 TSM,
             > diesel::query_source::AppearsInFromClause<
                 diesel::query_builder::Tablesample<super::table, TSM>,
-            > for version
+            > for user_id
             where
                 TSM: diesel::internal::table_macro::TablesampleMethod,
             {
@@ -1252,7 +1526,1292 @@ pub mod database_metadata {
                 TSM,
             > diesel::SelectableExpression<
                 diesel::query_builder::Tablesample<super::table, TSM>,
-            > for version
+            > for user_id
+            where
+                TSM: diesel::internal::table_macro::TablesampleMethod,
+            {}
+            #[allow(non_camel_case_types, dead_code)]
+            pub struct paid;
+            #[automatically_derived]
+            #[allow(non_camel_case_types, dead_code)]
+            impl ::core::fmt::Debug for paid {
+                #[inline]
+                fn fmt(&self, f: &mut ::core::fmt::Formatter) -> ::core::fmt::Result {
+                    ::core::fmt::Formatter::write_str(f, "paid")
+                }
+            }
+            #[automatically_derived]
+            #[allow(non_camel_case_types, dead_code)]
+            impl ::core::clone::Clone for paid {
+                #[inline]
+                fn clone(&self) -> paid {
+                    *self
+                }
+            }
+            #[automatically_derived]
+            #[allow(non_camel_case_types, dead_code)]
+            impl ::core::marker::Copy for paid {}
+            #[allow(unused_imports)]
+            const _: () = {
+                use diesel;
+                use diesel::query_builder::QueryId;
+                #[allow(non_camel_case_types)]
+                impl QueryId for paid {
+                    type QueryId = paid;
+                    const HAS_STATIC_QUERY_ID: bool = true;
+                }
+            };
+            #[automatically_derived]
+            #[allow(non_camel_case_types, dead_code)]
+            impl ::core::default::Default for paid {
+                #[inline]
+                fn default() -> paid {
+                    paid {}
+                }
+            }
+            impl diesel::expression::Expression for paid {
+                type SqlType = Bool;
+            }
+            impl<DB> diesel::query_builder::QueryFragment<DB> for paid
+            where
+                DB: diesel::backend::Backend,
+                diesel::internal::table_macro::StaticQueryFragmentInstance<
+                    table,
+                >: diesel::query_builder::QueryFragment<DB>,
+            {
+                #[allow(non_snake_case)]
+                fn walk_ast<'b>(
+                    &'b self,
+                    mut __diesel_internal_out: diesel::query_builder::AstPass<'_, 'b, DB>,
+                ) -> diesel::result::QueryResult<()> {
+                    if !__diesel_internal_out.should_skip_from() {
+                        const FROM_CLAUSE: diesel::internal::table_macro::StaticQueryFragmentInstance<
+                            table,
+                        > = diesel::internal::table_macro::StaticQueryFragmentInstance::new();
+                        FROM_CLAUSE.walk_ast(__diesel_internal_out.reborrow())?;
+                        __diesel_internal_out.push_sql(".");
+                    }
+                    __diesel_internal_out.push_identifier("paid")
+                }
+            }
+            impl diesel::SelectableExpression<super::table> for paid {}
+            impl<QS> diesel::AppearsOnTable<QS> for paid
+            where
+                QS: diesel::query_source::AppearsInFromClause<
+                    super::table,
+                    Count = diesel::query_source::Once,
+                >,
+            {}
+            impl<
+                Left,
+                Right,
+            > diesel::SelectableExpression<
+                diesel::internal::table_macro::Join<
+                    Left,
+                    Right,
+                    diesel::internal::table_macro::LeftOuter,
+                >,
+            > for paid
+            where
+                paid: diesel::AppearsOnTable<
+                    diesel::internal::table_macro::Join<
+                        Left,
+                        Right,
+                        diesel::internal::table_macro::LeftOuter,
+                    >,
+                >,
+                Self: diesel::SelectableExpression<Left>,
+                Right: diesel::query_source::AppearsInFromClause<
+                        super::table,
+                        Count = diesel::query_source::Never,
+                    > + diesel::query_source::QuerySource,
+                Left: diesel::query_source::QuerySource,
+            {}
+            impl<
+                Left,
+                Right,
+            > diesel::SelectableExpression<
+                diesel::internal::table_macro::Join<
+                    Left,
+                    Right,
+                    diesel::internal::table_macro::Inner,
+                >,
+            > for paid
+            where
+                paid: diesel::AppearsOnTable<
+                    diesel::internal::table_macro::Join<
+                        Left,
+                        Right,
+                        diesel::internal::table_macro::Inner,
+                    >,
+                >,
+                Left: diesel::query_source::AppearsInFromClause<super::table>
+                    + diesel::query_source::QuerySource,
+                Right: diesel::query_source::AppearsInFromClause<super::table>
+                    + diesel::query_source::QuerySource,
+                (
+                    Left::Count,
+                    Right::Count,
+                ): diesel::internal::table_macro::Pick<Left, Right>,
+                Self: diesel::SelectableExpression<
+                    <(
+                        Left::Count,
+                        Right::Count,
+                    ) as diesel::internal::table_macro::Pick<Left, Right>>::Selection,
+                >,
+            {}
+            impl<
+                Join,
+                On,
+            > diesel::SelectableExpression<
+                diesel::internal::table_macro::JoinOn<Join, On>,
+            > for paid
+            where
+                paid: diesel::SelectableExpression<Join>
+                    + diesel::AppearsOnTable<
+                        diesel::internal::table_macro::JoinOn<Join, On>,
+                    >,
+            {}
+            impl<
+                From,
+            > diesel::SelectableExpression<
+                diesel::internal::table_macro::SelectStatement<
+                    diesel::internal::table_macro::FromClause<From>,
+                >,
+            > for paid
+            where
+                From: diesel::query_source::QuerySource,
+                paid: diesel::SelectableExpression<From>
+                    + diesel::AppearsOnTable<
+                        diesel::internal::table_macro::SelectStatement<
+                            diesel::internal::table_macro::FromClause<From>,
+                        >,
+                    >,
+            {}
+            impl<__GB> diesel::expression::ValidGrouping<__GB> for paid
+            where
+                __GB: diesel::expression::IsContainedInGroupBy<
+                    paid,
+                    Output = diesel::expression::is_contained_in_group_by::Yes,
+                >,
+            {
+                type IsAggregate = diesel::expression::is_aggregate::Yes;
+            }
+            impl diesel::expression::ValidGrouping<()> for paid {
+                type IsAggregate = diesel::expression::is_aggregate::No;
+            }
+            impl diesel::expression::IsContainedInGroupBy<paid> for paid {
+                type Output = diesel::expression::is_contained_in_group_by::Yes;
+            }
+            impl diesel::query_source::Column for paid {
+                type Table = super::table;
+                const NAME: &'static str = "paid";
+            }
+            impl<T> diesel::EqAll<T> for paid
+            where
+                T: diesel::expression::AsExpression<Bool>,
+                diesel::dsl::Eq<
+                    paid,
+                    T::Expression,
+                >: diesel::Expression<SqlType = diesel::sql_types::Bool>,
+            {
+                type Output = diesel::dsl::Eq<Self, T::Expression>;
+                fn eq_all(self, __diesel_internal_rhs: T) -> Self::Output {
+                    use diesel::expression_methods::ExpressionMethods;
+                    self.eq(__diesel_internal_rhs)
+                }
+            }
+            impl diesel::query_source::AppearsInFromClause<
+                diesel::query_builder::Only<super::table>,
+            > for paid {
+                type Count = diesel::query_source::Once;
+            }
+            impl diesel::SelectableExpression<diesel::query_builder::Only<super::table>>
+            for paid {}
+            impl<
+                TSM,
+            > diesel::query_source::AppearsInFromClause<
+                diesel::query_builder::Tablesample<super::table, TSM>,
+            > for paid
+            where
+                TSM: diesel::internal::table_macro::TablesampleMethod,
+            {
+                type Count = diesel::query_source::Once;
+            }
+            impl<
+                TSM,
+            > diesel::SelectableExpression<
+                diesel::query_builder::Tablesample<super::table, TSM>,
+            > for paid
+            where
+                TSM: diesel::internal::table_macro::TablesampleMethod,
+            {}
+            #[allow(non_camel_case_types, dead_code)]
+            pub struct production_date;
+            #[automatically_derived]
+            #[allow(non_camel_case_types, dead_code)]
+            impl ::core::fmt::Debug for production_date {
+                #[inline]
+                fn fmt(&self, f: &mut ::core::fmt::Formatter) -> ::core::fmt::Result {
+                    ::core::fmt::Formatter::write_str(f, "production_date")
+                }
+            }
+            #[automatically_derived]
+            #[allow(non_camel_case_types, dead_code)]
+            impl ::core::clone::Clone for production_date {
+                #[inline]
+                fn clone(&self) -> production_date {
+                    *self
+                }
+            }
+            #[automatically_derived]
+            #[allow(non_camel_case_types, dead_code)]
+            impl ::core::marker::Copy for production_date {}
+            #[allow(unused_imports)]
+            const _: () = {
+                use diesel;
+                use diesel::query_builder::QueryId;
+                #[allow(non_camel_case_types)]
+                impl QueryId for production_date {
+                    type QueryId = production_date;
+                    const HAS_STATIC_QUERY_ID: bool = true;
+                }
+            };
+            #[automatically_derived]
+            #[allow(non_camel_case_types, dead_code)]
+            impl ::core::default::Default for production_date {
+                #[inline]
+                fn default() -> production_date {
+                    production_date {}
+                }
+            }
+            impl diesel::expression::Expression for production_date {
+                type SqlType = Date;
+            }
+            impl<DB> diesel::query_builder::QueryFragment<DB> for production_date
+            where
+                DB: diesel::backend::Backend,
+                diesel::internal::table_macro::StaticQueryFragmentInstance<
+                    table,
+                >: diesel::query_builder::QueryFragment<DB>,
+            {
+                #[allow(non_snake_case)]
+                fn walk_ast<'b>(
+                    &'b self,
+                    mut __diesel_internal_out: diesel::query_builder::AstPass<'_, 'b, DB>,
+                ) -> diesel::result::QueryResult<()> {
+                    if !__diesel_internal_out.should_skip_from() {
+                        const FROM_CLAUSE: diesel::internal::table_macro::StaticQueryFragmentInstance<
+                            table,
+                        > = diesel::internal::table_macro::StaticQueryFragmentInstance::new();
+                        FROM_CLAUSE.walk_ast(__diesel_internal_out.reborrow())?;
+                        __diesel_internal_out.push_sql(".");
+                    }
+                    __diesel_internal_out.push_identifier("production_date")
+                }
+            }
+            impl diesel::SelectableExpression<super::table> for production_date {}
+            impl<QS> diesel::AppearsOnTable<QS> for production_date
+            where
+                QS: diesel::query_source::AppearsInFromClause<
+                    super::table,
+                    Count = diesel::query_source::Once,
+                >,
+            {}
+            impl<
+                Left,
+                Right,
+            > diesel::SelectableExpression<
+                diesel::internal::table_macro::Join<
+                    Left,
+                    Right,
+                    diesel::internal::table_macro::LeftOuter,
+                >,
+            > for production_date
+            where
+                production_date: diesel::AppearsOnTable<
+                    diesel::internal::table_macro::Join<
+                        Left,
+                        Right,
+                        diesel::internal::table_macro::LeftOuter,
+                    >,
+                >,
+                Self: diesel::SelectableExpression<Left>,
+                Right: diesel::query_source::AppearsInFromClause<
+                        super::table,
+                        Count = diesel::query_source::Never,
+                    > + diesel::query_source::QuerySource,
+                Left: diesel::query_source::QuerySource,
+            {}
+            impl<
+                Left,
+                Right,
+            > diesel::SelectableExpression<
+                diesel::internal::table_macro::Join<
+                    Left,
+                    Right,
+                    diesel::internal::table_macro::Inner,
+                >,
+            > for production_date
+            where
+                production_date: diesel::AppearsOnTable<
+                    diesel::internal::table_macro::Join<
+                        Left,
+                        Right,
+                        diesel::internal::table_macro::Inner,
+                    >,
+                >,
+                Left: diesel::query_source::AppearsInFromClause<super::table>
+                    + diesel::query_source::QuerySource,
+                Right: diesel::query_source::AppearsInFromClause<super::table>
+                    + diesel::query_source::QuerySource,
+                (
+                    Left::Count,
+                    Right::Count,
+                ): diesel::internal::table_macro::Pick<Left, Right>,
+                Self: diesel::SelectableExpression<
+                    <(
+                        Left::Count,
+                        Right::Count,
+                    ) as diesel::internal::table_macro::Pick<Left, Right>>::Selection,
+                >,
+            {}
+            impl<
+                Join,
+                On,
+            > diesel::SelectableExpression<
+                diesel::internal::table_macro::JoinOn<Join, On>,
+            > for production_date
+            where
+                production_date: diesel::SelectableExpression<Join>
+                    + diesel::AppearsOnTable<
+                        diesel::internal::table_macro::JoinOn<Join, On>,
+                    >,
+            {}
+            impl<
+                From,
+            > diesel::SelectableExpression<
+                diesel::internal::table_macro::SelectStatement<
+                    diesel::internal::table_macro::FromClause<From>,
+                >,
+            > for production_date
+            where
+                From: diesel::query_source::QuerySource,
+                production_date: diesel::SelectableExpression<From>
+                    + diesel::AppearsOnTable<
+                        diesel::internal::table_macro::SelectStatement<
+                            diesel::internal::table_macro::FromClause<From>,
+                        >,
+                    >,
+            {}
+            impl<__GB> diesel::expression::ValidGrouping<__GB> for production_date
+            where
+                __GB: diesel::expression::IsContainedInGroupBy<
+                    production_date,
+                    Output = diesel::expression::is_contained_in_group_by::Yes,
+                >,
+            {
+                type IsAggregate = diesel::expression::is_aggregate::Yes;
+            }
+            impl diesel::expression::ValidGrouping<()> for production_date {
+                type IsAggregate = diesel::expression::is_aggregate::No;
+            }
+            impl diesel::expression::IsContainedInGroupBy<production_date>
+            for production_date {
+                type Output = diesel::expression::is_contained_in_group_by::Yes;
+            }
+            impl diesel::query_source::Column for production_date {
+                type Table = super::table;
+                const NAME: &'static str = "production_date";
+            }
+            impl<T> diesel::EqAll<T> for production_date
+            where
+                T: diesel::expression::AsExpression<Date>,
+                diesel::dsl::Eq<
+                    production_date,
+                    T::Expression,
+                >: diesel::Expression<SqlType = diesel::sql_types::Bool>,
+            {
+                type Output = diesel::dsl::Eq<Self, T::Expression>;
+                fn eq_all(self, __diesel_internal_rhs: T) -> Self::Output {
+                    use diesel::expression_methods::ExpressionMethods;
+                    self.eq(__diesel_internal_rhs)
+                }
+            }
+            impl<Rhs> ::std::ops::Add<Rhs> for production_date
+            where
+                Rhs: diesel::expression::AsExpression<
+                    <<production_date as diesel::Expression>::SqlType as diesel::sql_types::ops::Add>::Rhs,
+                >,
+            {
+                type Output = diesel::internal::table_macro::ops::Add<
+                    Self,
+                    Rhs::Expression,
+                >;
+                fn add(self, __diesel_internal_rhs: Rhs) -> Self::Output {
+                    diesel::internal::table_macro::ops::Add::new(
+                        self,
+                        __diesel_internal_rhs.as_expression(),
+                    )
+                }
+            }
+            impl<Rhs> ::std::ops::Sub<Rhs> for production_date
+            where
+                Rhs: diesel::expression::AsExpression<
+                    <<production_date as diesel::Expression>::SqlType as diesel::sql_types::ops::Sub>::Rhs,
+                >,
+            {
+                type Output = diesel::internal::table_macro::ops::Sub<
+                    Self,
+                    Rhs::Expression,
+                >;
+                fn sub(self, __diesel_internal_rhs: Rhs) -> Self::Output {
+                    diesel::internal::table_macro::ops::Sub::new(
+                        self,
+                        __diesel_internal_rhs.as_expression(),
+                    )
+                }
+            }
+            impl diesel::query_source::AppearsInFromClause<
+                diesel::query_builder::Only<super::table>,
+            > for production_date {
+                type Count = diesel::query_source::Once;
+            }
+            impl diesel::SelectableExpression<diesel::query_builder::Only<super::table>>
+            for production_date {}
+            impl<
+                TSM,
+            > diesel::query_source::AppearsInFromClause<
+                diesel::query_builder::Tablesample<super::table, TSM>,
+            > for production_date
+            where
+                TSM: diesel::internal::table_macro::TablesampleMethod,
+            {
+                type Count = diesel::query_source::Once;
+            }
+            impl<
+                TSM,
+            > diesel::SelectableExpression<
+                diesel::query_builder::Tablesample<super::table, TSM>,
+            > for production_date
+            where
+                TSM: diesel::internal::table_macro::TablesampleMethod,
+            {}
+            #[allow(non_camel_case_types, dead_code)]
+            pub struct taken_date;
+            #[automatically_derived]
+            #[allow(non_camel_case_types, dead_code)]
+            impl ::core::fmt::Debug for taken_date {
+                #[inline]
+                fn fmt(&self, f: &mut ::core::fmt::Formatter) -> ::core::fmt::Result {
+                    ::core::fmt::Formatter::write_str(f, "taken_date")
+                }
+            }
+            #[automatically_derived]
+            #[allow(non_camel_case_types, dead_code)]
+            impl ::core::clone::Clone for taken_date {
+                #[inline]
+                fn clone(&self) -> taken_date {
+                    *self
+                }
+            }
+            #[automatically_derived]
+            #[allow(non_camel_case_types, dead_code)]
+            impl ::core::marker::Copy for taken_date {}
+            #[allow(unused_imports)]
+            const _: () = {
+                use diesel;
+                use diesel::query_builder::QueryId;
+                #[allow(non_camel_case_types)]
+                impl QueryId for taken_date {
+                    type QueryId = taken_date;
+                    const HAS_STATIC_QUERY_ID: bool = true;
+                }
+            };
+            #[automatically_derived]
+            #[allow(non_camel_case_types, dead_code)]
+            impl ::core::default::Default for taken_date {
+                #[inline]
+                fn default() -> taken_date {
+                    taken_date {}
+                }
+            }
+            impl diesel::expression::Expression for taken_date {
+                type SqlType = Date;
+            }
+            impl<DB> diesel::query_builder::QueryFragment<DB> for taken_date
+            where
+                DB: diesel::backend::Backend,
+                diesel::internal::table_macro::StaticQueryFragmentInstance<
+                    table,
+                >: diesel::query_builder::QueryFragment<DB>,
+            {
+                #[allow(non_snake_case)]
+                fn walk_ast<'b>(
+                    &'b self,
+                    mut __diesel_internal_out: diesel::query_builder::AstPass<'_, 'b, DB>,
+                ) -> diesel::result::QueryResult<()> {
+                    if !__diesel_internal_out.should_skip_from() {
+                        const FROM_CLAUSE: diesel::internal::table_macro::StaticQueryFragmentInstance<
+                            table,
+                        > = diesel::internal::table_macro::StaticQueryFragmentInstance::new();
+                        FROM_CLAUSE.walk_ast(__diesel_internal_out.reborrow())?;
+                        __diesel_internal_out.push_sql(".");
+                    }
+                    __diesel_internal_out.push_identifier("taken_date")
+                }
+            }
+            impl diesel::SelectableExpression<super::table> for taken_date {}
+            impl<QS> diesel::AppearsOnTable<QS> for taken_date
+            where
+                QS: diesel::query_source::AppearsInFromClause<
+                    super::table,
+                    Count = diesel::query_source::Once,
+                >,
+            {}
+            impl<
+                Left,
+                Right,
+            > diesel::SelectableExpression<
+                diesel::internal::table_macro::Join<
+                    Left,
+                    Right,
+                    diesel::internal::table_macro::LeftOuter,
+                >,
+            > for taken_date
+            where
+                taken_date: diesel::AppearsOnTable<
+                    diesel::internal::table_macro::Join<
+                        Left,
+                        Right,
+                        diesel::internal::table_macro::LeftOuter,
+                    >,
+                >,
+                Self: diesel::SelectableExpression<Left>,
+                Right: diesel::query_source::AppearsInFromClause<
+                        super::table,
+                        Count = diesel::query_source::Never,
+                    > + diesel::query_source::QuerySource,
+                Left: diesel::query_source::QuerySource,
+            {}
+            impl<
+                Left,
+                Right,
+            > diesel::SelectableExpression<
+                diesel::internal::table_macro::Join<
+                    Left,
+                    Right,
+                    diesel::internal::table_macro::Inner,
+                >,
+            > for taken_date
+            where
+                taken_date: diesel::AppearsOnTable<
+                    diesel::internal::table_macro::Join<
+                        Left,
+                        Right,
+                        diesel::internal::table_macro::Inner,
+                    >,
+                >,
+                Left: diesel::query_source::AppearsInFromClause<super::table>
+                    + diesel::query_source::QuerySource,
+                Right: diesel::query_source::AppearsInFromClause<super::table>
+                    + diesel::query_source::QuerySource,
+                (
+                    Left::Count,
+                    Right::Count,
+                ): diesel::internal::table_macro::Pick<Left, Right>,
+                Self: diesel::SelectableExpression<
+                    <(
+                        Left::Count,
+                        Right::Count,
+                    ) as diesel::internal::table_macro::Pick<Left, Right>>::Selection,
+                >,
+            {}
+            impl<
+                Join,
+                On,
+            > diesel::SelectableExpression<
+                diesel::internal::table_macro::JoinOn<Join, On>,
+            > for taken_date
+            where
+                taken_date: diesel::SelectableExpression<Join>
+                    + diesel::AppearsOnTable<
+                        diesel::internal::table_macro::JoinOn<Join, On>,
+                    >,
+            {}
+            impl<
+                From,
+            > diesel::SelectableExpression<
+                diesel::internal::table_macro::SelectStatement<
+                    diesel::internal::table_macro::FromClause<From>,
+                >,
+            > for taken_date
+            where
+                From: diesel::query_source::QuerySource,
+                taken_date: diesel::SelectableExpression<From>
+                    + diesel::AppearsOnTable<
+                        diesel::internal::table_macro::SelectStatement<
+                            diesel::internal::table_macro::FromClause<From>,
+                        >,
+                    >,
+            {}
+            impl<__GB> diesel::expression::ValidGrouping<__GB> for taken_date
+            where
+                __GB: diesel::expression::IsContainedInGroupBy<
+                    taken_date,
+                    Output = diesel::expression::is_contained_in_group_by::Yes,
+                >,
+            {
+                type IsAggregate = diesel::expression::is_aggregate::Yes;
+            }
+            impl diesel::expression::ValidGrouping<()> for taken_date {
+                type IsAggregate = diesel::expression::is_aggregate::No;
+            }
+            impl diesel::expression::IsContainedInGroupBy<taken_date> for taken_date {
+                type Output = diesel::expression::is_contained_in_group_by::Yes;
+            }
+            impl diesel::query_source::Column for taken_date {
+                type Table = super::table;
+                const NAME: &'static str = "taken_date";
+            }
+            impl<T> diesel::EqAll<T> for taken_date
+            where
+                T: diesel::expression::AsExpression<Date>,
+                diesel::dsl::Eq<
+                    taken_date,
+                    T::Expression,
+                >: diesel::Expression<SqlType = diesel::sql_types::Bool>,
+            {
+                type Output = diesel::dsl::Eq<Self, T::Expression>;
+                fn eq_all(self, __diesel_internal_rhs: T) -> Self::Output {
+                    use diesel::expression_methods::ExpressionMethods;
+                    self.eq(__diesel_internal_rhs)
+                }
+            }
+            impl<Rhs> ::std::ops::Add<Rhs> for taken_date
+            where
+                Rhs: diesel::expression::AsExpression<
+                    <<taken_date as diesel::Expression>::SqlType as diesel::sql_types::ops::Add>::Rhs,
+                >,
+            {
+                type Output = diesel::internal::table_macro::ops::Add<
+                    Self,
+                    Rhs::Expression,
+                >;
+                fn add(self, __diesel_internal_rhs: Rhs) -> Self::Output {
+                    diesel::internal::table_macro::ops::Add::new(
+                        self,
+                        __diesel_internal_rhs.as_expression(),
+                    )
+                }
+            }
+            impl<Rhs> ::std::ops::Sub<Rhs> for taken_date
+            where
+                Rhs: diesel::expression::AsExpression<
+                    <<taken_date as diesel::Expression>::SqlType as diesel::sql_types::ops::Sub>::Rhs,
+                >,
+            {
+                type Output = diesel::internal::table_macro::ops::Sub<
+                    Self,
+                    Rhs::Expression,
+                >;
+                fn sub(self, __diesel_internal_rhs: Rhs) -> Self::Output {
+                    diesel::internal::table_macro::ops::Sub::new(
+                        self,
+                        __diesel_internal_rhs.as_expression(),
+                    )
+                }
+            }
+            impl diesel::query_source::AppearsInFromClause<
+                diesel::query_builder::Only<super::table>,
+            > for taken_date {
+                type Count = diesel::query_source::Once;
+            }
+            impl diesel::SelectableExpression<diesel::query_builder::Only<super::table>>
+            for taken_date {}
+            impl<
+                TSM,
+            > diesel::query_source::AppearsInFromClause<
+                diesel::query_builder::Tablesample<super::table, TSM>,
+            > for taken_date
+            where
+                TSM: diesel::internal::table_macro::TablesampleMethod,
+            {
+                type Count = diesel::query_source::Once;
+            }
+            impl<
+                TSM,
+            > diesel::SelectableExpression<
+                diesel::query_builder::Tablesample<super::table, TSM>,
+            > for taken_date
+            where
+                TSM: diesel::internal::table_macro::TablesampleMethod,
+            {}
+            #[allow(non_camel_case_types, dead_code)]
+            pub struct price;
+            #[automatically_derived]
+            #[allow(non_camel_case_types, dead_code)]
+            impl ::core::fmt::Debug for price {
+                #[inline]
+                fn fmt(&self, f: &mut ::core::fmt::Formatter) -> ::core::fmt::Result {
+                    ::core::fmt::Formatter::write_str(f, "price")
+                }
+            }
+            #[automatically_derived]
+            #[allow(non_camel_case_types, dead_code)]
+            impl ::core::clone::Clone for price {
+                #[inline]
+                fn clone(&self) -> price {
+                    *self
+                }
+            }
+            #[automatically_derived]
+            #[allow(non_camel_case_types, dead_code)]
+            impl ::core::marker::Copy for price {}
+            #[allow(unused_imports)]
+            const _: () = {
+                use diesel;
+                use diesel::query_builder::QueryId;
+                #[allow(non_camel_case_types)]
+                impl QueryId for price {
+                    type QueryId = price;
+                    const HAS_STATIC_QUERY_ID: bool = true;
+                }
+            };
+            #[automatically_derived]
+            #[allow(non_camel_case_types, dead_code)]
+            impl ::core::default::Default for price {
+                #[inline]
+                fn default() -> price {
+                    price {}
+                }
+            }
+            impl diesel::expression::Expression for price {
+                type SqlType = Double;
+            }
+            impl<DB> diesel::query_builder::QueryFragment<DB> for price
+            where
+                DB: diesel::backend::Backend,
+                diesel::internal::table_macro::StaticQueryFragmentInstance<
+                    table,
+                >: diesel::query_builder::QueryFragment<DB>,
+            {
+                #[allow(non_snake_case)]
+                fn walk_ast<'b>(
+                    &'b self,
+                    mut __diesel_internal_out: diesel::query_builder::AstPass<'_, 'b, DB>,
+                ) -> diesel::result::QueryResult<()> {
+                    if !__diesel_internal_out.should_skip_from() {
+                        const FROM_CLAUSE: diesel::internal::table_macro::StaticQueryFragmentInstance<
+                            table,
+                        > = diesel::internal::table_macro::StaticQueryFragmentInstance::new();
+                        FROM_CLAUSE.walk_ast(__diesel_internal_out.reborrow())?;
+                        __diesel_internal_out.push_sql(".");
+                    }
+                    __diesel_internal_out.push_identifier("price")
+                }
+            }
+            impl diesel::SelectableExpression<super::table> for price {}
+            impl<QS> diesel::AppearsOnTable<QS> for price
+            where
+                QS: diesel::query_source::AppearsInFromClause<
+                    super::table,
+                    Count = diesel::query_source::Once,
+                >,
+            {}
+            impl<
+                Left,
+                Right,
+            > diesel::SelectableExpression<
+                diesel::internal::table_macro::Join<
+                    Left,
+                    Right,
+                    diesel::internal::table_macro::LeftOuter,
+                >,
+            > for price
+            where
+                price: diesel::AppearsOnTable<
+                    diesel::internal::table_macro::Join<
+                        Left,
+                        Right,
+                        diesel::internal::table_macro::LeftOuter,
+                    >,
+                >,
+                Self: diesel::SelectableExpression<Left>,
+                Right: diesel::query_source::AppearsInFromClause<
+                        super::table,
+                        Count = diesel::query_source::Never,
+                    > + diesel::query_source::QuerySource,
+                Left: diesel::query_source::QuerySource,
+            {}
+            impl<
+                Left,
+                Right,
+            > diesel::SelectableExpression<
+                diesel::internal::table_macro::Join<
+                    Left,
+                    Right,
+                    diesel::internal::table_macro::Inner,
+                >,
+            > for price
+            where
+                price: diesel::AppearsOnTable<
+                    diesel::internal::table_macro::Join<
+                        Left,
+                        Right,
+                        diesel::internal::table_macro::Inner,
+                    >,
+                >,
+                Left: diesel::query_source::AppearsInFromClause<super::table>
+                    + diesel::query_source::QuerySource,
+                Right: diesel::query_source::AppearsInFromClause<super::table>
+                    + diesel::query_source::QuerySource,
+                (
+                    Left::Count,
+                    Right::Count,
+                ): diesel::internal::table_macro::Pick<Left, Right>,
+                Self: diesel::SelectableExpression<
+                    <(
+                        Left::Count,
+                        Right::Count,
+                    ) as diesel::internal::table_macro::Pick<Left, Right>>::Selection,
+                >,
+            {}
+            impl<
+                Join,
+                On,
+            > diesel::SelectableExpression<
+                diesel::internal::table_macro::JoinOn<Join, On>,
+            > for price
+            where
+                price: diesel::SelectableExpression<Join>
+                    + diesel::AppearsOnTable<
+                        diesel::internal::table_macro::JoinOn<Join, On>,
+                    >,
+            {}
+            impl<
+                From,
+            > diesel::SelectableExpression<
+                diesel::internal::table_macro::SelectStatement<
+                    diesel::internal::table_macro::FromClause<From>,
+                >,
+            > for price
+            where
+                From: diesel::query_source::QuerySource,
+                price: diesel::SelectableExpression<From>
+                    + diesel::AppearsOnTable<
+                        diesel::internal::table_macro::SelectStatement<
+                            diesel::internal::table_macro::FromClause<From>,
+                        >,
+                    >,
+            {}
+            impl<__GB> diesel::expression::ValidGrouping<__GB> for price
+            where
+                __GB: diesel::expression::IsContainedInGroupBy<
+                    price,
+                    Output = diesel::expression::is_contained_in_group_by::Yes,
+                >,
+            {
+                type IsAggregate = diesel::expression::is_aggregate::Yes;
+            }
+            impl diesel::expression::ValidGrouping<()> for price {
+                type IsAggregate = diesel::expression::is_aggregate::No;
+            }
+            impl diesel::expression::IsContainedInGroupBy<price> for price {
+                type Output = diesel::expression::is_contained_in_group_by::Yes;
+            }
+            impl diesel::query_source::Column for price {
+                type Table = super::table;
+                const NAME: &'static str = "price";
+            }
+            impl<T> diesel::EqAll<T> for price
+            where
+                T: diesel::expression::AsExpression<Double>,
+                diesel::dsl::Eq<
+                    price,
+                    T::Expression,
+                >: diesel::Expression<SqlType = diesel::sql_types::Bool>,
+            {
+                type Output = diesel::dsl::Eq<Self, T::Expression>;
+                fn eq_all(self, __diesel_internal_rhs: T) -> Self::Output {
+                    use diesel::expression_methods::ExpressionMethods;
+                    self.eq(__diesel_internal_rhs)
+                }
+            }
+            impl<Rhs> ::std::ops::Add<Rhs> for price
+            where
+                Rhs: diesel::expression::AsExpression<
+                    <<price as diesel::Expression>::SqlType as diesel::sql_types::ops::Add>::Rhs,
+                >,
+            {
+                type Output = diesel::internal::table_macro::ops::Add<
+                    Self,
+                    Rhs::Expression,
+                >;
+                fn add(self, __diesel_internal_rhs: Rhs) -> Self::Output {
+                    diesel::internal::table_macro::ops::Add::new(
+                        self,
+                        __diesel_internal_rhs.as_expression(),
+                    )
+                }
+            }
+            impl<Rhs> ::std::ops::Sub<Rhs> for price
+            where
+                Rhs: diesel::expression::AsExpression<
+                    <<price as diesel::Expression>::SqlType as diesel::sql_types::ops::Sub>::Rhs,
+                >,
+            {
+                type Output = diesel::internal::table_macro::ops::Sub<
+                    Self,
+                    Rhs::Expression,
+                >;
+                fn sub(self, __diesel_internal_rhs: Rhs) -> Self::Output {
+                    diesel::internal::table_macro::ops::Sub::new(
+                        self,
+                        __diesel_internal_rhs.as_expression(),
+                    )
+                }
+            }
+            impl<Rhs> ::std::ops::Div<Rhs> for price
+            where
+                Rhs: diesel::expression::AsExpression<
+                    <<price as diesel::Expression>::SqlType as diesel::sql_types::ops::Div>::Rhs,
+                >,
+            {
+                type Output = diesel::internal::table_macro::ops::Div<
+                    Self,
+                    Rhs::Expression,
+                >;
+                fn div(self, __diesel_internal_rhs: Rhs) -> Self::Output {
+                    diesel::internal::table_macro::ops::Div::new(
+                        self,
+                        __diesel_internal_rhs.as_expression(),
+                    )
+                }
+            }
+            impl<Rhs> ::std::ops::Mul<Rhs> for price
+            where
+                Rhs: diesel::expression::AsExpression<
+                    <<price as diesel::Expression>::SqlType as diesel::sql_types::ops::Mul>::Rhs,
+                >,
+            {
+                type Output = diesel::internal::table_macro::ops::Mul<
+                    Self,
+                    Rhs::Expression,
+                >;
+                fn mul(self, __diesel_internal_rhs: Rhs) -> Self::Output {
+                    diesel::internal::table_macro::ops::Mul::new(
+                        self,
+                        __diesel_internal_rhs.as_expression(),
+                    )
+                }
+            }
+            impl diesel::query_source::AppearsInFromClause<
+                diesel::query_builder::Only<super::table>,
+            > for price {
+                type Count = diesel::query_source::Once;
+            }
+            impl diesel::SelectableExpression<diesel::query_builder::Only<super::table>>
+            for price {}
+            impl<
+                TSM,
+            > diesel::query_source::AppearsInFromClause<
+                diesel::query_builder::Tablesample<super::table, TSM>,
+            > for price
+            where
+                TSM: diesel::internal::table_macro::TablesampleMethod,
+            {
+                type Count = diesel::query_source::Once;
+            }
+            impl<
+                TSM,
+            > diesel::SelectableExpression<
+                diesel::query_builder::Tablesample<super::table, TSM>,
+            > for price
+            where
+                TSM: diesel::internal::table_macro::TablesampleMethod,
+            {}
+            #[allow(non_camel_case_types, dead_code)]
+            pub struct amount;
+            #[automatically_derived]
+            #[allow(non_camel_case_types, dead_code)]
+            impl ::core::fmt::Debug for amount {
+                #[inline]
+                fn fmt(&self, f: &mut ::core::fmt::Formatter) -> ::core::fmt::Result {
+                    ::core::fmt::Formatter::write_str(f, "amount")
+                }
+            }
+            #[automatically_derived]
+            #[allow(non_camel_case_types, dead_code)]
+            impl ::core::clone::Clone for amount {
+                #[inline]
+                fn clone(&self) -> amount {
+                    *self
+                }
+            }
+            #[automatically_derived]
+            #[allow(non_camel_case_types, dead_code)]
+            impl ::core::marker::Copy for amount {}
+            #[allow(unused_imports)]
+            const _: () = {
+                use diesel;
+                use diesel::query_builder::QueryId;
+                #[allow(non_camel_case_types)]
+                impl QueryId for amount {
+                    type QueryId = amount;
+                    const HAS_STATIC_QUERY_ID: bool = true;
+                }
+            };
+            #[automatically_derived]
+            #[allow(non_camel_case_types, dead_code)]
+            impl ::core::default::Default for amount {
+                #[inline]
+                fn default() -> amount {
+                    amount {}
+                }
+            }
+            impl diesel::expression::Expression for amount {
+                type SqlType = Integer;
+            }
+            impl<DB> diesel::query_builder::QueryFragment<DB> for amount
+            where
+                DB: diesel::backend::Backend,
+                diesel::internal::table_macro::StaticQueryFragmentInstance<
+                    table,
+                >: diesel::query_builder::QueryFragment<DB>,
+            {
+                #[allow(non_snake_case)]
+                fn walk_ast<'b>(
+                    &'b self,
+                    mut __diesel_internal_out: diesel::query_builder::AstPass<'_, 'b, DB>,
+                ) -> diesel::result::QueryResult<()> {
+                    if !__diesel_internal_out.should_skip_from() {
+                        const FROM_CLAUSE: diesel::internal::table_macro::StaticQueryFragmentInstance<
+                            table,
+                        > = diesel::internal::table_macro::StaticQueryFragmentInstance::new();
+                        FROM_CLAUSE.walk_ast(__diesel_internal_out.reborrow())?;
+                        __diesel_internal_out.push_sql(".");
+                    }
+                    __diesel_internal_out.push_identifier("amount")
+                }
+            }
+            impl diesel::SelectableExpression<super::table> for amount {}
+            impl<QS> diesel::AppearsOnTable<QS> for amount
+            where
+                QS: diesel::query_source::AppearsInFromClause<
+                    super::table,
+                    Count = diesel::query_source::Once,
+                >,
+            {}
+            impl<
+                Left,
+                Right,
+            > diesel::SelectableExpression<
+                diesel::internal::table_macro::Join<
+                    Left,
+                    Right,
+                    diesel::internal::table_macro::LeftOuter,
+                >,
+            > for amount
+            where
+                amount: diesel::AppearsOnTable<
+                    diesel::internal::table_macro::Join<
+                        Left,
+                        Right,
+                        diesel::internal::table_macro::LeftOuter,
+                    >,
+                >,
+                Self: diesel::SelectableExpression<Left>,
+                Right: diesel::query_source::AppearsInFromClause<
+                        super::table,
+                        Count = diesel::query_source::Never,
+                    > + diesel::query_source::QuerySource,
+                Left: diesel::query_source::QuerySource,
+            {}
+            impl<
+                Left,
+                Right,
+            > diesel::SelectableExpression<
+                diesel::internal::table_macro::Join<
+                    Left,
+                    Right,
+                    diesel::internal::table_macro::Inner,
+                >,
+            > for amount
+            where
+                amount: diesel::AppearsOnTable<
+                    diesel::internal::table_macro::Join<
+                        Left,
+                        Right,
+                        diesel::internal::table_macro::Inner,
+                    >,
+                >,
+                Left: diesel::query_source::AppearsInFromClause<super::table>
+                    + diesel::query_source::QuerySource,
+                Right: diesel::query_source::AppearsInFromClause<super::table>
+                    + diesel::query_source::QuerySource,
+                (
+                    Left::Count,
+                    Right::Count,
+                ): diesel::internal::table_macro::Pick<Left, Right>,
+                Self: diesel::SelectableExpression<
+                    <(
+                        Left::Count,
+                        Right::Count,
+                    ) as diesel::internal::table_macro::Pick<Left, Right>>::Selection,
+                >,
+            {}
+            impl<
+                Join,
+                On,
+            > diesel::SelectableExpression<
+                diesel::internal::table_macro::JoinOn<Join, On>,
+            > for amount
+            where
+                amount: diesel::SelectableExpression<Join>
+                    + diesel::AppearsOnTable<
+                        diesel::internal::table_macro::JoinOn<Join, On>,
+                    >,
+            {}
+            impl<
+                From,
+            > diesel::SelectableExpression<
+                diesel::internal::table_macro::SelectStatement<
+                    diesel::internal::table_macro::FromClause<From>,
+                >,
+            > for amount
+            where
+                From: diesel::query_source::QuerySource,
+                amount: diesel::SelectableExpression<From>
+                    + diesel::AppearsOnTable<
+                        diesel::internal::table_macro::SelectStatement<
+                            diesel::internal::table_macro::FromClause<From>,
+                        >,
+                    >,
+            {}
+            impl<__GB> diesel::expression::ValidGrouping<__GB> for amount
+            where
+                __GB: diesel::expression::IsContainedInGroupBy<
+                    amount,
+                    Output = diesel::expression::is_contained_in_group_by::Yes,
+                >,
+            {
+                type IsAggregate = diesel::expression::is_aggregate::Yes;
+            }
+            impl diesel::expression::ValidGrouping<()> for amount {
+                type IsAggregate = diesel::expression::is_aggregate::No;
+            }
+            impl diesel::expression::IsContainedInGroupBy<amount> for amount {
+                type Output = diesel::expression::is_contained_in_group_by::Yes;
+            }
+            impl diesel::query_source::Column for amount {
+                type Table = super::table;
+                const NAME: &'static str = "amount";
+            }
+            impl<T> diesel::EqAll<T> for amount
+            where
+                T: diesel::expression::AsExpression<Integer>,
+                diesel::dsl::Eq<
+                    amount,
+                    T::Expression,
+                >: diesel::Expression<SqlType = diesel::sql_types::Bool>,
+            {
+                type Output = diesel::dsl::Eq<Self, T::Expression>;
+                fn eq_all(self, __diesel_internal_rhs: T) -> Self::Output {
+                    use diesel::expression_methods::ExpressionMethods;
+                    self.eq(__diesel_internal_rhs)
+                }
+            }
+            impl<Rhs> ::std::ops::Add<Rhs> for amount
+            where
+                Rhs: diesel::expression::AsExpression<
+                    <<amount as diesel::Expression>::SqlType as diesel::sql_types::ops::Add>::Rhs,
+                >,
+            {
+                type Output = diesel::internal::table_macro::ops::Add<
+                    Self,
+                    Rhs::Expression,
+                >;
+                fn add(self, __diesel_internal_rhs: Rhs) -> Self::Output {
+                    diesel::internal::table_macro::ops::Add::new(
+                        self,
+                        __diesel_internal_rhs.as_expression(),
+                    )
+                }
+            }
+            impl<Rhs> ::std::ops::Sub<Rhs> for amount
+            where
+                Rhs: diesel::expression::AsExpression<
+                    <<amount as diesel::Expression>::SqlType as diesel::sql_types::ops::Sub>::Rhs,
+                >,
+            {
+                type Output = diesel::internal::table_macro::ops::Sub<
+                    Self,
+                    Rhs::Expression,
+                >;
+                fn sub(self, __diesel_internal_rhs: Rhs) -> Self::Output {
+                    diesel::internal::table_macro::ops::Sub::new(
+                        self,
+                        __diesel_internal_rhs.as_expression(),
+                    )
+                }
+            }
+            impl<Rhs> ::std::ops::Div<Rhs> for amount
+            where
+                Rhs: diesel::expression::AsExpression<
+                    <<amount as diesel::Expression>::SqlType as diesel::sql_types::ops::Div>::Rhs,
+                >,
+            {
+                type Output = diesel::internal::table_macro::ops::Div<
+                    Self,
+                    Rhs::Expression,
+                >;
+                fn div(self, __diesel_internal_rhs: Rhs) -> Self::Output {
+                    diesel::internal::table_macro::ops::Div::new(
+                        self,
+                        __diesel_internal_rhs.as_expression(),
+                    )
+                }
+            }
+            impl<Rhs> ::std::ops::Mul<Rhs> for amount
+            where
+                Rhs: diesel::expression::AsExpression<
+                    <<amount as diesel::Expression>::SqlType as diesel::sql_types::ops::Mul>::Rhs,
+                >,
+            {
+                type Output = diesel::internal::table_macro::ops::Mul<
+                    Self,
+                    Rhs::Expression,
+                >;
+                fn mul(self, __diesel_internal_rhs: Rhs) -> Self::Output {
+                    diesel::internal::table_macro::ops::Mul::new(
+                        self,
+                        __diesel_internal_rhs.as_expression(),
+                    )
+                }
+            }
+            impl diesel::query_source::AppearsInFromClause<
+                diesel::query_builder::Only<super::table>,
+            > for amount {
+                type Count = diesel::query_source::Once;
+            }
+            impl diesel::SelectableExpression<diesel::query_builder::Only<super::table>>
+            for amount {}
+            impl<
+                TSM,
+            > diesel::query_source::AppearsInFromClause<
+                diesel::query_builder::Tablesample<super::table, TSM>,
+            > for amount
+            where
+                TSM: diesel::internal::table_macro::TablesampleMethod,
+            {
+                type Count = diesel::query_source::Once;
+            }
+            impl<
+                TSM,
+            > diesel::SelectableExpression<
+                diesel::query_builder::Tablesample<super::table, TSM>,
+            > for amount
             where
                 TSM: diesel::internal::table_macro::TablesampleMethod,
             {}
@@ -1472,10 +3031,40 @@ pub mod database_metadata {
             where
                 TSM: diesel::internal::table_macro::TablesampleMethod,
             {}
-            impl diesel::expression::IsContainedInGroupBy<id> for version {
+            impl diesel::expression::IsContainedInGroupBy<id> for user_id {
                 type Output = diesel::expression::is_contained_in_group_by::No;
             }
-            impl diesel::expression::IsContainedInGroupBy<version> for id {
+            impl diesel::expression::IsContainedInGroupBy<user_id> for id {
+                type Output = diesel::expression::is_contained_in_group_by::Yes;
+            }
+            impl diesel::expression::IsContainedInGroupBy<id> for paid {
+                type Output = diesel::expression::is_contained_in_group_by::No;
+            }
+            impl diesel::expression::IsContainedInGroupBy<paid> for id {
+                type Output = diesel::expression::is_contained_in_group_by::Yes;
+            }
+            impl diesel::expression::IsContainedInGroupBy<id> for production_date {
+                type Output = diesel::expression::is_contained_in_group_by::No;
+            }
+            impl diesel::expression::IsContainedInGroupBy<production_date> for id {
+                type Output = diesel::expression::is_contained_in_group_by::Yes;
+            }
+            impl diesel::expression::IsContainedInGroupBy<id> for taken_date {
+                type Output = diesel::expression::is_contained_in_group_by::No;
+            }
+            impl diesel::expression::IsContainedInGroupBy<taken_date> for id {
+                type Output = diesel::expression::is_contained_in_group_by::Yes;
+            }
+            impl diesel::expression::IsContainedInGroupBy<id> for price {
+                type Output = diesel::expression::is_contained_in_group_by::No;
+            }
+            impl diesel::expression::IsContainedInGroupBy<price> for id {
+                type Output = diesel::expression::is_contained_in_group_by::Yes;
+            }
+            impl diesel::expression::IsContainedInGroupBy<id> for amount {
+                type Output = diesel::expression::is_contained_in_group_by::No;
+            }
+            impl diesel::expression::IsContainedInGroupBy<amount> for id {
                 type Output = diesel::expression::is_contained_in_group_by::Yes;
             }
             impl diesel::expression::IsContainedInGroupBy<id> for description {
@@ -1484,14 +3073,167 @@ pub mod database_metadata {
             impl diesel::expression::IsContainedInGroupBy<description> for id {
                 type Output = diesel::expression::is_contained_in_group_by::Yes;
             }
-            impl diesel::expression::IsContainedInGroupBy<version> for description {
+            impl diesel::expression::IsContainedInGroupBy<user_id> for paid {
                 type Output = diesel::expression::is_contained_in_group_by::No;
             }
-            impl diesel::expression::IsContainedInGroupBy<description> for version {
+            impl diesel::expression::IsContainedInGroupBy<paid> for user_id {
+                type Output = diesel::expression::is_contained_in_group_by::No;
+            }
+            impl diesel::expression::IsContainedInGroupBy<user_id> for production_date {
+                type Output = diesel::expression::is_contained_in_group_by::No;
+            }
+            impl diesel::expression::IsContainedInGroupBy<production_date> for user_id {
+                type Output = diesel::expression::is_contained_in_group_by::No;
+            }
+            impl diesel::expression::IsContainedInGroupBy<user_id> for taken_date {
+                type Output = diesel::expression::is_contained_in_group_by::No;
+            }
+            impl diesel::expression::IsContainedInGroupBy<taken_date> for user_id {
+                type Output = diesel::expression::is_contained_in_group_by::No;
+            }
+            impl diesel::expression::IsContainedInGroupBy<user_id> for price {
+                type Output = diesel::expression::is_contained_in_group_by::No;
+            }
+            impl diesel::expression::IsContainedInGroupBy<price> for user_id {
+                type Output = diesel::expression::is_contained_in_group_by::No;
+            }
+            impl diesel::expression::IsContainedInGroupBy<user_id> for amount {
+                type Output = diesel::expression::is_contained_in_group_by::No;
+            }
+            impl diesel::expression::IsContainedInGroupBy<amount> for user_id {
+                type Output = diesel::expression::is_contained_in_group_by::No;
+            }
+            impl diesel::expression::IsContainedInGroupBy<user_id> for description {
+                type Output = diesel::expression::is_contained_in_group_by::No;
+            }
+            impl diesel::expression::IsContainedInGroupBy<description> for user_id {
+                type Output = diesel::expression::is_contained_in_group_by::No;
+            }
+            impl diesel::expression::IsContainedInGroupBy<paid> for production_date {
+                type Output = diesel::expression::is_contained_in_group_by::No;
+            }
+            impl diesel::expression::IsContainedInGroupBy<production_date> for paid {
+                type Output = diesel::expression::is_contained_in_group_by::No;
+            }
+            impl diesel::expression::IsContainedInGroupBy<paid> for taken_date {
+                type Output = diesel::expression::is_contained_in_group_by::No;
+            }
+            impl diesel::expression::IsContainedInGroupBy<taken_date> for paid {
+                type Output = diesel::expression::is_contained_in_group_by::No;
+            }
+            impl diesel::expression::IsContainedInGroupBy<paid> for price {
+                type Output = diesel::expression::is_contained_in_group_by::No;
+            }
+            impl diesel::expression::IsContainedInGroupBy<price> for paid {
+                type Output = diesel::expression::is_contained_in_group_by::No;
+            }
+            impl diesel::expression::IsContainedInGroupBy<paid> for amount {
+                type Output = diesel::expression::is_contained_in_group_by::No;
+            }
+            impl diesel::expression::IsContainedInGroupBy<amount> for paid {
+                type Output = diesel::expression::is_contained_in_group_by::No;
+            }
+            impl diesel::expression::IsContainedInGroupBy<paid> for description {
+                type Output = diesel::expression::is_contained_in_group_by::No;
+            }
+            impl diesel::expression::IsContainedInGroupBy<description> for paid {
+                type Output = diesel::expression::is_contained_in_group_by::No;
+            }
+            impl diesel::expression::IsContainedInGroupBy<production_date>
+            for taken_date {
+                type Output = diesel::expression::is_contained_in_group_by::No;
+            }
+            impl diesel::expression::IsContainedInGroupBy<taken_date>
+            for production_date {
+                type Output = diesel::expression::is_contained_in_group_by::No;
+            }
+            impl diesel::expression::IsContainedInGroupBy<production_date> for price {
+                type Output = diesel::expression::is_contained_in_group_by::No;
+            }
+            impl diesel::expression::IsContainedInGroupBy<price> for production_date {
+                type Output = diesel::expression::is_contained_in_group_by::No;
+            }
+            impl diesel::expression::IsContainedInGroupBy<production_date> for amount {
+                type Output = diesel::expression::is_contained_in_group_by::No;
+            }
+            impl diesel::expression::IsContainedInGroupBy<amount> for production_date {
+                type Output = diesel::expression::is_contained_in_group_by::No;
+            }
+            impl diesel::expression::IsContainedInGroupBy<production_date>
+            for description {
+                type Output = diesel::expression::is_contained_in_group_by::No;
+            }
+            impl diesel::expression::IsContainedInGroupBy<description>
+            for production_date {
+                type Output = diesel::expression::is_contained_in_group_by::No;
+            }
+            impl diesel::expression::IsContainedInGroupBy<taken_date> for price {
+                type Output = diesel::expression::is_contained_in_group_by::No;
+            }
+            impl diesel::expression::IsContainedInGroupBy<price> for taken_date {
+                type Output = diesel::expression::is_contained_in_group_by::No;
+            }
+            impl diesel::expression::IsContainedInGroupBy<taken_date> for amount {
+                type Output = diesel::expression::is_contained_in_group_by::No;
+            }
+            impl diesel::expression::IsContainedInGroupBy<amount> for taken_date {
+                type Output = diesel::expression::is_contained_in_group_by::No;
+            }
+            impl diesel::expression::IsContainedInGroupBy<taken_date> for description {
+                type Output = diesel::expression::is_contained_in_group_by::No;
+            }
+            impl diesel::expression::IsContainedInGroupBy<description> for taken_date {
+                type Output = diesel::expression::is_contained_in_group_by::No;
+            }
+            impl diesel::expression::IsContainedInGroupBy<price> for amount {
+                type Output = diesel::expression::is_contained_in_group_by::No;
+            }
+            impl diesel::expression::IsContainedInGroupBy<amount> for price {
+                type Output = diesel::expression::is_contained_in_group_by::No;
+            }
+            impl diesel::expression::IsContainedInGroupBy<price> for description {
+                type Output = diesel::expression::is_contained_in_group_by::No;
+            }
+            impl diesel::expression::IsContainedInGroupBy<description> for price {
+                type Output = diesel::expression::is_contained_in_group_by::No;
+            }
+            impl diesel::expression::IsContainedInGroupBy<amount> for description {
+                type Output = diesel::expression::is_contained_in_group_by::No;
+            }
+            impl diesel::expression::IsContainedInGroupBy<description> for amount {
                 type Output = diesel::expression::is_contained_in_group_by::No;
             }
         }
     }
+    #[allow(unused_imports)]
+    const _: () = {
+        use diesel;
+        use diesel::expression::Selectable;
+        impl<__DB: diesel::backend::Backend> Selectable<__DB> for Record {
+            type SelectExpression = (
+                record_table::id,
+                record_table::user_id,
+                record_table::paid,
+                record_table::production_date,
+                record_table::taken_date,
+                record_table::price,
+                record_table::amount,
+                record_table::description,
+            );
+            fn construct_selection() -> Self::SelectExpression {
+                (
+                    record_table::id,
+                    record_table::user_id,
+                    record_table::paid,
+                    record_table::production_date,
+                    record_table::taken_date,
+                    record_table::price,
+                    record_table::amount,
+                    record_table::description,
+                )
+            }
+        }
+    };
     #[allow(unused_imports)]
     const _: () = {
         use diesel;
@@ -1503,130 +3245,205 @@ pub mod database_metadata {
             __ST0,
             __ST1,
             __ST2,
-        > Queryable<(__ST0, __ST1, __ST2), __DB> for Metadata
+            __ST3,
+            __ST4,
+            __ST5,
+            __ST6,
+            __ST7,
+        > Queryable<(__ST0, __ST1, __ST2, __ST3, __ST4, __ST5, __ST6, __ST7), __DB>
+        for Record
         where
-            (i32, i64, String): FromStaticSqlRow<(__ST0, __ST1, __ST2), __DB>,
+            (
+                i32,
+                i32,
+                bool,
+                NaiveDate,
+                NaiveDate,
+                f64,
+                i32,
+                String,
+            ): FromStaticSqlRow<
+                (__ST0, __ST1, __ST2, __ST3, __ST4, __ST5, __ST6, __ST7),
+                __DB,
+            >,
         {
-            type Row = (i32, i64, String);
+            type Row = (i32, i32, bool, NaiveDate, NaiveDate, f64, i32, String);
             fn build(row: Self::Row) -> deserialize::Result<Self> {
                 Ok(Self {
                     id: row.0.try_into()?,
-                    version: row.1.try_into()?,
-                    description: row.2.try_into()?,
+                    user_id: row.1.try_into()?,
+                    paid: row.2.try_into()?,
+                    production_date: row.3.try_into()?,
+                    taken_date: row.4.try_into()?,
+                    price: row.5.try_into()?,
+                    amount: row.6.try_into()?,
+                    description: row.7.try_into()?,
                 })
             }
         }
     };
-    #[allow(unused_imports)]
-    const _: () = {
-        use diesel;
-        use diesel::associations::{HasTable, Identifiable};
-        impl HasTable for Metadata {
-            type Table = metadata_table::table;
-            fn table() -> Self::Table {
-                metadata_table::table
-            }
-        }
-        impl<'ident> Identifiable for &'ident Metadata {
-            type Id = (&'ident i32);
-            fn id(self) -> Self::Id {
-                (&self.id)
-            }
-        }
-        impl<'ident> Identifiable for &'_ &'ident Metadata {
-            type Id = (&'ident i32);
-            fn id(self) -> Self::Id {
-                (&self.id)
-            }
-        }
-    };
-    #[allow(unused_imports)]
-    const _: () = {
-        use diesel;
-        use diesel::expression::Selectable;
-        impl<__DB: diesel::backend::Backend> Selectable<__DB> for Metadata {
-            type SelectExpression = (
-                metadata_table::id,
-                metadata_table::version,
-                metadata_table::description,
-            );
-            fn construct_selection() -> Self::SelectExpression {
-                (
-                    metadata_table::id,
-                    metadata_table::version,
-                    metadata_table::description,
-                )
-            }
-        }
-    };
     #[automatically_derived]
-    impl ::core::fmt::Debug for Metadata {
+    impl ::core::fmt::Debug for Record {
         #[inline]
         fn fmt(&self, f: &mut ::core::fmt::Formatter) -> ::core::fmt::Result {
-            ::core::fmt::Formatter::debug_struct_field3_finish(
-                f,
-                "Metadata",
+            let names: &'static _ = &[
                 "id",
-                &self.id,
-                "version",
-                &self.version,
+                "user_id",
+                "paid",
+                "production_date",
+                "taken_date",
+                "price",
+                "amount",
                 "description",
+            ];
+            let values: &[&dyn ::core::fmt::Debug] = &[
+                &self.id,
+                &self.user_id,
+                &self.paid,
+                &self.production_date,
+                &self.taken_date,
+                &self.price,
+                &self.amount,
                 &&self.description,
+            ];
+            ::core::fmt::Formatter::debug_struct_fields_finish(
+                f,
+                "Record",
+                names,
+                values,
             )
         }
     }
     #[automatically_derived]
-    impl ::core::marker::StructuralPartialEq for Metadata {}
+    impl ::core::marker::StructuralPartialEq for Record {}
     #[automatically_derived]
-    impl ::core::cmp::PartialEq for Metadata {
+    impl ::core::cmp::PartialEq for Record {
         #[inline]
-        fn eq(&self, other: &Metadata) -> bool {
-            self.id == other.id && self.version == other.version
-                && self.description == other.description
+        fn eq(&self, other: &Record) -> bool {
+            self.id == other.id && self.user_id == other.user_id
+                && self.paid == other.paid
+                && self.production_date == other.production_date
+                && self.taken_date == other.taken_date && self.price == other.price
+                && self.amount == other.amount && self.description == other.description
         }
     }
-    impl Migrationable for Metadata {
-        fn get_up_migration(builder: impl sea_query::SchemaBuilder) -> String {
+    impl ::diesel::JoinTo<user_table::table> for record_table::table {
+        type FromClause = user_table::table;
+        type OnClause = ::diesel::dsl::Eq<
+            ::diesel::internal::table_macro::NullableExpression<record_table::user_id>,
+            ::diesel::internal::table_macro::NullableExpression<
+                <user_table::table as ::diesel::query_source::Table>::PrimaryKey,
+            >,
+        >;
+        fn join_target(rhs: user_table::table) -> (Self::FromClause, Self::OnClause) {
+            use ::diesel::{ExpressionMethods, NullableExpressionMethods};
+            (
+                rhs,
+                record_table::user_id
+                    .nullable()
+                    .eq(
+                        <user_table::table as ::diesel::query_source::Table>::primary_key(
+                                &user_table::table,
+                            )
+                            .nullable(),
+                    ),
+            )
+        }
+    }
+    impl ::diesel::JoinTo<record_table::table> for user_table::table {
+        type FromClause = record_table::table;
+        type OnClause = ::diesel::dsl::Eq<
+            ::diesel::internal::table_macro::NullableExpression<record_table::user_id>,
+            ::diesel::internal::table_macro::NullableExpression<
+                <user_table::table as ::diesel::query_source::Table>::PrimaryKey,
+            >,
+        >;
+        fn join_target(rhs: record_table::table) -> (Self::FromClause, Self::OnClause) {
+            use ::diesel::{ExpressionMethods, NullableExpressionMethods};
+            (
+                rhs,
+                record_table::user_id
+                    .nullable()
+                    .eq(
+                        <user_table::table as ::diesel::query_source::Table>::primary_key(
+                                &user_table::table,
+                            )
+                            .nullable(),
+                    ),
+            )
+        }
+    }
+    impl ::diesel::query_source::TableNotEqual<record_table::table>
+    for user_table::table {}
+    impl ::diesel::query_source::TableNotEqual<user_table::table>
+    for record_table::table {}
+    impl ::diesel::query_source::TableNotEqual<record_table::table>
+    for ::diesel::query_builder::Only<user_table::table> {}
+    impl ::diesel::query_source::TableNotEqual<user_table::table>
+    for ::diesel::query_builder::Only<record_table::table> {}
+    impl ::diesel::query_source::TableNotEqual<
+        ::diesel::query_builder::Only<record_table::table>,
+    > for user_table::table {}
+    impl ::diesel::query_source::TableNotEqual<
+        ::diesel::query_builder::Only<user_table::table>,
+    > for record_table::table {}
+    impl<TSM> ::diesel::query_source::TableNotEqual<record_table::table>
+    for ::diesel::query_builder::Tablesample<user_table::table, TSM>
+    where
+        TSM: ::diesel::internal::table_macro::TablesampleMethod,
+    {}
+    impl<TSM> ::diesel::query_source::TableNotEqual<user_table::table>
+    for ::diesel::query_builder::Tablesample<record_table::table, TSM>
+    where
+        TSM: ::diesel::internal::table_macro::TablesampleMethod,
+    {}
+    impl<
+        TSM,
+    > ::diesel::query_source::TableNotEqual<
+        ::diesel::query_builder::Tablesample<record_table::table, TSM>,
+    > for user_table::table
+    where
+        TSM: ::diesel::internal::table_macro::TablesampleMethod,
+    {}
+    impl<
+        TSM,
+    > ::diesel::query_source::TableNotEqual<
+        ::diesel::query_builder::Tablesample<user_table::table, TSM>,
+    > for record_table::table
+    where
+        TSM: ::diesel::internal::table_macro::TablesampleMethod,
+    {}
+    impl Migrationable for Record {
+        fn get_up_migration(builder: impl SchemaBuilder) -> String {
             Table::create()
-                .table(MetadataTable::Table)
+                .table(RecordTable::Table)
                 .if_not_exists()
                 .col(
-                    ColumnDef::new(MetadataTable::Id)
+                    ColumnDef::new(RecordTable::Id)
                         .integer()
                         .not_null()
                         .auto_increment()
                         .primary_key(),
                 )
-                .col(ColumnDef::new(MetadataTable::Version).integer())
-                .col(ColumnDef::new(MetadataTable::Description).text())
+                .col(ColumnDef::new(RecordTable::UserId).integer())
+                .col(ColumnDef::new(RecordTable::Paid).boolean())
+                .col(ColumnDef::new(RecordTable::ProductionDate).date_time())
+                .col(ColumnDef::new(RecordTable::TakenDate).date_time())
+                .col(ColumnDef::new(RecordTable::Price).double())
+                .col(ColumnDef::new(RecordTable::Amount).integer())
+                .col(ColumnDef::new(RecordTable::Description).text())
+                .foreign_key(
+                    ForeignKey::create()
+                        .name("FK_ProductToUser")
+                        .from(RecordTable::Table, RecordTable::UserId)
+                        .to(UserTable::Table, UserTable::Id)
+                        .on_delete(ForeignKeyAction::Cascade)
+                        .on_update(ForeignKeyAction::Cascade),
+                )
                 .build(builder)
         }
-        fn get_down_migration(builder: impl sea_query::SchemaBuilder) -> String {
-            Table::drop().table(MetadataTable::Table).if_exists().build(builder)
-        }
-    }
-    impl Metadata {
-        pub fn get_latest_version() -> i32 {
-            let conn = &mut create_connection();
-            let latest_db_metadata = metadata_table::table
-                .order(metadata_table::version.desc())
-                .first::<Metadata>(conn);
-            match latest_db_metadata {
-                Ok(db_metatdata) => db_metatdata.version as i32,
-                Err(_) => 0,
-            }
-        }
-        pub fn add_migration_stamp() {
-            let conn = &mut create_connection();
-            let latest_version = Self::get_latest_version();
-            let new_db_metadata = MetadataNoId {
-                version: (latest_version + 1) as i64,
-                description: Utc::now().naive_utc().to_string(),
-            };
-            let _ = diesel::insert_into(metadata_table::table)
-                .values(new_db_metadata)
-                .execute(conn)
-                .expect("Cant Insert to database metadata!!!");
+        fn get_down_migration(builder: impl SchemaBuilder) -> String {
+            Table::drop().table(RecordTable::Table).if_exists().build(builder)
         }
     }
 }
