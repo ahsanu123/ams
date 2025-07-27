@@ -1,5 +1,4 @@
-use migration::sea_orm::Database;
-use sea_orm_migration::prelude::*;
+use ams_migration::{sea_orm::Database, MigratorTrait};
 
 #[async_std::main]
 async fn main() {
@@ -7,5 +6,5 @@ async fn main() {
         .await
         .unwrap();
 
-    let _ = migration::Migrator::up(&db, None).await;
+    let _ = ams_migration::Migrator::up(&db, None).await;
 }

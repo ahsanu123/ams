@@ -11,6 +11,8 @@ syn = { version = "2.0", features = ["derive"] }
 quote = "1.0"
 sea-query = "0.32.6"
 convert_case = "0.8.0"
+async-trait = "0.1.88"
+chrono = "0.4.41"
 
 [dev-dependencies]
 macrotest = "1.1.0"

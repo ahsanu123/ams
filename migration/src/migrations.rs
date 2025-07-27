@@ -1,0 +1,1 @@
+pub mod m20250727_000001_create_table;

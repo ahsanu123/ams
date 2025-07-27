@@ -4,6 +4,7 @@ pub struct Book {
     pub id: i32,
     pub title: String,
 }
+use sea_query::Iden;
 pub enum BookTable {
     Id,
     Title,
@@ -32,3 +33,17 @@ impl ::core::clone::Clone for BookTable {
 }
 #[automatically_derived]
 impl ::core::marker::Copy for BookTable {}
+impl sea_query::Iden for BookTable {
+    fn prepare(&self, s: &mut dyn ::std::fmt::Write, q: sea_query::Quote) {
+        s.write_fmt(format_args!("{0}", q.left())).unwrap();
+        self.unquoted(s);
+        s.write_fmt(format_args!("{0}", q.right())).unwrap();
+    }
+    fn unquoted(&self, s: &mut dyn ::std::fmt::Write) {
+        match self {
+            Self::Id => s.write_fmt(format_args!("{0}", "id")).unwrap(),
+            Self::Title => s.write_fmt(format_args!("{0}", "title")).unwrap(),
+            Self::Table => s.write_fmt(format_args!("{0}", "book_table")).unwrap(),
+        };
+    }
+}

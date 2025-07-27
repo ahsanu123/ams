@@ -5,12 +5,14 @@ edition = "2021"
 publish = false
 
 [lib]
-name = "migration"
-proc-macro = false
+name = "ams_migration"
 path = "src/lib.rs"
 
 [dependencies]
+ams_macro = { path = "../macro" }
 async-std = { version = "1", features = ["attributes", "tokio1"] }
+chrono = "0.4.41"
+sea-query = "0.32.6"
 
 [dependencies.sea-orm-migration]
 version = "1.1.14"
