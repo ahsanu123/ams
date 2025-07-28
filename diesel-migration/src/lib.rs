@@ -5,6 +5,7 @@ use std::env;
 use crate::models::{NewPost, Post};
 
 pub mod models;
+pub mod repositories;
 pub mod schema;
 
 pub fn establish_connection() -> SqliteConnection {
