@@ -3,7 +3,18 @@ use chrono::NaiveDate;
 use sea_orm_migration::{async_trait::async_trait, prelude::*, schema::*};
 use sea_query::Table;
 
-#[derive(DeriveMigrationName, GenerateTableEnum)]
+use crate::models::payment_record::PaymentRecordTable;
+
+pub struct Migration;
+
+impl MigrationName for Migration {
+    fn name(&self) -> &str {
+        "migrating payment taking"
+    }
+}
+
+#[allow(dead_code)]
+#[derive(GenerateTableEnum)]
 pub struct PaymentTaking {
     pub id: i64,
     pub taking_id: i64,
@@ -11,7 +22,7 @@ pub struct PaymentTaking {
 }
 
 #[async_trait]
-impl MigrationTrait for PaymentTaking {
+impl MigrationTrait for Migration {
     async fn up(&self, manager: &SchemaManager) -> Result<(), DbErr> {
         manager
             .create_table(
@@ -20,6 +31,14 @@ impl MigrationTrait for PaymentTaking {
                     .if_not_exists()
                     .col(pk_auto(PaymentTakingTable::Id))
                     .col(float(PaymentTakingTable::TakingId))
+                    .foreign_key(
+                        ForeignKeyCreateStatement::new()
+                            .name("fk_payment-taking_taking-id_payment-id")
+                            .from(PaymentTakingTable::Table, PaymentTakingTable::TakingId)
+                            .from(PaymentTakingTable::Table, PaymentTakingTable::PaymentId)
+                            .to(PaymentRecordTable::Table, PaymentRecordTable::Id)
+                            .to(PaymentRecordTable::Table, PaymentRecordTable::Id),
+                    )
                     .to_owned(),
             )
             .await

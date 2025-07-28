@@ -3,26 +3,33 @@ use chrono::NaiveDate;
 use sea_orm_migration::{async_trait::async_trait, prelude::*, schema::*};
 use sea_query::Table;
 
-#[derive(DeriveMigrationName, GenerateTableEnum)]
-pub struct TakingRecord {
+pub struct Migration;
+
+impl MigrationName for Migration {
+    fn name(&self) -> &str {
+        "migrating product record"
+    }
+}
+
+#[allow(dead_code)]
+#[derive(GenerateTableEnum)]
+pub struct ProductionRecord {
     pub id: i64,
     pub amount: i32,
     pub date: NaiveDate,
-    pub paid: bool,
 }
 
 #[async_trait]
-impl MigrationTrait for TakingRecord {
+impl MigrationTrait for Migration {
     async fn up(&self, manager: &SchemaManager) -> Result<(), DbErr> {
         manager
             .create_table(
                 Table::create()
-                    .table(TakingRecordTable::Table)
+                    .table(ProductionRecordTable::Table)
                     .if_not_exists()
-                    .col(pk_auto(TakingRecordTable::Id))
-                    .col(integer(TakingRecordTable::Amount))
-                    .col(date(TakingRecordTable::Date))
-                    .col(boolean(TakingRecordTable::Paid))
+                    .col(pk_auto(ProductionRecordTable::Id))
+                    .col(integer(ProductionRecordTable::Amount))
+                    .col(date(ProductionRecordTable::Date))
                     .to_owned(),
             )
             .await
@@ -30,7 +37,7 @@ impl MigrationTrait for TakingRecord {
 
     async fn down(&self, manager: &SchemaManager) -> Result<(), DbErr> {
         manager
-            .drop_table(Table::drop().table(TakingRecordTable::Table).to_owned())
+            .drop_table(Table::drop().table(ProductionRecordTable::Table).to_owned())
             .await
     }
 }

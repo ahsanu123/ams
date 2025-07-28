@@ -1,0 +1,5 @@
+tl: 
+  dotnet test -t 
+
+tr TestName: 
+  cargo test {{TestName}} -- --nocapture

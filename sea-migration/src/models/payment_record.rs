@@ -3,7 +3,18 @@ use chrono::NaiveDate;
 use sea_orm_migration::{async_trait::async_trait, prelude::*, schema::*};
 use sea_query::Table;
 
-#[derive(DeriveMigrationName, GenerateTableEnum)]
+use crate::models::user::UserTable;
+
+pub struct Migration;
+
+impl MigrationName for Migration {
+    fn name(&self) -> &str {
+        "migrating payment record"
+    }
+}
+
+#[allow(dead_code)]
+#[derive(GenerateTableEnum)]
 pub struct PaymentRecord {
     pub id: i64,
     pub user_id: i64,
@@ -12,7 +23,7 @@ pub struct PaymentRecord {
 }
 
 #[async_trait]
-impl MigrationTrait for PaymentRecord {
+impl MigrationTrait for Migration {
     async fn up(&self, manager: &SchemaManager) -> Result<(), DbErr> {
         manager
             .create_table(
@@ -23,6 +34,12 @@ impl MigrationTrait for PaymentRecord {
                     .col(integer(PaymentRecordTable::UserId))
                     .col(date(PaymentRecordTable::Date))
                     .col(float(PaymentRecordTable::PayingAmount))
+                    .foreign_key(
+                        ForeignKeyCreateStatement::new()
+                            .name("fk_paymment-record_user")
+                            .from(PaymentRecordTable::Table, PaymentRecordTable::UserId)
+                            .to(UserTable::Table, UserTable::Id),
+                    )
                     .to_owned(),
             )
             .await

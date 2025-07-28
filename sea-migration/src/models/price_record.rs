@@ -3,7 +3,16 @@ use chrono::NaiveDate;
 use sea_orm_migration::{async_trait::async_trait, prelude::*, schema::*};
 use sea_query::Table;
 
-#[derive(DeriveMigrationName, GenerateTableEnum)]
+pub struct Migration;
+
+impl MigrationName for Migration {
+    fn name(&self) -> &str {
+        "migrating price record"
+    }
+}
+
+#[allow(dead_code)]
+#[derive(GenerateTableEnum)]
 pub struct PriceRecord {
     pub id: i64,
     pub price: f64,
@@ -12,7 +21,7 @@ pub struct PriceRecord {
 }
 
 #[async_trait]
-impl MigrationTrait for PriceRecord {
+impl MigrationTrait for Migration {
     async fn up(&self, manager: &SchemaManager) -> Result<(), DbErr> {
         manager
             .create_table(

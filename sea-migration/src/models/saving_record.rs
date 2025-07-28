@@ -3,7 +3,18 @@ use chrono::NaiveDate;
 use sea_orm_migration::{async_trait::async_trait, prelude::*, schema::*};
 use sea_query::Table;
 
-#[derive(DeriveMigrationName, GenerateTableEnum)]
+use crate::models::user::UserTable;
+
+pub struct Migration;
+
+impl MigrationName for Migration {
+    fn name(&self) -> &str {
+        "migrating saving record"
+    }
+}
+
+#[allow(dead_code)]
+#[derive(GenerateTableEnum)]
 pub struct SavingRecord {
     pub id: i64,
     pub user_id: i64,
@@ -13,7 +24,7 @@ pub struct SavingRecord {
 }
 
 #[async_trait]
-impl MigrationTrait for SavingRecord {
+impl MigrationTrait for Migration {
     async fn up(&self, manager: &SchemaManager) -> Result<(), DbErr> {
         manager
             .create_table(
@@ -25,6 +36,12 @@ impl MigrationTrait for SavingRecord {
                     .col(float(SavingRecordTable::Amount))
                     .col(date(SavingRecordTable::Date))
                     .col(string(SavingRecordTable::Description))
+                    .foreign_key(
+                        ForeignKeyCreateStatement::new()
+                            .name("fk_saving-record_user-id")
+                            .from(SavingRecordTable::Table, SavingRecordTable::UserId)
+                            .to(UserTable::Table, UserTable::Id),
+                    )
                     .to_owned(),
             )
             .await
