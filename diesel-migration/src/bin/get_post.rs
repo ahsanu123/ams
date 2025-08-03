@@ -1,6 +1,4 @@
-// use diesel::query_dsl::methods::{FindDsl, SelectDsl};
-// use diesel::{OptionalExtension, RunQueryDsl, SelectableHelper};
-use diesel::prelude::*;
+use diesel::{OptionalExtension as _, QueryDsl as _, RunQueryDsl as _, SelectableHelper as _};
 use diesel_migration::models::Post;
 use diesel_migration::*;
 use std::env::args;
@@ -31,61 +29,93 @@ fn main() {
 }
 
 mod proto {
-    use diesel::prelude::*;
-    use diesel::query_dsl::methods::FindDsl;
-    use diesel_migration::models::Post;
-    use diesel_migration::*;
+    use diesel::{
+        EqAll, IntoSql, OptionalExtension, QueryDsl, QueryResult, RunQueryDsl, Selectable,
+        SelectableHelper, SqliteConnection, Table,
+        backend::Backend,
+        expression::AsExpression,
+        query_builder::AsQuery,
+        query_dsl::methods::{FindDsl, LimitDsl, LoadQuery, SelectDsl},
+        sql_types::Integer,
+        sqlite::Sqlite,
+    };
+    use diesel_migration::{establish_connection, models::Post, schema::posts::dsl::posts};
 
-    pub trait IsQueryDsl<PK>
-    where
-        Self: FindDsl<PK>,
-    {
-        fn check_find(self, id: PK);
+    pub trait AbstractRepository {
+        fn get_byid(self, id: i64, conn: &mut SqliteConnection);
     }
 
-    impl<T, PK> IsQueryDsl<PK> for T
+    impl<'a, T> AbstractRepository for T
     where
-        Self: FindDsl<PK>,
+        T: Table + FindDsl<i64>,
+        <T as FindDsl<i64>>::Output: SelectDsl<<T as Table>::AllColumns>,
+        <<T as FindDsl<i64>>::Output as SelectDsl<<T as Table>::AllColumns>>::Output: LimitDsl,
+        <<<T as FindDsl<i64>>::Output as SelectDsl<<T as Table>::AllColumns>>::Output as LimitDsl>::Output: LoadQuery<'a, SqliteConnection,<T as Table>::AllColumns >
     {
-        fn check_find(self, id: PK) {
-            // self.find(1).
-            todo!()
+        fn get_byid(self, id: i64, conn: &mut SqliteConnection) {
+            let r = self
+                .find(id)
+                .select(T::all_columns())
+                .limit(1)
+                .get_result(conn);
         }
     }
 
-    pub trait AbstractRepository<T>
+    pub fn get_byid<'a, T, PK>(data: T, id: PK, conn: &mut SqliteConnection)
     where
-        T: diesel::Table,
-        Self: diesel::Table,
+        T: Table,
+        T: FindDsl<PK> + AsQuery,
+        T::PrimaryKey: EqAll<PK>,
+    // Source as FindDsl<PK>>::Output;
+    // <T as FindDsl<i64>>::Output:Find<Self, i64>,
+        <T as FindDsl<PK>>::Output: SelectDsl<<T as Table>::AllColumns>,
+        <<T as FindDsl<PK>>::Output as SelectDsl<<T as Table>::AllColumns>>::Output: LimitDsl,
+        <<<T as FindDsl<PK>>::Output as SelectDsl<<T as Table>::AllColumns>>::Output as LimitDsl>::Output: LoadQuery<'a, SqliteConnection,<T as Table>::AllColumns >
     {
-        type Output;
-
-        fn get_byid<PK>(self, id: PK)
-        where
-            Self: Table + FindDsl<PK>;
+        let r = data
+            .find(id)
+            .select(T::all_columns())
+            .limit(1)
+            .get_result(conn);
     }
 
-    impl<T> AbstractRepository<T> for T
+    pub trait EstablishConnectionTrait<Backend = SqliteConnection> {
+        fn create_connection(self) -> Backend;
+    }
+
+    impl<T> EstablishConnectionTrait for T
     where
         T: Table,
     {
-        type Output = i32;
-
-        fn get_byid<PK>(self, id: PK)
-        where
-            Self: Table + QueryDsl,
-        {
-            todo!()
-            // let selection = self.
-            // let data = self.find(id).select();
+        fn create_connection(self) -> SqliteConnection {
+            establish_connection()
         }
     }
 
-    pub fn get() {
-        use diesel_migration::schema::posts::dsl::posts;
-        let connection = &mut establish_connection();
+    // pub fn find_by_id_optional<T, PK, S, M>(
+    //     table: T,
+    //     id: PK,
+    //     conn: &mut SqliteConnection,
+    // ) -> QueryResult<Option<M>>
+    // where
+    //     T: FindDsl<PK>,
+    //     <T as FindDsl<PK>>::Output: SelectDsl<S>,
+    //     <<T as FindDsl<PK>>::Output as SelectDsl<S>>::Output: LoadQuery<'_, SqliteConnection, M>,
+    //     PK: diesel::expression::AsExpression<<T::Table as Table>::PrimaryKey::SqlType>,
+    // {
+    //     table
+    //         .find(id)
+    //         .select(S::default()) // OR pass `S` in as a parameter
+    //         .first::<M>(conn)
+    //         .optional()
+    // }
 
-        // let p = posts.check_find();
-        // let post = posts.get_byid::<Post>(1);
+    fn hoho() {
+        let conn = &mut posts.create_connection();
+        // let res = posts.get_byid(1);
+        // let res = get_byid(
+        //     1,
+        //     conn,
+        // );
     }
 }
