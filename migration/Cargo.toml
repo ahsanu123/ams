@@ -5,24 +5,15 @@ edition = "2021"
 publish = false
 
 [lib]
-name = "ams_migration"
+name = "migration"
 path = "src/lib.rs"
 
-[dev-dependencies]
-tokio = { version = "1.47.0", features = ["full"] }
-
 [dependencies]
-ams_macro = { path = "../macro" }
 async-std = { version = "1", features = ["attributes", "tokio1"] }
-chrono = "0.4.41"
-sea-orm = { version = "1.1.14", features = ["macros"] }
-sea-query = "0.32.6"
 
 [dependencies.sea-orm-migration]
-version = "1.1.14"
+version = "1.1.0"
 features = [
-  "runtime-tokio-rustls",
-  "sqlx-sqlite",
   # Enable at least one `ASYNC_RUNTIME` and `DATABASE_DRIVER` feature if you want to run migration via CLI.
   # View the list of supported features at https://www.sea-ql.org/SeaORM/docs/install-and-config/database-and-async-runtime.
   # e.g.
