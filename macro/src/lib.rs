@@ -1,5 +1,6 @@
 use proc_macro::TokenStream;
 
+mod generate_crud_macro;
 mod generate_diesel_table_macro;
 mod generate_no_id_struct_macro;
 mod generate_table_enum_macro;

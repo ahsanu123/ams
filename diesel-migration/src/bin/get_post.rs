@@ -15,8 +15,6 @@ fn main() {
 
     let connection = &mut establish_connection();
 
-    let po = posts::table();
-
     let post = posts
         .find(post_id)
         .select(Post::as_select())
@@ -27,20 +25,5 @@ fn main() {
         Ok(Some(post)) => println!("Post with id: {} has a title: {}", post.id, post.title),
         Ok(None) => println!("Unable to find post {}", post_id),
         Err(_) => println!("An error occured while fetching post {}", post_id),
-    }
-}
-
-mod proto {
-    use diesel::{associations::HasTable, prelude::*, result::Error, sqlite::Sqlite};
-
-    pub trait Repository<T>: HasTable
-    where
-        T: Queryable<<T as Selectable<Sqlite>>::SelectExpression, Sqlite>
-            + Selectable<Sqlite>
-            + Sized,
-    {
-        fn get_by_id(conn: &mut SqliteConnection, id: i32) -> Result<T, Error> {
-            todo!()
-        }
     }
 }

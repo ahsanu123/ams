@@ -17,3 +17,17 @@ pub struct NewPost<'a> {
     pub title: &'a str,
     pub body: &'a str,
 }
+
+mod generated {
+    use super::*;
+    use diesel::result::Error;
+
+    impl posts::dsl::posts {
+        fn get_by_id(self, id: i32, conn: &mut SqliteConnection) -> Result<Option<Post>, Error> {
+            self.find(id)
+                .select(Post::as_select())
+                .first(conn)
+                .optional()
+        }
+    }
+}
