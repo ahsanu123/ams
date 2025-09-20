@@ -1,6 +1,11 @@
+use super::m202509200753_create_user_table::UserTable;
+use super::m202509200811_create_price_history_table::PriceHistoryTable;
 use ams_macro::GenerateTableEnum;
 use chrono::NaiveDateTime;
 use sea_orm_migration::prelude::*;
+
+const TAKING_RECORD_USER_ID_NAME: &str = "FK_taking_record_user_id";
+const TAKING_RECORD_PRICE_ID_NAME: &str = "FK_taking_record_price_id";
 
 #[derive(GenerateTableEnum, Debug)]
 #[warn(dead_code)]
@@ -20,6 +25,26 @@ pub struct Migration;
 #[async_trait::async_trait]
 impl MigrationTrait for Migration {
     async fn up(&self, manager: &SchemaManager) -> Result<(), DbErr> {
+        let taking_record_user_id = &mut ForeignKey::create()
+            .name(TAKING_RECORD_USER_ID_NAME)
+            .from_tbl(TakingRecordTable::Table)
+            .from_col(TakingRecordTable::UserId)
+            .to_tbl(UserTable::Table)
+            .to_col(UserTable::Id)
+            .on_delete(ForeignKeyAction::Cascade)
+            .on_update(ForeignKeyAction::Cascade)
+            .to_owned();
+
+        let taking_record_price_id = &mut ForeignKey::create()
+            .name(TAKING_RECORD_PRICE_ID_NAME)
+            .from_tbl(TakingRecordTable::Table)
+            .from_col(TakingRecordTable::PriceId)
+            .to_tbl(PriceHistoryTable::Table)
+            .to_col(PriceHistoryTable::Id)
+            .on_delete(ForeignKeyAction::Cascade)
+            .on_update(ForeignKeyAction::Cascade)
+            .to_owned();
+
         manager
             .create_table(
                 Table::create()
@@ -38,6 +63,8 @@ impl MigrationTrait for Migration {
                     .col(ColumnDef::new(TakingRecordTable::ProductionDate).date_time())
                     .col(ColumnDef::new(TakingRecordTable::TakenDate).date_time())
                     .col(ColumnDef::new(TakingRecordTable::Description).text())
+                    .foreign_key(taking_record_price_id)
+                    .foreign_key(taking_record_user_id)
                     .to_owned(),
             )
             .await

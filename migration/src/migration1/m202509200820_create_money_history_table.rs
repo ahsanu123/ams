@@ -1,6 +1,9 @@
+use super::m202509200753_create_user_table::UserTable;
 use ams_macro::GenerateTableEnum;
 use chrono::NaiveDateTime;
 use sea_orm_migration::prelude::*;
+
+const MONEY_HISTORY_USER_ID_NAME: &str = "FK_money_history_user_id";
 
 #[derive(GenerateTableEnum, Debug)]
 #[warn(dead_code)]
@@ -18,6 +21,15 @@ pub struct Migration;
 #[async_trait::async_trait]
 impl MigrationTrait for Migration {
     async fn up(&self, manager: &SchemaManager) -> Result<(), DbErr> {
+        let money_history_user_id = &mut ForeignKey::create()
+            .name(MONEY_HISTORY_USER_ID_NAME)
+            .from_tbl(MoneyHistoryTable::Table)
+            .from_col(MoneyHistoryTable::UserId)
+            .to_tbl(UserTable::Table)
+            .to_col(UserTable::Id)
+            .on_delete(ForeignKeyAction::Cascade)
+            .on_update(ForeignKeyAction::Cascade)
+            .to_owned();
         manager
             .create_table(
                 Table::create()
@@ -34,6 +46,7 @@ impl MigrationTrait for Migration {
                     .col(ColumnDef::new(MoneyHistoryTable::Date).date_time())
                     .col(ColumnDef::new(MoneyHistoryTable::MoneyAmount).big_integer())
                     .col(ColumnDef::new(MoneyHistoryTable::Description).big_integer())
+                    .foreign_key(money_history_user_id)
                     .to_owned(),
             )
             .await

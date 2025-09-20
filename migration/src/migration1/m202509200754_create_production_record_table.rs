@@ -1,6 +1,11 @@
+use super::m202509200811_create_price_history_table::PriceHistoryTable;
+use super::m202509200818_create_soybean_price_history_table::SoybeanPriceHistoryTable;
 use ams_macro::GenerateTableEnum;
-use chrono::{NaiveDate, NaiveDateTime};
+use chrono::NaiveDateTime;
 use sea_orm_migration::prelude::*;
+
+const PRODUCTION_RECORD_PRICE_ID_NAME: &str = "FK_production_record_price_id";
+const PRODUCTION_RECORD_SOYBEAN_PRICE_ID_NAME: &str = "FK_production_record_soybean_price_id";
 
 #[derive(GenerateTableEnum, Debug)]
 #[warn(dead_code)]
@@ -18,6 +23,25 @@ pub struct Migration;
 #[async_trait::async_trait]
 impl MigrationTrait for Migration {
     async fn up(&self, manager: &SchemaManager) -> Result<(), DbErr> {
+        let production_record_user_id = &mut ForeignKey::create()
+            .name(PRODUCTION_RECORD_PRICE_ID_NAME)
+            .from_tbl(ProductionRecordTable::Table)
+            .from_col(ProductionRecordTable::DregPriceId)
+            .to_tbl(PriceHistoryTable::Table)
+            .to_col(PriceHistoryTable::Id)
+            .on_delete(ForeignKeyAction::Cascade)
+            .on_update(ForeignKeyAction::Cascade)
+            .to_owned();
+
+        let production_record_price_id = &mut ForeignKey::create()
+            .name(PRODUCTION_RECORD_SOYBEAN_PRICE_ID_NAME)
+            .from_tbl(ProductionRecordTable::Table)
+            .from_col(ProductionRecordTable::SoybeanPriceId)
+            .to_tbl(SoybeanPriceHistoryTable::Table)
+            .to_col(SoybeanPriceHistoryTable::Id)
+            .on_delete(ForeignKeyAction::Cascade)
+            .on_update(ForeignKeyAction::Cascade)
+            .to_owned();
         manager
             .create_table(
                 Table::create()
@@ -34,6 +58,8 @@ impl MigrationTrait for Migration {
                     .col(ColumnDef::new(ProductionRecordTable::Amount).big_integer())
                     .col(ColumnDef::new(ProductionRecordTable::DregPriceId).big_unsigned())
                     .col(ColumnDef::new(ProductionRecordTable::SoybeanPriceId).big_unsigned())
+                    .foreign_key(production_record_price_id)
+                    .foreign_key(production_record_user_id)
                     .to_owned(),
             )
             .await
