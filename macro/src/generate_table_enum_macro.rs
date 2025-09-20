@@ -34,7 +34,7 @@ pub fn derive(input: TokenStream) -> TokenStream {
             });
 
             let expanded = quote! {
-                use sea_query::Iden;
+                use sea_orm::sea_query::Iden;
                 #[derive(Debug, Clone, Copy, Iden)]
                 pub enum #enum_name {
                     #(#fields),*

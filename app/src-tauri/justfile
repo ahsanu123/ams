@@ -1,0 +1,2 @@
+tr testName: 
+  cargo test {{testName}} -- --nocapture

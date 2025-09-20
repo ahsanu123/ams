@@ -23,4 +23,5 @@ features = [
   # "sqlx-postgres",         # `DATABASE_DRIVER` feature
   "sqlx-sqlite", 
   "runtime-tokio-rustls",  # `ASYNC_RUNTIME` feature
+  "with-chrono"
 ]
