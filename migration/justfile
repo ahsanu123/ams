@@ -1,2 +1,5 @@
 run: 
   RUST_BACKTRACE=1 cargo run
+
+gen-entity:
+  DATABASE_URL=sqlite://./ams.sqlite?mode=rwc sea-orm-cli generate entity  -o ./entity/
