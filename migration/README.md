@@ -1,3 +1,9 @@
+# Workflow for this sqlite db 
+- update migration as needed
+- run migration up/down as needed, it will create sqlite db in `src-tauri`
+- run generate entity, it also saved i `src-tauri` 
+- tauri will bundle the sqlite db on final executable
+
 # Running Migrator CLI
 
 - Generate a new migration file

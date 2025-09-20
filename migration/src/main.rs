@@ -1,10 +1,21 @@
-use migration::sea_orm;
+use std::fs;
+use std::path::Path;
+
+use migration::sea_orm::Database;
 use migration::{Migrator, MigratorTrait};
 
 #[async_std::main]
 async fn main() {
-    let path = "sqlite://./ams.sqlite?mode=rwc";
-    let connection = sea_orm::Database::connect(path).await.unwrap();
+    let database_path = "./../app/src-tauri/ams.sqlite";
 
+    if let Some(parent) = Path::new(database_path).parent() {
+        fs::create_dir_all(parent).unwrap()
+    }
+
+    let sqlite_file = format!("sqlite://{database_path}?mode=rwc");
+    let connection = Database::connect(sqlite_file).await.unwrap();
+
+    // TODO: think on how to migrate old data into new table
+    // Migrator::down(&connection, None).await.unwrap();
     Migrator::up(&connection, None).await.unwrap();
 }

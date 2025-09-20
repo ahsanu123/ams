@@ -1,5 +1,10 @@
+# migrate and generate entity
+mage:
+  just run 
+  just gen-entity
+
 run: 
   RUST_BACKTRACE=1 cargo run
 
 gen-entity:
-  DATABASE_URL=sqlite://./ams.sqlite?mode=rwc sea-orm-cli generate entity  -o ./entity/
+  DATABASE_URL=sqlite://../app/src-tauri/ams.sqlite?mode=rwc sea-orm-cli generate entity  -o ./../app/src-tauri/src/entity/

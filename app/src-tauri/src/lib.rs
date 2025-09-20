@@ -2,6 +2,7 @@
 
 pub mod authentication;
 pub mod commands;
+pub mod entity;
 pub mod helper;
 pub mod migration;
 pub mod model;
