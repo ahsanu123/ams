@@ -3,11 +3,9 @@
 pub mod authentication;
 pub mod commands;
 pub mod helper;
-pub mod migration;
-pub mod model;
-pub mod query;
 pub mod repository;
 pub mod response;
+pub mod seeds;
 
 // #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {

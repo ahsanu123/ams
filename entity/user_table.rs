@@ -17,12 +17,20 @@ pub struct Model {
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
 pub enum Relation {
+    #[sea_orm(has_many = "super::hash_password_table::Entity")]
+    HashPasswordTable,
     #[sea_orm(has_many = "super::money_history_table::Entity")]
     MoneyHistoryTable,
     #[sea_orm(has_many = "super::payment_history_table::Entity")]
     PaymentHistoryTable,
     #[sea_orm(has_many = "super::taking_record_table::Entity")]
     TakingRecordTable,
+}
+
+impl Related<super::hash_password_table::Entity> for Entity {
+    fn to() -> RelationDef {
+        Relation::HashPasswordTable.def()
+    }
 }
 
 impl Related<super::money_history_table::Entity> for Entity {

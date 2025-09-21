@@ -17,6 +17,7 @@ impl MigratorTrait for Migrator {
             Box::new(migration1::m202509200804_create_taking_record_table::Migration),
             Box::new(migration1::m202509200815_create_payment_history_table::Migration),
             Box::new(migration1::m202509200820_create_money_history_table::Migration),
+            Box::new(migration1::m202509211820_create_password_hash_table::Migration),
             // migration2
             // Box::new(migration2::m202509200832_create_foreign_key_taking_record::Migration),
             // Box::new(migration2::m202509200903_create_foreign_key_production_record::Migration),

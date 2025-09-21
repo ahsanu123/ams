@@ -2,6 +2,7 @@
 
 pub mod prelude;
 
+pub mod hash_password_table;
 pub mod money_history_table;
 pub mod payment_history_table;
 pub mod price_history_table;

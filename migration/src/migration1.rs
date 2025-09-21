@@ -5,3 +5,4 @@ pub mod m202509200811_create_price_history_table;
 pub mod m202509200815_create_payment_history_table;
 pub mod m202509200818_create_soybean_price_history_table;
 pub mod m202509200820_create_money_history_table;
+pub mod m202509211820_create_password_hash_table;
