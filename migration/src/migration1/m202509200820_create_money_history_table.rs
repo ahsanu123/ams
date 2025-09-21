@@ -42,10 +42,26 @@ impl MigrationTrait for Migration {
                             .auto_increment()
                             .primary_key(),
                     )
-                    .col(ColumnDef::new(MoneyHistoryTable::UserId).big_unsigned())
-                    .col(ColumnDef::new(MoneyHistoryTable::Date).date_time())
-                    .col(ColumnDef::new(MoneyHistoryTable::MoneyAmount).big_integer())
-                    .col(ColumnDef::new(MoneyHistoryTable::Description).big_integer())
+                    .col(
+                        ColumnDef::new(MoneyHistoryTable::UserId)
+                            .big_unsigned()
+                            .not_null(),
+                    )
+                    .col(
+                        ColumnDef::new(MoneyHistoryTable::Date)
+                            .date_time()
+                            .not_null(),
+                    )
+                    .col(
+                        ColumnDef::new(MoneyHistoryTable::MoneyAmount)
+                            .big_integer()
+                            .not_null(),
+                    )
+                    .col(
+                        ColumnDef::new(MoneyHistoryTable::Description)
+                            .big_integer()
+                            .not_null(),
+                    )
                     .foreign_key(money_history_user_id)
                     .to_owned(),
             )

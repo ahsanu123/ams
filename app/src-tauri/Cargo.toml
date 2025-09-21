@@ -6,8 +6,12 @@ authors = ["Ahsanu Amala"]
 edition = "2021"
 
 [lib]
+# staticlib is for android/ios 
+# crate-type = ["staticlib", "cdylib", "rlib"]
+#
+# use this crate-type make rust analyzer faster 
+crate-type = ["rlib"]
 name = "ams_lib"
-crate-type = ["staticlib", "cdylib", "rlib"]
 proc-macro = true
 
 [dependencies]
@@ -32,13 +36,7 @@ sea-orm = { version = "1.1.16", features = [
   "macros", 
   "with-chrono"
 ] }
-# sea-query = "0.32.1"
-# sea-query-binder = { version = "0", features = [
-#   "sqlx-sqlite",
-#   "with-chrono",
-#   "with-json",
-#   "with-time",
-# ] }
+async-once-cell = "0.5.4"
 
 [build-dependencies]
 tauri-build = { version = "2", features = [] }

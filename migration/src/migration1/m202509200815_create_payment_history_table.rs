@@ -44,12 +44,36 @@ impl MigrationTrait for Migration {
                             .auto_increment()
                             .primary_key(),
                     )
-                    .col(ColumnDef::new(PaymentHistoryTable::UserId).big_unsigned())
-                    .col(ColumnDef::new(PaymentHistoryTable::Date).date_time())
-                    .col(ColumnDef::new(PaymentHistoryTable::BillAmount).big_integer())
-                    .col(ColumnDef::new(PaymentHistoryTable::InitialMoney).big_integer())
-                    .col(ColumnDef::new(PaymentHistoryTable::EndMoney).big_integer())
-                    .col(ColumnDef::new(PaymentHistoryTable::AddedMoney).big_integer())
+                    .col(
+                        ColumnDef::new(PaymentHistoryTable::UserId)
+                            .big_unsigned()
+                            .not_null(),
+                    )
+                    .col(
+                        ColumnDef::new(PaymentHistoryTable::Date)
+                            .date_time()
+                            .not_null(),
+                    )
+                    .col(
+                        ColumnDef::new(PaymentHistoryTable::BillAmount)
+                            .big_integer()
+                            .not_null(),
+                    )
+                    .col(
+                        ColumnDef::new(PaymentHistoryTable::InitialMoney)
+                            .big_integer()
+                            .not_null(),
+                    )
+                    .col(
+                        ColumnDef::new(PaymentHistoryTable::EndMoney)
+                            .big_integer()
+                            .not_null(),
+                    )
+                    .col(
+                        ColumnDef::new(PaymentHistoryTable::AddedMoney)
+                            .big_integer()
+                            .not_null(),
+                    )
                     .foreign_key(payment_history_user_id)
                     .to_owned(),
             )

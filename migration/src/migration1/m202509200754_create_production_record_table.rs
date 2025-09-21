@@ -54,10 +54,26 @@ impl MigrationTrait for Migration {
                             .auto_increment()
                             .primary_key(),
                     )
-                    .col(ColumnDef::new(ProductionRecordTable::Date).date_time())
-                    .col(ColumnDef::new(ProductionRecordTable::Amount).big_integer())
-                    .col(ColumnDef::new(ProductionRecordTable::DregPriceId).big_unsigned())
-                    .col(ColumnDef::new(ProductionRecordTable::SoybeanPriceId).big_unsigned())
+                    .col(
+                        ColumnDef::new(ProductionRecordTable::Date)
+                            .date_time()
+                            .not_null(),
+                    )
+                    .col(
+                        ColumnDef::new(ProductionRecordTable::Amount)
+                            .big_integer()
+                            .not_null(),
+                    )
+                    .col(
+                        ColumnDef::new(ProductionRecordTable::DregPriceId)
+                            .big_unsigned()
+                            .not_null(),
+                    )
+                    .col(
+                        ColumnDef::new(ProductionRecordTable::SoybeanPriceId)
+                            .big_unsigned()
+                            .not_null(),
+                    )
                     .foreign_key(production_record_price_id)
                     .foreign_key(production_record_user_id)
                     .to_owned(),

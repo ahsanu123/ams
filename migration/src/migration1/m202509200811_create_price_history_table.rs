@@ -28,8 +28,16 @@ impl MigrationTrait for Migration {
                             .auto_increment()
                             .primary_key(),
                     )
-                    .col(ColumnDef::new(PriceHistoryTable::CreatedDate).date_time())
-                    .col(ColumnDef::new(PriceHistoryTable::Price).big_integer())
+                    .col(
+                        ColumnDef::new(PriceHistoryTable::CreatedDate)
+                            .date_time()
+                            .not_null(),
+                    )
+                    .col(
+                        ColumnDef::new(PriceHistoryTable::Price)
+                            .big_integer()
+                            .not_null(),
+                    )
                     .to_owned(),
             )
             .await

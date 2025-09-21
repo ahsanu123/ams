@@ -7,12 +7,12 @@ use sea_orm::entity::prelude::*;
 pub struct Model {
     #[sea_orm(primary_key)]
     pub id: i32,
-    #[sea_orm(column_type = "Text", nullable)]
-    pub username: Option<String>,
-    pub is_active: Option<bool>,
-    pub is_admin: Option<bool>,
-    pub created_date: Option<DateTime>,
-    pub updated_date: Option<DateTime>,
+    #[sea_orm(column_type = "Text")]
+    pub username: String,
+    pub is_active: bool,
+    pub is_admin: bool,
+    pub created_date: DateTime,
+    pub updated_date: DateTime,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]

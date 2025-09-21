@@ -1,10 +1,24 @@
+# NOTE: 
+# delete sqlite file before run `mage` command
+
 # migrate and generate entity
 mage:
   just run 
+  just delete-old-entity
   just gen-entity
+
+delete-old-entity: 
+  find ./../entity/ -type f \
+    ! -name 'Cargo.toml' \
+    ! -name 'Cargo.lock' \
+    ! -name '.gitignore' \
+    -delete
 
 run: 
   RUST_BACKTRACE=1 cargo run
 
 gen-entity:
   DATABASE_URL=sqlite://../app/src-tauri/ams.sqlite?mode=rwc sea-orm-cli generate entity  -o ./../entity/ --lib
+
+delete-database-file:
+  rm ../app/src-tauri/ams.sqlite

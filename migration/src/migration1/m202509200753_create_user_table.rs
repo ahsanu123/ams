@@ -31,11 +31,19 @@ impl MigrationTrait for Migration {
                             .auto_increment()
                             .primary_key(),
                     )
-                    .col(ColumnDef::new(UserTable::Username).text())
-                    .col(ColumnDef::new(UserTable::IsActive).boolean())
-                    .col(ColumnDef::new(UserTable::IsAdmin).boolean())
-                    .col(ColumnDef::new(UserTable::CreatedDate).date_time())
-                    .col(ColumnDef::new(UserTable::UpdatedDate).date_time())
+                    .col(ColumnDef::new(UserTable::Username).text().not_null())
+                    .col(ColumnDef::new(UserTable::IsActive).boolean().not_null())
+                    .col(ColumnDef::new(UserTable::IsAdmin).boolean().not_null())
+                    .col(
+                        ColumnDef::new(UserTable::CreatedDate)
+                            .date_time()
+                            .not_null(),
+                    )
+                    .col(
+                        ColumnDef::new(UserTable::UpdatedDate)
+                            .date_time()
+                            .not_null(),
+                    )
                     .to_owned(),
             )
             .await

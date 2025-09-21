@@ -1,2 +1,5 @@
 tr testName: 
   cargo test {{testName}} -- --nocapture
+
+tl: 
+  cargo test -- --list

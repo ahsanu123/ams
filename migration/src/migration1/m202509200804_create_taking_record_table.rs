@@ -57,12 +57,36 @@ impl MigrationTrait for Migration {
                             .auto_increment()
                             .primary_key(),
                     )
-                    .col(ColumnDef::new(TakingRecordTable::UserId).big_unsigned())
-                    .col(ColumnDef::new(TakingRecordTable::PriceId).big_unsigned())
-                    .col(ColumnDef::new(TakingRecordTable::Amount).big_unsigned())
-                    .col(ColumnDef::new(TakingRecordTable::ProductionDate).date_time())
-                    .col(ColumnDef::new(TakingRecordTable::TakenDate).date_time())
-                    .col(ColumnDef::new(TakingRecordTable::Description).text())
+                    .col(
+                        ColumnDef::new(TakingRecordTable::UserId)
+                            .big_unsigned()
+                            .not_null(),
+                    )
+                    .col(
+                        ColumnDef::new(TakingRecordTable::PriceId)
+                            .big_unsigned()
+                            .not_null(),
+                    )
+                    .col(
+                        ColumnDef::new(TakingRecordTable::Amount)
+                            .big_unsigned()
+                            .not_null(),
+                    )
+                    .col(
+                        ColumnDef::new(TakingRecordTable::ProductionDate)
+                            .date_time()
+                            .not_null(),
+                    )
+                    .col(
+                        ColumnDef::new(TakingRecordTable::TakenDate)
+                            .date_time()
+                            .not_null(),
+                    )
+                    .col(
+                        ColumnDef::new(TakingRecordTable::Description)
+                            .text()
+                            .not_null(),
+                    )
                     .foreign_key(taking_record_price_id)
                     .foreign_key(taking_record_user_id)
                     .to_owned(),
