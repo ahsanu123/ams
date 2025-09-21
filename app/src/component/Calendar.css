@@ -12,6 +12,12 @@
   align-items: center;
   padding: 10px 0px;
 
+  >div {
+    display: flex;
+    align-items: center;
+    column-gap: 10px;
+  }
+
   select {
     border: 1.5px black solid;
     margin: 0;

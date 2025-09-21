@@ -24,13 +24,20 @@ export default function Calendar(props: CalendarProps) {
   } = props
 
   const products = useMainLayoutStore(state => state.products);
-  const setProducts = useMainLayoutStore(state => state.setProducts)
   const date = useMainLayoutStore(state => state.selectedMonth)
   const setDate = useMainLayoutStore(state => state.setSelectedDate)
 
   const calendarCells = useMainLayoutStore(state => state.calendarCells)
   const setCalendarCells = useMainLayoutStore(state => state.setCalendarCells)
 
+  const lastSelectedUser = useMainLayoutStore(state => state.lastSelectedUser)
+
+  const handleOnCurrentMonthClicked = () => {
+    const newDate = new Date()
+
+    setDate(newDate)
+    setCalendarCells(generateCalendarObject(newDate, products))
+  }
 
   const handleOnPrevMonthClicked = () => {
     const newDate = addMonths(date, -1)
@@ -59,12 +66,19 @@ export default function Calendar(props: CalendarProps) {
       <div
         className="calendar-heading"
       >
-        <h5>
-          {headerText}
-        </h5>
-      </div>
-      {showNavigator && (
         <div>
+          <h5>
+            {headerText}
+          </h5>
+
+          <button
+            onClick={() => handleOnCurrentMonthClicked()}
+          >
+            Bulan Sekarang
+          </button>
+
+          {" "}
+
           <button
             onClick={() => handleOnPrevMonthClicked()}
           >
@@ -79,7 +93,12 @@ export default function Calendar(props: CalendarProps) {
             Bulan Selanjutnya
           </button>
         </div>
-      )}
+
+        <div>
+          <b>{lastSelectedUser?.username}</b>
+        </div>
+      </div>
+
 
       <div
         className="user-information"

@@ -1,43 +1,8 @@
-import type { ProductRecord, User } from "@/model";
-import type { InvokeCommand } from "./invoke-interface";
+import type { ProductInvokeCommand } from "@/commands";
+import type { Product, User } from "@/model";
 import { isSameMonth } from "date-fns";
 
-const mockUser: User[] = [
-  {
-    id: 1,
-    username: "Paijo",
-    isActive: true,
-    money: 4000000,
-    bill: 0,
-    isAdmin: false
-  },
-  {
-    id: 2,
-    username: "Tukiman",
-    isActive: true,
-    money: 2500000,
-    bill: 0,
-    isAdmin: false
-  },
-  {
-    id: 3,
-    username: "Painem",
-    isActive: true,
-    money: 6000000,
-    bill: 0,
-    isAdmin: false
-  },
-  {
-    id: 4,
-    username: "Admin",
-    isActive: true,
-    money: 0,
-    bill: 0,
-    isAdmin: true
-  }
-]
-
-const mockProductRecord: ProductRecord = [
+const mockProductRecord: Array<Product> = [
   {
     id: 1,
     userId: 1,
@@ -120,28 +85,16 @@ const mockProductRecord: ProductRecord = [
   }
 ]
 
-export const mockCommand: InvokeCommand = {
-  getProductRecord: (): Promise<ProductRecord> => {
+export const mockProductCommand: ProductInvokeCommand = {
+  getProductRecord: (): Promise<Array<Product>> => {
     return Promise.resolve(mockProductRecord);
-  },
-
-  getUserById: function (id: number): Promise<User> {
-    const user = mockUser.find((user) => user.id === id);
-
-    if (user) return Promise.resolve(user);
-    else return Promise.reject("User not found");
-  },
-
-  getUsers: function (): Promise<User[]> {
-    const userNoAdmin = mockUser.filter((user) => !user.isAdmin);
-    return Promise.resolve(userNoAdmin);
   },
 
   getProductPrice: function (): Promise<number> {
     return Promise.resolve(11000);
   },
 
-  getAllProductOfThisMonth: function (date: Date): Promise<ProductRecord> {
+  getAllProductOfThisMonth: function (date: Date): Promise<Array<Product>> {
     const productOfThisMonth = mockProductRecord.filter((product) => isSameMonth(product.takenDate, date))
     return Promise.resolve(productOfThisMonth)
   }

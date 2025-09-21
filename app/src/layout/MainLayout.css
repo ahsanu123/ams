@@ -3,6 +3,7 @@ header {
   justify-content: space-between;
 
   h1,
+  h2,
   img {
     margin: 0;
   }
@@ -44,6 +45,16 @@ footer {
 .button-transparent {
   border: 0px;
   background-color: transparent;
+  border: none;
+  box-shadow: none;
+}
+
+.button-transparent:hover {
+  border: none;
+  box-shadow: none;
+  border: 0px;
+  top: 0px;
+  background: transparent;
 }
 
 .button-icon-with-background {

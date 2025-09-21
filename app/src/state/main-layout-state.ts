@@ -18,6 +18,9 @@ interface MainLayoutStore {
   user?: User,
   setUser: (user: User | undefined) => void,
 
+  lastSelectedUser?: User,
+  setLastSelectedUser: (user: User | undefined) => void,
+
   currentPage: AppRoutes,
   pageRoutes: string[],
   setPage: (pageRoute: AppRoutes) => void,
@@ -37,7 +40,7 @@ interface MainLayoutStore {
   setAllProductOfThisMonth: (products: Array<Product>) => void
 
   headerInformation: HeaderInformation,
-  setHeaderInformation: (information: HeaderInformation) => void;
+  setHeaderInformation: (information: HeaderInformation) => void
 
   isAdmin: boolean,
   setIsAdmin: (admin: boolean) => void
@@ -186,6 +189,13 @@ export const useMainLayoutStore = create<MainLayoutStore>()(
     setCalendarCells: (calendarCells) => {
       set((state) => {
         state.calendarCells = calendarCells
+      })
+    },
+
+    lastSelectedUser: undefined,
+    setLastSelectedUser: (user) => {
+      set((state) => {
+        state.lastSelectedUser = user
       })
     }
 

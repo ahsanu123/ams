@@ -76,6 +76,7 @@ export default function VirtualKeypad(props: VirtualKeyboardProps) {
       }
 
       <input
+        id='virtual-keypad-input'
         type={inputType}
         value={value ?? 0}
         onChange={(event) => handleOnNumberClick(parseInt(event.target.value))}

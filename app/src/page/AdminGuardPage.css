@@ -1,10 +1,18 @@
 .admin-guard {
   min-height: 780px;
 
+  h2 {
+    margin: 0;
+  }
+
   .main-container {
     display: flex;
     gap: 10px;
     justify-content: space-between;
+
+    >div {
+      width: 100%;
+    }
   }
 
   .list-admin-menu {
@@ -14,6 +22,7 @@
 
     button {
       font-size: 1.3em;
+      padding: 25px 0;
     }
   }
 }

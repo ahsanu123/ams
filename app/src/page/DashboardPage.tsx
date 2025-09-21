@@ -1,16 +1,20 @@
 import Calendar from "../component/Calendar";
 import { useMainLayoutStore } from "@/state";
-import { getCommand, mockCommand } from "@/commands";
+import { getProductCommand, getUserCommand } from "@/commands";
 import type { Route } from "./+types/DashboardPage";
 import { useEffect } from "react";
 import './DashboardPage.css'
+import VirtualKeypad from "@/component/VirtualKeypad";
+import { EMPTY_HEADER_INFORMATION } from "@/constants";
+import type { User } from "@/model";
 
 export async function clientLoader() {
-  const command = getCommand();
+  const productCommand = getProductCommand();
+  const userCommand = getUserCommand();
 
-  const listUser = await command.getUsers()
-  const productRecord = await command.getProductRecord()
-  const productPrice = await command.getProductPrice()
+  const listUser = await userCommand.getUsers()
+  const productRecord = await productCommand.getProductRecord()
+  const productPrice = await productCommand.getProductPrice()
 
   return {
     listUser,
@@ -29,25 +33,75 @@ export default function DashboardPage({
     productPrice,
   } = loaderData
 
-  const command = getCommand();
+  const setHeaderInformation = useMainLayoutStore(state => state.setHeaderInformation)
 
-  const selectedMonth = useMainLayoutStore(state => state.selectedMonth)
-  const setAllProductOfThisMonth = useMainLayoutStore(state => state.setAllProductOfThisMonth)
+  const user = useMainLayoutStore(state => state.user)
+  const setUser = useMainLayoutStore(state => state.setUser)
 
-  // TODO: Think better way to do this
-  const getAllProduct = async () => {
-    const allProductOfThisMonth = await command.getAllProductOfThisMonth(selectedMonth)
-    setAllProductOfThisMonth(allProductOfThisMonth)
-  }
+  const setLastSelectedUser = useMainLayoutStore(state => state.setLastSelectedUser)
+  // const command = getCommand();
+  //
+  // const selectedMonth = useMainLayoutStore(state => state.selectedMonth)
+  // const setAllProductOfThisMonth = useMainLayoutStore(state => state.setAllProductOfThisMonth)
+  //
+  // // TODO: Think better way to do this
+  // const getAllProduct = async () => {
+  //   const allProductOfThisMonth = await command.getAllProductOfThisMonth(selectedMonth)
+  //   setAllProductOfThisMonth(allProductOfThisMonth)
+  // }
+  //
+  // useEffect(() => {
+  //   useMainLayoutStore.setState({
+  //     products: productRecord,
+  //     listUser,
+  //     productPrice,
+  //   })
+  //   getAllProduct()
+  // }, [])
 
   useEffect(() => {
-    useMainLayoutStore.setState({
-      products: productRecord,
-      listUser,
-      productPrice,
-    })
-    getAllProduct()
+    setHeaderInformation(EMPTY_HEADER_INFORMATION)
   }, [])
+
+  const handleOnPickDregs = (value: number) => {
+    console.log(`${user?.username} is pick ${value} dregs`)
+
+    setUser(undefined)
+    setHeaderInformation(EMPTY_HEADER_INFORMATION)
+  }
+
+  const handleOnClickUser = (user: User) => {
+    setLastSelectedUser(user)
+    setUser(user)
+    setHeaderInformation({
+      title: user.username,
+      description: 'welcome!'
+    })
+  }
+
+  const showUserSelector = () => (
+    <div className="user-container">
+      {
+        listUser.map((user, index) => (
+          <button
+            key={index}
+            onClick={() => handleOnClickUser(user)}
+          >
+            {user.username}
+          </button>
+        ))
+      }
+    </div>
+  )
+
+  const showVirtualKeypad = () => (
+    <div>
+      <VirtualKeypad
+        inputType='number'
+        handleOnConfirm={handleOnPickDregs}
+      />
+    </div>
+  )
 
   return (
     <>
@@ -55,7 +109,14 @@ export default function DashboardPage({
         className="dashboard-page"
       >
         <main>
-          {/* <Calendar /> */}
+
+          {
+            user ? showVirtualKeypad() : showUserSelector()
+          }
+
+          <div>
+            <Calendar />
+          </div>
         </main>
 
       </div>

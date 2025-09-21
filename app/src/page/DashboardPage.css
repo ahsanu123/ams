@@ -6,8 +6,23 @@
   }
 
   main {
+    display: flex;
+    gap: 10px;
+    justify-content: space-between;
+
     h2 {
       margin-top: 0;
+    }
+
+    .user-container {
+      display: grid;
+      width: 100%;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+
+      button {
+        font-size: 2em;
+      }
     }
   }
 }
