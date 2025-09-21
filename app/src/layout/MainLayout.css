@@ -1,4 +1,6 @@
 header {
+  display: flex;
+  justify-content: space-between;
 
   h1,
   img {
@@ -14,25 +16,19 @@ header {
     }
   }
 
-  .user-profile {
-    position: absolute;
-    top: 40px;
-    text-align: right;
-    right: calc(((100vw - 55em)/2) + 30px);
 
-    h5 {
-      margin: 0;
-    }
+  h5 {
+    margin: 0;
+  }
 
-    sub {
-      display: block;
-    }
+  sub {
+    display: block;
   }
 
 }
 
 body {
-  max-width: 55em;
+  max-width: 90em;
 }
 
 footer {
@@ -48,8 +44,6 @@ footer {
 .button-transparent {
   border: 0px;
   background-color: transparent;
-  top: 10px;
-  float: right;
 }
 
 .button-icon-with-background {

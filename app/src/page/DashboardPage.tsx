@@ -55,7 +55,7 @@ export default function DashboardPage({
         className="dashboard-page"
       >
         <main>
-          <Calendar />
+          {/* <Calendar /> */}
         </main>
 
       </div>

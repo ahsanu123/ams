@@ -1,4 +1,4 @@
-import type { Product, ProductRecord } from "model";
+import type { Product } from "model";
 
 // Helper functions
 const randomInt = (min: number, max: number): number =>
@@ -38,14 +38,14 @@ const randomDescription = (): string => {
 };
 
 // Generate Products
-export const generateMockProduct = (count: number = 50): ProductRecord => {
-  const products: ProductRecord = [];
+export const generateMockProduct = (count: number = 50): Array<Product> => {
+  const products: Array<Product> = [];
 
   for (let i = 1; i <= count; i++) {
     const product: Product = {
       id: i,
       userId: randomInt(1, 10),
-      paid: randomBool(),
+      paid: false,
       productionDate: randomDate(new Date(2024, 0, 1), new Date()),
       takenDate: randomDate(new Date(2024, 0, 1), new Date()),
       price: parseFloat((Math.random() * 100).toFixed(2)),

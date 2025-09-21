@@ -11,7 +11,7 @@ export enum AppRoutes {
 }
 
 export enum SecretRoutes {
-  AdminGuardPage = "admin-guard-page"
+  AdminLoginPage = "admin-guard-page"
 }
 
 export default [
@@ -31,10 +31,10 @@ export default [
     route(`${AppRoutes.PagePrefix}${AppRoutes.AdminPage}`, "./page/AdminPage.tsx", {
       id: AppRoutes.AdminPage
     }),
+    route(`${SecretRoutes.AdminLoginPage}`, "./page/AdminGuardPage.tsx", {
+      id: SecretRoutes.AdminLoginPage
+    })
   ]),
 
-  route(`${SecretRoutes.AdminGuardPage}`, "./page/AdminGuardPage.tsx", {
-    id: SecretRoutes.AdminGuardPage
-  })
 
 ] satisfies RouteConfig;

@@ -1,14 +1,16 @@
 import { create } from 'zustand'
 import { immer } from 'zustand/middleware/immer'
-import type { ProductRecord, Product, User } from 'model'
+import type { Product, User, HeaderInformation } from 'model'
 import { AppRoutes } from '@/routes'
-import { getCookie, type AuthenticationCookieData } from '@/utility'
+import { getCookie, type AuthenticationCookieData, type ICalendarCell } from '@/utility'
+import { generateMockProduct } from '@/mock'
 
 interface MainLayoutStore {
-  products: ProductRecord,
+  products: Array<Product>,
   addProduct: (product: Product) => boolean,
   updateProduct: (id: number, productData: Partial<Product>) => boolean,
   deleteProduct: (id: number) => boolean,
+  setProducts: (products: Array<Product>) => void,
 
   selectedMonth: Date,
   setSelectedDate: (date: Date) => void,
@@ -31,15 +33,24 @@ interface MainLayoutStore {
   productPrice: number,
   setProductPrice: (price: number) => void
 
-  allProductOfThisMonth: ProductRecord,
-  setAllProductOfThisMonth: (products: ProductRecord) => void
+  allProductOfThisMonth: Array<Product>,
+  setAllProductOfThisMonth: (products: Array<Product>) => void
 
+  headerInformation: HeaderInformation,
+  setHeaderInformation: (information: HeaderInformation) => void;
+
+  isAdmin: boolean,
+  setIsAdmin: (admin: boolean) => void
+
+  calendarCells: ICalendarCell[],
+  setCalendarCells: (calendarCells: ICalendarCell[]) => void;
 }
 
 export const useMainLayoutStore = create<MainLayoutStore>()(
   immer((set) => ({
 
-    products: [],
+    // mocked
+    products: generateMockProduct(),
     addProduct: (product) => {
       set((state) => {
         state.products.push(product)
@@ -74,6 +85,12 @@ export const useMainLayoutStore = create<MainLayoutStore>()(
       })
 
       return success
+    },
+
+    setProducts: (products) => {
+      set((state) => {
+        state.products = products
+      })
     },
 
     selectedMonth: new Date(),
@@ -144,6 +161,31 @@ export const useMainLayoutStore = create<MainLayoutStore>()(
     setAllProductOfThisMonth: (products) => {
       set((state) => {
         state.allProductOfThisMonth = products
+      })
+    },
+
+    headerInformation: {
+      title: '',
+      description: ''
+    },
+
+    setHeaderInformation: (information) => {
+      set((state) => {
+        state.headerInformation = information
+      })
+    },
+
+    isAdmin: false,
+    setIsAdmin: (admin) => {
+      set((state) => {
+        state.isAdmin = admin
+      })
+    },
+
+    calendarCells: [],
+    setCalendarCells: (calendarCells) => {
+      set((state) => {
+        state.calendarCells = calendarCells
       })
     }
 

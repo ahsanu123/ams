@@ -8,16 +8,15 @@ import type { Product } from '@/model';
 
 interface CalendarCellProps {
   data: ICalendarCell,
-  adminMode?: boolean,
 }
 
 export default function CalendarCellComponent(props: CalendarCellProps) {
 
   const {
     data,
-    adminMode = false,
   } = props
 
+  const isAdmin = useMainLayoutStore(state => state.isAdmin)
   const setDialogVisibility = useEditPageStore(state => state.setDialogVisibility);
   const isDialogVisible = useEditPageStore(state => state.isDialogVisible);
   const setDialogData = useEditPageStore(state => state.setDialogData);
@@ -26,114 +25,72 @@ export default function CalendarCellComponent(props: CalendarCellProps) {
   const selectedUser = useMainLayoutStore(state => state.user)
   const isUserSelected = !!selectedUser
 
-  const onDetailButtonClick = () => {
-    // TODO:
-    // get other user product from current date
-    // const otherUserProduct = TODO
+  // const onDetailButtonClick = () => {
+  //
+  //   if (selectedUser) {
+  //     const emptyProductRecord: Product = {
+  //       id: 0,
+  //       userId: selectedUser.id,
+  //       paid: false,
+  //       productionDate: data.date!,
+  //       takenDate: data.date!,
+  //       price: productPrice,
+  //       amount: 0,
+  //       description: 'edited by admin'
+  //     }
+  //
+  //     setDialogData({
+  //       product: data.product ?? emptyProductRecord,
+  //       user: selectedUser,
+  //       date: data.date!,
+  //     });
+  //   }
+  //
+  //
+  //   setDialogVisibility(!isDialogVisible)
+  // }
 
-    if (selectedUser) {
-      const emptyProductRecord: Product = {
-        id: 0,
-        userId: selectedUser.id,
-        paid: false,
-        productionDate: data.date!,
-        takenDate: data.date!,
-        price: productPrice,
-        amount: 0,
-        description: 'edited by admin'
-      }
+  const handleOnCellClicked = () => {
+    console.log("iam admin")
 
-      setDialogData({
-        product: data.product ?? emptyProductRecord,
-        user: selectedUser,
-        date: data.date!,
-        otherData: []
-      });
-    }
-
-
-    setDialogVisibility(!isDialogVisible)
   }
-
   const highlightCurrentDay = data.date && isSameDay(data.date, new Date())
 
   const headerLabelComponent = () => (
     <b>{data.headerLabelText}</b>
   )
 
-  const showDateComponent = () => (
+  const dateComponent = () => (
     <>
       {data.product
         ? (
           <div
-            className={`calendar-cell ${highlightCurrentDay ? 'highlight-current-day' : ''}`}
+            onClick={() => isAdmin && handleOnCellClicked()}
+            className={`calendar-cell ${highlightCurrentDay ? 'highlight-current-day' : ''} ${isAdmin ? 'is-admin' : ''}`}
           >
-            <div>
+            <div className='current-day'>
+
               <sub>
-                {data.product.paid ? "✔️" : "💷"}
-                {formatAsRupiah(data.product.price * data.product.amount)}
+                {data.date && format(data.date, "dd", { locale: id })}
               </sub>
             </div>
 
-            <div
-              className="center-cell-item"
-            >
-              {adminMode
-                ? (
-                  <button
-                    className="button-no-padding"
-                    onClick={() => onDetailButtonClick()}
-                    disabled={!isUserSelected}
-                  >
-                    🔧 Details
-                  </button>
-                ) :
-                (
-                  <p>
-                    Ambil {data.product?.amount}
-                  </p>
-                )}
-            </div>
-
-            <div>
-              <sub>
-                {data.date && format(data.date, "dd MMMM yyyy", { locale: id })}
-              </sub>
+            <div className='taking-amount'>
+              <h2>
+                {data.product?.amount}
+              </h2>
             </div>
           </div>
 
         )
         : (
           <div
-            className={`calendar-cell ${highlightCurrentDay ? 'highlight-current-day' : ''}`}
+            onClick={() => isAdmin && handleOnCellClicked()}
+            className={`calendar-cell ${highlightCurrentDay ? 'highlight-current-day' : ''} ${isAdmin ? 'is-admin' : ''}`}
           >
-            <div>
+            <div className='current-day'>
               <sub>
-                <b>Tidak Ambil</b>
-              </sub>
-            </div>
-
-            <div>
-              {adminMode
-                ? (
-                  <button
-                    className="button-no-padding"
-                    onClick={() => onDetailButtonClick()}
-                    disabled={!isUserSelected}
-                  >
-                    🔧 Details
-                  </button>
-                ) :
-                (
-                  <b>
-                    🚫
-                  </b>
-                )}
-            </div>
-
-            <div>
-              <sub>
-                {data.date && format(data.date, "dd MMMM yyyy", { locale: id })}
+                {data.date && format(data.date, "dd", { locale: id })}
               </sub>
             </div>
           </div>
@@ -149,9 +106,6 @@ export default function CalendarCellComponent(props: CalendarCellProps) {
       <h4>
         🚧
       </h4>
-      <sub>
-        Disembunyikan
-      </sub>
     </div>
   )
 
@@ -160,7 +114,7 @@ export default function CalendarCellComponent(props: CalendarCellProps) {
       return headerLabelComponent()
 
     case 'ShowDate':
-      return showDateComponent()
+      return dateComponent()
 
     case 'HiddenDate':
       return hiddenDateComponent()

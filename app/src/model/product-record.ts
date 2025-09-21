@@ -8,4 +8,3 @@ export interface Product {
   amount: number,
   description: string,
 }
-export type ProductRecord = Array<Product>

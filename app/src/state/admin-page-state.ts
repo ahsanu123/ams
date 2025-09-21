@@ -7,6 +7,9 @@ interface AdminPageStore {
   setSelectedYear: (date: Date) => void,
   increaseYear: () => void,
   decreaseYear: () => void,
+
+  loginMessage: string,
+  setLoginMessage: (message: string) => void
 }
 
 export const useAdminPageStore = create<AdminPageStore>()(
@@ -29,6 +32,13 @@ export const useAdminPageStore = create<AdminPageStore>()(
     decreaseYear: () => {
       set((state) => {
         state.selectedYear = addYears(state.selectedYear, -1)
+      })
+    },
+
+    loginMessage: '',
+    setLoginMessage: (message) => {
+      set((state) => {
+        state.loginMessage = message
       })
     }
 

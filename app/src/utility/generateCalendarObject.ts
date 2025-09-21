@@ -1,4 +1,4 @@
-import type { Product, ProductRecord } from "@/model"
+import type { Product } from "@/model"
 import { isSameDay, setDate } from "date-fns"
 
 const TOTAL_DAYS_TO_SHOW = 42
@@ -20,7 +20,7 @@ export interface ICalendarCell {
   type: CellType,
 }
 
-export function generateCalendarObject(inputDate: Date, products: ProductRecord) {
+export function generateCalendarObject(inputDate: Date, products: Array<Product>) {
 
   const currentyear = inputDate.getFullYear()
   const currentMonth = inputDate.getMonth()

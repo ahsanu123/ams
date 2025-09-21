@@ -1,12 +1,9 @@
-import React, { useEffect, useState } from "react"
-import { addMonths, format, isSameMonth } from "date-fns"
+import React, { useEffect } from "react"
+import { addMonths } from "date-fns"
 import CalendarCellComponent from "./CalendarCell"
 import { useMainLayoutStore } from "@/state"
-import { generateCalendarObject, type ICalendarCell } from "@/utility"
-import { id } from "date-fns/locale"
-import { formatAsRupiah } from "@/utility/format-as-rupiah"
+import { generateCalendarObject } from "@/utility"
 import "./Calendar.css"
-import UserSelector from "./UserSelector"
 
 interface CalendarProps {
   showNavigator?: boolean
@@ -27,16 +24,19 @@ export default function Calendar(props: CalendarProps) {
   } = props
 
   const products = useMainLayoutStore(state => state.products);
+  const setProducts = useMainLayoutStore(state => state.setProducts)
   const date = useMainLayoutStore(state => state.selectedMonth)
   const setDate = useMainLayoutStore(state => state.setSelectedDate)
 
-  const [productCellDatas, setProductCell] = useState<ICalendarCell[]>()
+  const calendarCells = useMainLayoutStore(state => state.calendarCells)
+  const setCalendarCells = useMainLayoutStore(state => state.setCalendarCells)
+
 
   const handleOnPrevMonthClicked = () => {
     const newDate = addMonths(date, -1)
 
     setDate(newDate)
-    setProductCell(generateCalendarObject(newDate, products))
+    setCalendarCells(generateCalendarObject(newDate, products))
     onPrevMonthClicked?.(newDate)
   }
 
@@ -44,29 +44,14 @@ export default function Calendar(props: CalendarProps) {
     const newDate = addMonths(date, 1)
 
     setDate(newDate)
-    setProductCell(generateCalendarObject(newDate, products))
+    setCalendarCells(generateCalendarObject(newDate, products))
     onNextMonthClicked?.(newDate)
   }
 
   const headerText = `🌕 ${date.toLocaleDateString("id-id", { month: 'long' })} ${date.toLocaleDateString("id-id", { year: 'numeric' })} ${title ? ` - ${title}` : ""}`
 
-  const totalTake = products
-    .filter((item) => isSameMonth(item.takenDate, date))
-    .map((item) => item.amount)
-    .reduce((a, b) => a + b, 0)
-
-  const unpaidBill = products
-    .filter((item) => isSameMonth(item.takenDate, date) && !item.paid)
-    .map((item) => item.price * item.amount)
-    .reduce((a, b) => a + b, 0)
-
-  const paidBill = products
-    .filter((item) => isSameMonth(item.takenDate, date) && item.paid)
-    .map((item) => item.price * item.amount)
-    .reduce((a, b) => a + b, 0)
-
   useEffect(() => {
-    setProductCell(generateCalendarObject(new Date(), products))
+    setCalendarCells(generateCalendarObject(new Date(), products))
   }, [products])
 
   return (
@@ -77,7 +62,6 @@ export default function Calendar(props: CalendarProps) {
         <h5>
           {headerText}
         </h5>
-        <UserSelector />
       </div>
       {showNavigator && (
         <div>
@@ -100,26 +84,25 @@ export default function Calendar(props: CalendarProps) {
       <div
         className="user-information"
       >
-        <sub>
-          <b>
-            {`Informasi Bulan ${format(date, "MMMM", { locale: id })} : `}
-          </b>
-          📍 Total Ambil <b>{totalTake}</b>, {" "}
-          💷 Tagihan <b>{formatAsRupiah(unpaidBill)}</b>, {" "}
-          ✔️ Terbayar <b>{formatAsRupiah(paidBill)}</b>, {" "}
-        </sub>
+        {/* <sub> */}
+        {/*   <b> */}
+        {/*     {`Informasi Bulan ${format(date, "MMMM", { locale: id })} : `} */}
+        {/*   </b> */}
+        {/*   📍 Total Ambil <b>{totalTake}</b>, {" "} */}
+        {/*   💷 Tagihan <b>{formatAsRupiah(unpaidBill)}</b>, {" "} */}
+        {/*   ✔️ Terbayar <b>{formatAsRupiah(paidBill)}</b>, {" "} */}
+        {/* </sub> */}
       </div>
 
       <div
         className="ams-calendar"
       >
-        {productCellDatas && productCellDatas.map((cell, index) => (
+        {calendarCells && calendarCells.map((cell, index) => (
           <React.Fragment
             key={index}
           >
             <CalendarCellComponent
               data={cell}
-              adminMode={adminMode}
             />
           </React.Fragment>
         ))}
