@@ -1,19 +1,46 @@
-use crate::helper::ENV_VAR;
+use super::database_connection::DATABASE_CONNECTION_POOL;
 use ams_entity::prelude::*;
-use sea_orm::{sqlx::Connection, DatabaseConnection, EntityTrait};
-
-pub trait AbstractRepository {}
+use sea_orm::{Database, DatabaseConnection, EntityTrait, PrimaryKeyTrait};
 
 pub trait GetSqlConnectionTrait {
-    fn get_connection() -> DatabaseConnection;
+    async fn get_connection(self) -> DatabaseConnection;
 }
 
-pub fn get_by_id(id: i32) {
-    // User::find_by_id(id)
+pub trait AbstractRepository<TEntity>
+where
+    TEntity: EntityTrait + GetSqlConnectionTrait,
+{
+    type PrimaryKeyType: Send;
+
+    async fn get_by_id(
+        self,
+        id: Self::PrimaryKeyType,
+    ) -> Result<Option<TEntity::Model>, sea_orm::DbErr>;
 }
 
-pub fn db_conn() {
-    // let mut connection_option = ConnectionOption
+impl<TEntity> GetSqlConnectionTrait for TEntity
+where
+    TEntity: EntityTrait,
+{
+    async fn get_connection(self) -> DatabaseConnection {
+        DATABASE_CONNECTION_POOL.clone()
+    }
+}
+
+impl<TEntity> AbstractRepository<TEntity> for UserTable
+where
+    TEntity: EntityTrait + GetSqlConnectionTrait,
+{
+    type PrimaryKeyType = <TEntity::PrimaryKey as PrimaryKeyTrait>::ValueType;
+
+    async fn get_by_id(
+        self,
+        id: Self::PrimaryKeyType,
+    ) -> Result<Option<<TEntity as EntityTrait>::Model>, sea_orm::DbErr> {
+        let conn = &mut self.get_connection().await;
+
+        TEntity::find_by_id(id).one(conn).await
+    }
 }
 
 #[cfg(test)]

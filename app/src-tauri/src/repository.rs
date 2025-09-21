@@ -4,3 +4,5 @@
 // pub mod record_repository;
 // pub mod user_repository;
 pub mod abstract_repository;
+
+pub(crate) mod database_connection;
