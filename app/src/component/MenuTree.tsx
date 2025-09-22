@@ -51,28 +51,33 @@ export default function MenuTreeComponent() {
           className="list-menu"
         >
           <button
+            className="cmd-button"
             onClick={() => setActiveMenu(undefined)}
           >
-            back
+            Root Menu
           </button>
-          {
-            menus.children ?
-              menus.children.map((child, index) =>
-              (
-                <React.Fragment
-                  key={index}>
+        </ul >
+        {
+          menus.children ?
+            menus.children.map((child, index) =>
+            (
+              <React.Fragment
+                key={index}>
+                <ul
+                  className="list-menu"
+                >
                   <button
                     onClick={() => handleOnSelectedMenuChanged(child.key)}>
                     {child.key}
                   </button>
 
                   {child.children != undefined && displayMenu(child.children)}
-                </React.Fragment>
-              )
-              )
-              : <></>
-          }
-        </ul>
+                </ul>
+              </React.Fragment>
+            )
+            )
+            : <></>
+        }
       </>
     )
   }

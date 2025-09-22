@@ -1,6 +1,17 @@
 .menu-tree {
+
   ul {
-    display: flex;
-    flex-direction: column;
+    display: grid;
+    column-gap: 20px;
+
+    button {
+      padding: 25px 0;
+      font-size: 1.2em;
+      font-weight: bold;
+    }
+  }
+
+  .cmd-button {
+    background-color: #37635a;
   }
 }

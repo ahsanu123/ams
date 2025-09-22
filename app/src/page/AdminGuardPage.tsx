@@ -67,25 +67,27 @@ export default function AdminGuardComponent() {
         </div>
       </div>
 
-      <button
-        onClick={handleOnClickBack}
-      >
-        <b>🍚 Back</b>
-      </button>
+      <div>
+        <button
+          onClick={handleOnClickBack}
+        >
+          <b>🍚 Back</b>
+        </button>
 
-      {
-        isAdmin && (
-          <>
-            {" "}
-            <button
-              onClick={() => handleOnLogOut()}
-            >
-              <b>Log Out</b>
+        {
+          isAdmin && (
+            <>
+              {" "}
+              <button
+                onClick={() => handleOnLogOut()}
+              >
+                <b>Log Out</b>
 
-            </button>
-          </>
-        )
-      }
+              </button>
+            </>
+          )
+        }
+      </div>
 
     </div>
   )
