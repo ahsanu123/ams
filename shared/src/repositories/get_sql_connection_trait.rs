@@ -1,5 +1,5 @@
 use super::database_connection::get_database_connection;
-use sea_orm::{prelude::async_trait::async_trait, DatabaseConnection, EntityTrait};
+use sea_orm::{DatabaseConnection, EntityTrait, prelude::async_trait::async_trait};
 
 #[async_trait]
 pub trait GetSqlConnectionTrait {

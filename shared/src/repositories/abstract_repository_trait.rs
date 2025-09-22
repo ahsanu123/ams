@@ -1,7 +1,7 @@
 use super::get_sql_connection_trait::GetSqlConnectionTrait;
 use sea_orm::{
-    prelude::async_trait::async_trait, ActiveModelTrait, DbErr, EntityTrait, IntoActiveModel,
-    PrimaryKeyTrait,
+    ActiveModelTrait, DbErr, EntityTrait, IntoActiveModel, PrimaryKeyTrait,
+    prelude::async_trait::async_trait,
 };
 
 #[async_trait]
