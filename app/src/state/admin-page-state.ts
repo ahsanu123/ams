@@ -1,3 +1,5 @@
+import { defaultMenuTree } from "@/constants"
+import type { MenuTree } from "@/model"
 import { addYears } from "date-fns"
 import { create } from "zustand"
 import { immer } from "zustand/middleware/immer"
@@ -5,16 +7,17 @@ import { immer } from "zustand/middleware/immer"
 interface AdminPageStore {
   selectedYear: Date,
   setSelectedYear: (date: Date) => void,
+
   increaseYear: () => void,
   decreaseYear: () => void,
 
-  loginMessage: string,
-  setLoginMessage: (message: string) => void
+  adminMenus: MenuTree[]
+  activeAdminMenu?: MenuTree,
+  setActiveAdminMenu: (menu?: MenuTree) => void
 }
 
 export const useAdminPageStore = create<AdminPageStore>()(
   immer((set) => ({
-
     selectedYear: new Date(),
 
     setSelectedYear: (date) => {
@@ -35,12 +38,12 @@ export const useAdminPageStore = create<AdminPageStore>()(
       })
     },
 
-    loginMessage: '',
-    setLoginMessage: (message) => {
+    adminMenus: defaultMenuTree,
+    activeAdminMenu: undefined,
+    setActiveAdminMenu: (menu) => {
       set((state) => {
-        state.loginMessage = message
+        state.activeAdminMenu = menu
       })
     }
-
   }))
 )

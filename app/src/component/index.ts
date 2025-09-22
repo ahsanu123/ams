@@ -1,3 +1,5 @@
 export * from '../page/AdminGuardPage'
 export * from './VirtualKeypad'
 export * from './DregInputKeyboard'
+export * from './VirtualKeyboard'
+export * from './MenuTree'

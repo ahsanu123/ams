@@ -5,7 +5,7 @@ const mockUser: User[] = [
 
   {
     id: 1,
-    username: "John",
+    username: "JOHN",
     isActive: true,
     money: 4000000,
     bill: 0,
@@ -13,7 +13,7 @@ const mockUser: User[] = [
   },
   {
     id: 1,
-    username: "Barn",
+    username: "BARN",
     isActive: true,
     money: 4000000,
     bill: 0,
@@ -21,7 +21,7 @@ const mockUser: User[] = [
   },
   {
     id: 1,
-    username: "Brisbane",
+    username: "BRISBANE",
     isActive: true,
     money: 4000000,
     bill: 0,
@@ -29,7 +29,7 @@ const mockUser: User[] = [
   },
   {
     id: 1,
-    username: "Paijo",
+    username: "ADELAIDE",
     isActive: true,
     money: 4000000,
     bill: 0,
@@ -37,7 +37,7 @@ const mockUser: User[] = [
   },
   {
     id: 2,
-    username: "Tukiman",
+    username: "MELBOURNE",
     isActive: true,
     money: 2500000,
     bill: 0,
@@ -45,7 +45,7 @@ const mockUser: User[] = [
   },
   {
     id: 3,
-    username: "Painem",
+    username: "NEW YORK",
     isActive: true,
     money: 6000000,
     bill: 0,

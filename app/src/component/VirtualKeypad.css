@@ -5,18 +5,6 @@
     border: 1px solid gray;
   }
 
-  b,
-  .stripe {
-    display: block;
-    height: 100px;
-    width: 100%;
-  }
-
-  .stripe {
-    color: white;
-    background: repeating-linear-gradient(45deg, #b75b9b, #bc607c 10px, #b3580e 10px, #d79009 20px);
-  }
-
   .virtual-keypad {
     display: grid;
     grid-template-columns: repeat(3, 1fr);

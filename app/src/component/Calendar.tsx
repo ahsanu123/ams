@@ -74,7 +74,9 @@ export default function Calendar(props: CalendarProps) {
           <button
             onClick={() => handleOnCurrentMonthClicked()}
           >
-            Bulan Sekarang
+            <b>
+              Bulan Ini
+            </b>
           </button>
 
           {" "}
@@ -82,7 +84,9 @@ export default function Calendar(props: CalendarProps) {
           <button
             onClick={() => handleOnPrevMonthClicked()}
           >
-            Bulan Sebelumnya
+            <b>
+              Bulan Lalu
+            </b>
           </button>
 
           {" "}
@@ -90,7 +94,9 @@ export default function Calendar(props: CalendarProps) {
           <button
             onClick={() => handleOnNextMonthClicked()}
           >
-            Bulan Selanjutnya
+            <b>
+              Bulan Depan
+            </b>
           </button>
         </div>
 

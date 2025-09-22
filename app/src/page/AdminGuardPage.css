@@ -8,10 +8,10 @@
   .main-container {
     display: flex;
     gap: 10px;
-    justify-content: space-between;
+    justify-content: start;
 
     >div {
-      width: 100%;
+      width: 570px;
     }
   }
 

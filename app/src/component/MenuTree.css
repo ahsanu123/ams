@@ -1,0 +1,6 @@
+.menu-tree {
+  ul {
+    display: flex;
+    flex-direction: column;
+  }
+}

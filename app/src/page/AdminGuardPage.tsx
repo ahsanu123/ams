@@ -1,4 +1,3 @@
-import Calendar from '@/component/Calendar';
 import { LOGGED_ADMIN_INFORMATION_MESSAGE, NOT_LOGGED_ADMIN_INFORMATION_MESSAGE } from '@/constants';
 import { AppRoutes } from '@/routes';
 import { useAdminPageStore, useMainLayoutStore } from '@/state';
@@ -7,31 +6,32 @@ import { useEffect } from 'react';
 import { useNavigate } from 'react-router';
 import VirtualKeypad from '../component/VirtualKeypad';
 import './AdminGuardPage.css';
+import MenuTreeComponent from '@/component/MenuTree';
 
 export default function AdminGuardComponent() {
   const navigate = useNavigate();
-
-  const loginMessage = useAdminPageStore(state => state.loginMessage)
-  const setLoginMessage = useAdminPageStore(state => state.setLoginMessage)
 
   const isAdmin = useMainLayoutStore(state => state.isAdmin)
   const setIsAdmin = useMainLayoutStore(state => state.setIsAdmin)
   const setHeaderInformation = useMainLayoutStore(state => state.setHeaderInformation)
   const setPage = useMainLayoutStore(state => state.setPage)
 
+  const activeMenu = useAdminPageStore(state => state.activeAdminMenu)
+
   const handleOnConfirmPassword = (value: number) => {
     const password = calculatePassword()
 
     if (value == password) {
       setHeaderInformation(LOGGED_ADMIN_INFORMATION_MESSAGE)
-      setLoginMessage('')
       setIsAdmin(true)
     }
-    else setLoginMessage("Wrong Broo!!!")
+    else setHeaderInformation({
+      ...NOT_LOGGED_ADMIN_INFORMATION_MESSAGE,
+      description: 'wrong password'
+    })
   }
 
   const handleOnLogOut = () => {
-    setLoginMessage('')
     setHeaderInformation(NOT_LOGGED_ADMIN_INFORMATION_MESSAGE)
     setIsAdmin(false)
   }
@@ -42,32 +42,18 @@ export default function AdminGuardComponent() {
     navigate(`${AppRoutes.PagePrefix}`)
   }
 
-  const ListAdminMenu = () => (
-    <>
-      <div>
-        <div className='list-admin-menu'>
-          <button>User Management</button>
-          <button>Edit Record</button>
-          <button>Payment Menu</button>
-          <button>Edit Dreg Price</button>
-          <button>Print Data</button>
-        </div>
-      </div>
-    </>
-  )
-
   useEffect(() => {
-    setLoginMessage('')
     setHeaderInformation(NOT_LOGGED_ADMIN_INFORMATION_MESSAGE)
   }, [])
+
   return (
     <div
       className='admin-guard'
     >
       <div className='main-container'>
         {
-          isAdmin ? ListAdminMenu() :
-            (
+          isAdmin ? <MenuTreeComponent />
+            : (
               <div>
                 <VirtualKeypad
                   inputType='number'
@@ -77,7 +63,7 @@ export default function AdminGuardComponent() {
             )
         }
         <div>
-          <Calendar />
+          {activeMenu?.component()}
         </div>
       </div>
 
@@ -100,8 +86,6 @@ export default function AdminGuardComponent() {
           </>
         )
       }
-
-      <sub>{loginMessage}</sub>
 
     </div>
   )

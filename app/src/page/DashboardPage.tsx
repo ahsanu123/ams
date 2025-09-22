@@ -7,6 +7,7 @@ import './DashboardPage.css'
 import VirtualKeypad from "@/component/VirtualKeypad";
 import { EMPTY_HEADER_INFORMATION } from "@/constants";
 import type { User } from "@/model";
+import MenuTreeComponent from "@/component/MenuTree";
 
 export async function clientLoader() {
   const productCommand = getProductCommand();
@@ -70,6 +71,11 @@ export default function DashboardPage({
     setHeaderInformation(EMPTY_HEADER_INFORMATION)
   }
 
+  const valueMustBeNonZero = (value: number): string | undefined => {
+    if (value == 0) return "Tidak Boleh Nol (0)"
+    return undefined
+  }
+
   const handleOnClickUser = (user: User) => {
     setLastSelectedUser(user)
     setUser(user)
@@ -97,8 +103,10 @@ export default function DashboardPage({
   const showVirtualKeypad = () => (
     <div>
       <VirtualKeypad
+        title="Ambil Berapa?"
         inputType='number'
         handleOnConfirm={handleOnPickDregs}
+        validatorFunction={valueMustBeNonZero}
       />
     </div>
   )
@@ -109,7 +117,6 @@ export default function DashboardPage({
         className="dashboard-page"
       >
         <main>
-
           {
             user ? showVirtualKeypad() : showUserSelector()
           }
@@ -118,7 +125,6 @@ export default function DashboardPage({
             <Calendar />
           </div>
         </main>
-
       </div>
     </>
   )

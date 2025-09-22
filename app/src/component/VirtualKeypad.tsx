@@ -5,7 +5,7 @@ import React from "react"
 type OkOrHapus = "Hapus" | "Ok"
 const MAX_AMOUNT = 10
 
-interface VirtualKeyboardProps {
+interface VirtualKeypadProps {
   title?: string,
   defaultValue?: number,
   description?: string
@@ -13,9 +13,10 @@ interface VirtualKeyboardProps {
   confirmText?: string
   inputType?: React.HTMLInputTypeAttribute
   handleOnConfirm: (value: number) => void
+  validatorFunction?: (value: number) => string | undefined
 }
 
-export default function VirtualKeypad(props: VirtualKeyboardProps) {
+export default function VirtualKeypad(props: VirtualKeypadProps) {
 
   const {
     title,
@@ -24,7 +25,8 @@ export default function VirtualKeypad(props: VirtualKeyboardProps) {
     cancelText = "Hapus",
     confirmText = "Ok",
     inputType = 'number',
-    handleOnConfirm
+    handleOnConfirm,
+    validatorFunction
   } = props
 
   const [value, setValue] = useState<number>(defaultValue)
@@ -40,15 +42,21 @@ export default function VirtualKeypad(props: VirtualKeyboardProps) {
   }
 
   const handleOnCmdButtonClicked = (cmd: OkOrHapus) => {
+    const validatorMessage = validatorFunction?.(value)
+
     if (value === undefined) return
 
-    if (cmd === 'Hapus') {
+    else if (cmd === 'Hapus') {
       const amountStr = value.toString()
       const amountNum = parseInt(amountStr.slice(0, -1))
       setValue(amountNum || 0)
     }
 
-    if (cmd === 'Ok') {
+    else if (cmd === 'Ok' && validatorMessage != undefined) {
+      setWarning(validatorMessage)
+    }
+
+    else if (cmd === 'Ok') {
       handleOnConfirm(value)
     }
 
@@ -61,11 +69,9 @@ export default function VirtualKeypad(props: VirtualKeyboardProps) {
       {
         !!warning
           ? (
-            <b
-              className="stripe"
-            >
+            <h4>
               {warning}
-            </b>
+            </h4>
           )
           : (
             <>
@@ -77,6 +83,7 @@ export default function VirtualKeypad(props: VirtualKeyboardProps) {
 
       <input
         id='virtual-keypad-input'
+        disabled
         type={inputType}
         value={value ?? 0}
         onChange={(event) => handleOnNumberClick(parseInt(event.target.value))}
