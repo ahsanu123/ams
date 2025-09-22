@@ -14,6 +14,7 @@ delete-old-entity:
     ! -name '.gitignore' \
     -delete
 
+# will run migration up
 run: 
   RUST_BACKTRACE=1 cargo run
 
@@ -22,3 +23,6 @@ gen-entity:
 
 delete-database-file:
   rm ../app/src-tauri/ams.sqlite
+
+copy-to-api: 
+  cp ../app/src-tauri/ams.sqlite ../api/
