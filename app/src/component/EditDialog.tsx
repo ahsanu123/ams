@@ -97,43 +97,17 @@ export default function EditDialogComponent() {
           <div
             className="info-tab"
           >
+            <div className="detail-tab">
+              <h5>Select Customer</h5>
+              <select>
+                <option>User 1</option>
+                <option>User 1</option>
+                <option>User 1</option>
+                <option>User 1</option>
+              </select>
+            </div>
 
             <div>
-              <label>
-                <p>
-                  Nama Pengguna
-                </p>
-                <input
-                  value={dialogData?.user.username}
-                  disabled
-                />
-              </label>
-
-              <label>
-                <p>
-                  💷 Senilai
-                </p>
-                <input
-                  value={productPrice}
-                  disabled
-                />
-              </label>
-
-              <label
-                htmlFor="paid-checkbox"
-                className="label-checkbox"
-              >
-                <p>
-                  ✔️ Lunas
-                </p>
-                <input
-                  id="paid-checkbox"
-                  type="checkbox"
-                  checked={product?.paid ?? false}
-                  onChange={({ target }) => handleOnIsPaidChange(target.checked)}
-                />
-              </label>
-
               <VirtualKeypad
                 title="Edit Amount"
                 defaultValue={product?.amount}
@@ -152,20 +126,6 @@ export default function EditDialogComponent() {
             </div>
 
           </div>
-
-          <div
-            className="detail-tab"
-          >
-            {selectedUser && allProductOfThisMonth
-              .filter((item) => isSameDay(item.takenDate) && item.userId !== selectedUser?.id)
-              .map((item, index) => (
-                <UserTakingCard
-                  key={index}
-                  data={item}
-                  user={selectedUser} />
-              ))}
-          </div>
-
         </div>
       </dialog>
     </div>

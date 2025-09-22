@@ -1,15 +1,33 @@
 import { LOGGED_ADMIN_INFORMATION_MESSAGE, NOT_LOGGED_ADMIN_INFORMATION_MESSAGE } from '@/constants';
 import { AppRoutes } from '@/routes';
-import { useAdminPageStore, useMainLayoutStore } from '@/state';
+import { useAdminPageStore, useEditPageStore, useMainLayoutStore } from '@/state';
 import { calculatePassword } from '@/utility';
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router';
 import VirtualKeypad from '../component/VirtualKeypad';
 import './AdminGuardPage.css';
 import MenuTreeComponent from '@/component/MenuTree';
+import { getUserCommand } from '@/commands';
+import type { Route } from './+types/AdminGuardPage';
 
-export default function AdminGuardComponent() {
+export async function clientLoader() {
+  const userCommand = getUserCommand();
+  const listUser = await userCommand.getUsers()
+
+  return {
+    listUser,
+  }
+}
+
+
+export default function AdminGuardComponent({
+  loaderData
+}: Route.ComponentProps) {
   const navigate = useNavigate();
+
+  const { listUser } = loaderData
+
+  const isDialogvisible = useEditPageStore(state => state.isDialogVisible)
 
   const isAdmin = useMainLayoutStore(state => state.isAdmin)
   const setIsAdmin = useMainLayoutStore(state => state.setIsAdmin)
@@ -62,28 +80,34 @@ export default function AdminGuardComponent() {
               </div>
             )
         }
-        <div>
-          {activeMenu?.component()}
+        <div className='active-menu-container'>
+          {activeMenu?.component}
         </div>
       </div>
 
       <div>
-        <button
-          onClick={handleOnClickBack}
-        >
-          <b>🍚 Back</b>
-        </button>
-
         {
-          isAdmin && (
+          !isDialogvisible && (
             <>
-              {" "}
               <button
-                onClick={() => handleOnLogOut()}
+                onClick={handleOnClickBack}
               >
-                <b>Log Out</b>
-
+                <b>🍚 Back</b>
               </button>
+
+              {
+                isAdmin && (
+                  <>
+                    {" "}
+                    <button
+                      onClick={() => handleOnLogOut()}
+                    >
+                      <b>Log Out</b>
+
+                    </button>
+                  </>
+                )
+              }
             </>
           )
         }

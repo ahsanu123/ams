@@ -10,8 +10,24 @@
     gap: 10px;
     justify-content: start;
 
+    .active-menu-container {
+      flex: 1;
+    }
+
     >div {
       width: 570px;
+    }
+
+    .user-container {
+      display: grid;
+      width: 100%;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+
+      button {
+        padding: 25px 0;
+        font-size: 1.2em;
+      }
     }
   }
 

@@ -1,59 +1,23 @@
 import './CalendarCell.css'
-import { formatAsRupiah } from "@/utility/format-as-rupiah";
 import type { ICalendarCell } from "@/utility";
 import { format, isSameDay } from "date-fns";
 import { id } from "date-fns/locale";
-import { useEditPageStore, useMainLayoutStore } from '@/state';
-import type { Product } from '@/model';
+import { useMainLayoutStore } from '@/state';
 
 interface CalendarCellProps {
   data: ICalendarCell,
+  onCellClicked?: (date?: Date) => void
 }
 
 export default function CalendarCellComponent(props: CalendarCellProps) {
 
   const {
     data,
+    onCellClicked
   } = props
 
   const isAdmin = useMainLayoutStore(state => state.isAdmin)
-  const setDialogVisibility = useEditPageStore(state => state.setDialogVisibility);
-  const isDialogVisible = useEditPageStore(state => state.isDialogVisible);
-  const setDialogData = useEditPageStore(state => state.setDialogData);
-  const productPrice = useMainLayoutStore(state => state.productPrice)
 
-  const selectedUser = useMainLayoutStore(state => state.user)
-  const isUserSelected = !!selectedUser
-
-  // const onDetailButtonClick = () => {
-  //
-  //   if (selectedUser) {
-  //     const emptyProductRecord: Product = {
-  //       id: 0,
-  //       userId: selectedUser.id,
-  //       paid: false,
-  //       productionDate: data.date!,
-  //       takenDate: data.date!,
-  //       price: productPrice,
-  //       amount: 0,
-  //       description: 'edited by admin'
-  //     }
-  //
-  //     setDialogData({
-  //       product: data.product ?? emptyProductRecord,
-  //       user: selectedUser,
-  //       date: data.date!,
-  //     });
-  //   }
-  //
-  //
-  //   setDialogVisibility(!isDialogVisible)
-  // }
-
-  const handleOnCellClicked = () => {
-    console.log("iam admin")
-
-  }
   const highlightCurrentDay = data.date && isSameDay(data.date, new Date())
 
   const headerLabelComponent = () => (
@@ -65,7 +29,7 @@ export default function CalendarCellComponent(props: CalendarCellProps) {
       {data.product
         ? (
           <div
-            onClick={() => isAdmin && handleOnCellClicked()}
+            onClick={() => isAdmin && onCellClicked?.(data.date)}
             className={`calendar-cell ${highlightCurrentDay ? 'highlight-current-day' : ''} ${isAdmin ? 'is-admin' : ''}`}
           >
             <div className='current-day'>
@@ -85,7 +49,7 @@ export default function CalendarCellComponent(props: CalendarCellProps) {
         )
         : (
           <div
-            onClick={() => isAdmin && handleOnCellClicked()}
+            onClick={() => isAdmin && onCellClicked?.(data.date)}
             className={`calendar-cell ${highlightCurrentDay ? 'highlight-current-day' : ''} ${isAdmin ? 'is-admin' : ''}`}
           >
             <div className='current-day'>

@@ -11,6 +11,7 @@ interface CalendarProps {
   adminMode?: boolean,
   onPrevMonthClicked?: (date: Date) => void
   onNextMonthClicked?: (date: Date) => void
+  onCellClicked?: (date?: Date) => void
 }
 
 export default function Calendar(props: CalendarProps) {
@@ -21,6 +22,7 @@ export default function Calendar(props: CalendarProps) {
     title,
     onPrevMonthClicked,
     onNextMonthClicked,
+    onCellClicked
   } = props
 
   const products = useMainLayoutStore(state => state.products);
@@ -105,20 +107,6 @@ export default function Calendar(props: CalendarProps) {
         </div>
       </div>
 
-
-      <div
-        className="user-information"
-      >
-        {/* <sub> */}
-        {/*   <b> */}
-        {/*     {`Informasi Bulan ${format(date, "MMMM", { locale: id })} : `} */}
-        {/*   </b> */}
-        {/*   📍 Total Ambil <b>{totalTake}</b>, {" "} */}
-        {/*   💷 Tagihan <b>{formatAsRupiah(unpaidBill)}</b>, {" "} */}
-        {/*   ✔️ Terbayar <b>{formatAsRupiah(paidBill)}</b>, {" "} */}
-        {/* </sub> */}
-      </div>
-
       <div
         className="ams-calendar"
       >
@@ -128,6 +116,7 @@ export default function Calendar(props: CalendarProps) {
           >
             <CalendarCellComponent
               data={cell}
+              onCellClicked={onCellClicked}
             />
           </React.Fragment>
         ))}

@@ -12,15 +12,15 @@ import type { JSX } from "react";
 const userManagementMenu: MenuTree = {
   key: AdminMenus.UserManagement,
   isRoot: true,
-  component: UserManagementPage,
+  component: <UserManagementPage />,
   children: [
     {
       key: UserManagementMenu.CreateNewUser,
-      component: CreateNewUserPage
+      component: <CreateNewUserPage />
     },
     {
       key: UserManagementMenu.EditUser,
-      component: EditUserPage
+      component: <EditUserPage />
     },
     // {
     //   key: UserManagementMenu.ListUser,
@@ -28,7 +28,7 @@ const userManagementMenu: MenuTree = {
     // },
     {
       key: UserManagementMenu.DeleteUser,
-      component: DeleteUserPage
+      component: <DeleteUserPage />
     }
   ]
 }
@@ -36,19 +36,20 @@ const userManagementMenu: MenuTree = {
 const editPickingRecordMenu: MenuTree = {
   key: AdminMenus.EditRecord,
   isRoot: true,
-  component: EditPickingRecordPage,
+  showSubBottomMenu: true,
+  component: <EditPickingRecordPage />,
 }
 
 const paymentMenu: MenuTree = {
   key: AdminMenus.PaymentMenu,
   isRoot: true,
-  component: PaymentPage
+  component: <PaymentPage />
 }
 
 const printDataMenu: MenuTree = {
   key: AdminMenus.PrintData,
   isRoot: true,
-  component: PrintDataPage,
+  component: <PrintDataPage />,
 }
 
 export const defaultMenuTree: MenuTree[] = [
