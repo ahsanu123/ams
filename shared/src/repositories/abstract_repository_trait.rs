@@ -32,6 +32,7 @@ where
         let conn = TEntity::get_connection().await;
         TEntity::find_by_id(id).one(conn).await
     }
+
     async fn update_by_model(model: TEntity::ActiveModel) -> Result<TEntity::Model, DbErr> {
         let conn = TEntity::get_connection().await;
 
