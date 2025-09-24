@@ -1,0 +1,10 @@
+.scroller-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+
+  button {
+    min-width: 90px;
+    max-height: 80px;
+  }
+}

@@ -18,8 +18,20 @@ pub async fn insert_new_user(new_user: user_table::Model) -> i32 {
     result.id
 }
 
+pub async fn get_all_user() -> Vec<user_table::Model> {
+    UserTable::get_all().await.unwrap()
+}
+
 pub async fn get_all_active_user() -> Vec<user_table::Model> {
     UserTable::get_all_active_user().await
+}
+
+pub async fn upsert_user(user: user_table::Model) -> i32 {
+    let active_model: user_table::ActiveModel = user.into();
+
+    let result = UserTable::update_by_model(active_model).await.unwrap();
+
+    result.id
 }
 
 #[cfg(test)]

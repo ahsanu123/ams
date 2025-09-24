@@ -17,6 +17,7 @@ pub struct TakingRecord {
     pub production_date: NaiveDateTime,
     pub taken_date: NaiveDateTime,
     pub description: String,
+    pub is_paid: bool,
 }
 
 #[derive(DeriveMigrationName)]
@@ -85,6 +86,11 @@ impl MigrationTrait for Migration {
                     .col(
                         ColumnDef::new(TakingRecordTable::Description)
                             .text()
+                            .not_null(),
+                    )
+                    .col(
+                        ColumnDef::new(TakingRecordTable::IsPaid)
+                            .boolean()
                             .not_null(),
                     )
                     .foreign_key(taking_record_price_id)

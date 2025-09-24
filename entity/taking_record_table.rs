@@ -14,6 +14,7 @@ pub struct Model {
     pub taken_date: DateTime,
     #[sea_orm(column_type = "Text")]
     pub description: String,
+    pub is_paid: bool,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]

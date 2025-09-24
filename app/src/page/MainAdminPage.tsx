@@ -3,6 +3,7 @@ import type { Route } from "./+types/MainAdminPage";
 import { useMainAdminPageState } from "@/state";
 import type { FlatMenuTree } from "@/model";
 import './MainAdminPage.css';
+import Scroller from "@/component/Scroller";
 
 export async function clientLoader() {
   const productCommand = getProductCommand();
@@ -56,6 +57,10 @@ export default function MainAdminPage({
         {selectedMenu?.component}
       </div>
 
+      <Scroller
+        onButtonUpClicked={() => console.log("up")}
+        onButtonDownClicked={() => console.log("down")}
+      />
     </div>
   )
 }
