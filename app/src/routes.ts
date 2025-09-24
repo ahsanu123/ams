@@ -8,7 +8,8 @@ export enum AppRoutes {
   AccoutancyPage = "accoutancy-page",
   EditDataPage = "edit-data-page",
   AdminPage = "admin-page",
-  EditPickingRecordPage = "edit-picking-record-page"
+  EditPickingRecordPage = "edit-picking-record-page",
+  MainAdminPage = "main-admin-page"
 }
 
 export enum SecretRoutes {
@@ -32,7 +33,10 @@ export default [
     route(`${AppRoutes.PagePrefix}${AppRoutes.AdminPage}`, "./page/AdminPage.tsx", {
       id: AppRoutes.AdminPage
     }),
-    route(`${AppRoutes.EditPickingRecordPage}`, "./page/edit-picking-record-pages/EditPickingRecordPage.tsx", {
+    route(`${AppRoutes.PagePrefix}${AppRoutes.MainAdminPage}`, "./page/MainAdminPage.tsx", {
+      id: AppRoutes.MainAdminPage
+    }),
+    route(`${AppRoutes.PagePrefix}${AppRoutes.EditPickingRecordPage}`, "./page/edit-picking-record-pages/EditPickingRecordPage.tsx", {
       id: AppRoutes.EditPickingRecordPage
     }),
     route(`${SecretRoutes.AdminLoginPage}`, "./page/AdminGuardPage.tsx", {

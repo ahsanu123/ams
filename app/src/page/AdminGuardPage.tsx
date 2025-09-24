@@ -6,7 +6,6 @@ import { useEffect } from 'react';
 import { useNavigate } from 'react-router';
 import VirtualKeypad from '../component/VirtualKeypad';
 import './AdminGuardPage.css';
-import MenuTreeComponent from '@/component/MenuTree';
 import { getUserCommand } from '@/commands';
 import type { Route } from './+types/AdminGuardPage';
 
@@ -42,6 +41,7 @@ export default function AdminGuardComponent({
     if (value == password) {
       setHeaderInformation(LOGGED_ADMIN_INFORMATION_MESSAGE)
       setIsAdmin(true)
+      navigate(`${AppRoutes.PagePrefix}${AppRoutes.MainAdminPage}`)
     }
     else setHeaderInformation({
       ...NOT_LOGGED_ADMIN_INFORMATION_MESSAGE,
@@ -69,49 +69,41 @@ export default function AdminGuardComponent({
       className='admin-guard'
     >
       <div className='main-container'>
-        {
-          isAdmin ? <MenuTreeComponent />
-            : (
-              <div>
-                <VirtualKeypad
-                  inputType='number'
-                  handleOnConfirm={handleOnConfirmPassword}
-                />
-              </div>
-            )
-        }
-        <div className='active-menu-container'>
-          {activeMenu?.component}
+        <div>
+          <VirtualKeypad
+            inputType='number'
+            handleOnConfirm={handleOnConfirmPassword}
+          />
         </div>
       </div>
 
-      <div>
-        {
-          !isDialogvisible && (
-            <>
-              <button
-                onClick={handleOnClickBack}
-              >
-                <b>🍚 Back</b>
-              </button>
-
-              {
-                isAdmin && (
-                  <>
-                    {" "}
-                    <button
-                      onClick={() => handleOnLogOut()}
-                    >
-                      <b>Log Out</b>
-
-                    </button>
-                  </>
-                )
-              }
-            </>
-          )
-        }
-      </div>
+      {/* <div> */}
+      {/*   { */}
+      {/*     !isDialogvisible && ( */}
+      {/*       <> */}
+      {/*         <button */}
+      {/*           onClick={handleOnClickBack} */}
+      {/*         > */}
+      {/*           <b>🍚 Back</b> */}
+      {/*         </button> */}
+      {/**/}
+      {/*         { */}
+      {/*           isAdmin && ( */}
+      {/*             <> */}
+      {/*               {" "} */}
+      {/*               <button */}
+      {/*                 onClick={() => handleOnLogOut()} */}
+      {/*               > */}
+      {/*                 <b>Log Out</b> */}
+      {/**/}
+      {/*               </button> */}
+      {/*             </> */}
+      {/*           ) */}
+      {/*         } */}
+      {/*       </> */}
+      {/*     ) */}
+      {/*   } */}
+      {/* </div> */}
 
     </div>
   )

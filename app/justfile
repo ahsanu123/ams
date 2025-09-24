@@ -1,0 +1,5 @@
+tl: 
+  yarn vitest list          # shows all tests
+
+tr testName:
+  yarn vitest -t "{{testName}}"  --reporter=verbose --silent=false

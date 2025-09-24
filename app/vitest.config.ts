@@ -15,6 +15,15 @@ export default defineConfig({
     environment: 'jsdom',
     globals: true,
     setupFiles: './test/setup-test.ts',
+    reporters: [
+      [
+        "default",
+        {
+          summary: false, // removes summary, matches "basic"
+        },
+      ],
+    ],
+    silent: false,
   }
 });
 

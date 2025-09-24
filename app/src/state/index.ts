@@ -1,3 +1,5 @@
 export * from './main-layout-state'
+export * from './main-admin-page-state'
 export * from './edit-page-state'
 export * from './admin-page-state'
+export * from './base-state-interface'
