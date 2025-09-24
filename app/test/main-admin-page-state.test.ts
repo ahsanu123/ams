@@ -7,7 +7,7 @@ describe("mainAdminPageStateTest", () => {
   })
 
   test("listAllMenu", () => {
-    const menus = useMainAdminPageState.getState().menus
+    const menus = useMainAdminPageState.getState().allMenu
     expect(menus).not.empty
 
     console.log(menus)

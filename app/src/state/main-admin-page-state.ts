@@ -6,13 +6,18 @@ import type { IBaseState } from "./base-state-interface"
 
 interface MainAdminPageState extends IBaseState {
 
-  menus: FlatMenuTree[],
+  allMenu: FlatMenuTree[],
 
-  activeMenu: FlatMenuTree,
-  setActiveMenu: (menu: FlatMenuTree) => void,
+  selectedMenu?: FlatMenuTree,
+  setSelectedMenu: (menu: FlatMenuTree) => void,
+
+  activeMenu: FlatMenuTree[],
+  setActiveMenu: (path: string) => void,
 
   getSubMenu: (path: string) => FlatMenuTree[]
+  getRootMenu: () => FlatMenuTree[],
 
+  setActiveMenuBackToRoot: () => void
 }
 
 export const useMainAdminPageState = create<MainAdminPageState>()(
@@ -20,20 +25,33 @@ export const useMainAdminPageState = create<MainAdminPageState>()(
 
     reset: () => {
       set((state) => {
-        state.activeMenu = defaultFlatMenuTree[0]
+        state.activeMenu = state.getRootMenu()
       })
     },
 
-    menus: defaultFlatMenuTree,
-    activeMenu: defaultFlatMenuTree[0],
+    allMenu: defaultFlatMenuTree,
+    activeMenu: defaultFlatMenuTree.filter(pr => pr.isRoot),
 
-    setActiveMenu: (menu) => {
+    setActiveMenu: (path) => {
       set((state) => {
-        state.activeMenu = menu
+        state.activeMenu = state.allMenu.filter(pr => pr.path.startsWith(path))
       })
     },
 
-    getSubMenu: (searchPath) => get().menus.filter(pr => pr.path.startsWith(searchPath))
+    selectedMenu: undefined,
+    setSelectedMenu: (menu) => {
+      set((state) => {
+        state.selectedMenu = menu
+      })
+    },
+
+    getSubMenu: (searchPath) => get().allMenu.filter(pr => pr.path.startsWith(searchPath)),
+    getRootMenu: () => get().allMenu.filter(pr => pr.isRoot),
+    setActiveMenuBackToRoot: () => {
+      set((state) => {
+        state.activeMenu = defaultFlatMenuTree.filter(pr => pr.isRoot)
+      })
+    }
 
   }))
 )
