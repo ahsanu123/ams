@@ -1,15 +1,42 @@
 use ams_entity::prelude::*;
 use ams_entity::taking_record_table;
 use chrono::Datelike;
+use chrono::Local;
 use chrono::Months;
 use chrono::NaiveDateTime;
 use sea_orm::{EntityTrait, entity::*, query::*};
 
 use crate::repositories::abstract_repository_trait::AbstractRepository;
 use crate::repositories::get_sql_connection_trait::GetSqlConnectionTrait;
+use crate::repositories::price_repositories::AdditionalPriceHistoryTableMethodTrait;
 
-pub async fn add_new_taking_record(record: taking_record_table::Model) -> i32 {
-    let active_model: taking_record_table::ActiveModel = record.into();
+pub async fn add_new_taking_record(user_id: i32, amount: i32) -> i32 {
+    let latest_price = PriceHistoryTable::get_latest_price().await;
+
+    let user = UserTable::get_by_id(user_id).await.unwrap();
+
+    if user.is_none() {
+        return 0;
+    }
+
+    let user = user.unwrap();
+
+    let date_now = Local::now()
+        .naive_local()
+        .date()
+        .and_hms_opt(0, 0, 0)
+        .unwrap();
+
+    let active_model = taking_record_table::ActiveModel {
+        id: NotSet,
+        user_id: Set(user_id as i64),
+        price_id: Set(latest_price.id as i64),
+        amount: Set(amount as i64),
+        production_date: Set(date_now),
+        taken_date: Set(date_now),
+        description: Set(format!("{0} is taking {1} dregs", user.username, amount)),
+        is_paid: Set(false),
+    };
 
     let result = TakingRecordTable::create(active_model).await.unwrap();
 
@@ -56,7 +83,7 @@ pub async fn upsert_taking_record(record: taking_record_table::Model) -> i32 {
     }
 }
 
-pub async fn get_all_record_by_date(date: NaiveDateTime) -> Vec<taking_record_table::Model> {
+pub async fn get_taking_record_by_month(date: NaiveDateTime) -> Vec<taking_record_table::Model> {
     let conn = TakingRecordTable::get_connection().await;
 
     let start_date = date

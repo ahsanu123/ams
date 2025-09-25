@@ -7,3 +7,4 @@ edition = "2024"
 ams_shared = {path = "../shared"}
 
 actix-web = "4"
+serde = "1.0.226"

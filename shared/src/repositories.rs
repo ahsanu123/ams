@@ -1,5 +1,6 @@
 pub mod abstract_repository_trait;
 pub mod payment_history_repository;
+pub mod price_repositories;
 pub mod taking_record_repository;
 pub mod user_repository;
 
