@@ -1,6 +1,9 @@
 use crate::repositories::user_repository::AdditionalUserTableMethodTrait;
 use ams_entity::prelude::*;
 use ams_entity::user_table;
+use chrono::Local;
+use sea_orm::ActiveValue::NotSet;
+use sea_orm::ActiveValue::Set;
 
 use crate::repositories::abstract_repository_trait::AbstractRepository;
 
@@ -27,7 +30,15 @@ pub async fn get_all_active_user() -> Vec<user_table::Model> {
 }
 
 pub async fn upsert_user(user: user_table::Model) -> i32 {
-    let active_model: user_table::ActiveModel = user.into();
+    let active_model = user_table::ActiveModel {
+        id: NotSet,
+        username: Set(user.username),
+        is_active: Set(user.is_active),
+        is_admin: Set(user.is_admin),
+        money: Set(user.money),
+        created_date: NotSet,
+        updated_date: Set(Local::now().naive_local()),
+    };
 
     let result = UserTable::update_by_model(active_model).await.unwrap();
 

@@ -59,7 +59,7 @@ impl MigrationTrait for Migration {
                     )
                     .col(
                         ColumnDef::new(MoneyHistoryTable::Description)
-                            .big_integer()
+                            .text()
                             .not_null(),
                     )
                     .foreign_key(money_history_user_id)

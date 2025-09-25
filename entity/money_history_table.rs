@@ -10,7 +10,8 @@ pub struct Model {
     pub user_id: i64,
     pub date: DateTime,
     pub money_amount: i64,
-    pub description: i64,
+    #[sea_orm(column_type = "Text")]
+    pub description: String,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]

@@ -11,6 +11,7 @@ pub struct Model {
     pub username: String,
     pub is_active: bool,
     pub is_admin: bool,
+    pub money: i64,
     pub created_date: DateTime,
     pub updated_date: DateTime,
 }

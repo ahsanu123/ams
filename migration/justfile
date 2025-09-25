@@ -3,6 +3,7 @@
 
 # migrate and generate entity
 mage:
+  just delete-database-file
   just run 
   just delete-old-entity
   just gen-entity
