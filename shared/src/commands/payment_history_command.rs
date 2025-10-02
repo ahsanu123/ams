@@ -18,7 +18,7 @@ pub async fn get_payment_record_by_user_id(user_id: i32) -> Vec<payment_history_
     records
 }
 
-pub async fn get_paymnt_record_by_user_id_and_month(
+pub async fn get_payment_record_by_user_id_and_month(
     user_id: i32,
     date: NaiveDateTime,
 ) -> Vec<payment_history_table::Model> {

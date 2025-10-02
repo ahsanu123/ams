@@ -47,8 +47,26 @@ pub async fn get_all_dreg_price() -> Vec<price_history_table::Model> {
 
 #[cfg(test)]
 mod test {
-    #[test]
-    fn name() {
-        todo!();
+    use super::*;
+
+    #[tokio::test]
+    async fn command_get_latest_dreg_price() {
+        let result = get_latest_dreg_price().await;
+
+        println!("result: {result:#?}");
+    }
+
+    #[tokio::test]
+    async fn command_update_dreg_price() {
+        let result = update_dreg_price(12000).await;
+
+        println!("result: {result:#?}");
+    }
+
+    #[tokio::test]
+    async fn command_get_all_dreg_price() {
+        let result = get_all_dreg_price().await;
+
+        println!("result: {result:#?}");
     }
 }

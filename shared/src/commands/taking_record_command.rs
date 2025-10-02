@@ -21,11 +21,7 @@ pub async fn add_new_taking_record(user_id: i32, amount: i32) -> i32 {
 
     let user = user.unwrap();
 
-    let date_now = Local::now()
-        .naive_local()
-        .date()
-        .and_hms_opt(0, 0, 0)
-        .unwrap();
+    let date_now = Local::now().naive_local();
 
     let active_model = taking_record_table::ActiveModel {
         id: NotSet,
@@ -83,6 +79,35 @@ pub async fn upsert_taking_record(record: taking_record_table::Model) -> i32 {
     }
 }
 
+pub async fn get_taking_record_by_user_id_and_month(
+    user_id: i32,
+    date: NaiveDateTime,
+) -> Vec<taking_record_table::Model> {
+    let conn = TakingRecordTable::get_connection().await;
+
+    let start_date = date
+        .date()
+        .with_day(1)
+        .unwrap()
+        .and_hms_opt(0, 0, 0)
+        .unwrap();
+
+    let end_date = start_date
+        .clone()
+        .checked_add_months(Months::new(1))
+        .unwrap();
+
+    let records = TakingRecordTable::find()
+        .filter(taking_record_table::Column::TakenDate.gte(start_date))
+        .filter(taking_record_table::Column::TakenDate.lt(end_date))
+        .filter(taking_record_table::Column::UserId.eq(user_id))
+        .all(conn)
+        .await
+        .unwrap();
+
+    records
+}
+
 pub async fn get_taking_record_by_month(date: NaiveDateTime) -> Vec<taking_record_table::Model> {
     let conn = TakingRecordTable::get_connection().await;
 
@@ -110,8 +135,23 @@ pub async fn get_taking_record_by_month(date: NaiveDateTime) -> Vec<taking_recor
 
 #[cfg(test)]
 mod test {
-    #[test]
-    fn name() {
-        todo!();
+    use super::*;
+
+    #[tokio::test]
+    async fn insert_new_taking_record() {
+        let result = add_new_taking_record(3, 2).await;
+        println!("result: {result:#?}");
+    }
+
+    #[tokio::test]
+    async fn command_get_taking_record_by_user_id_and_month() {
+        let date = Local::now()
+            .naive_local()
+            .date()
+            .and_hms_opt(0, 0, 0)
+            .unwrap();
+        let result = get_taking_record_by_user_id_and_month(1, date).await;
+
+        println!("result: {result:#?}");
     }
 }

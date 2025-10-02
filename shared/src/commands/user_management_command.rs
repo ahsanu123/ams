@@ -1,22 +1,30 @@
+use crate::repositories::get_sql_connection_trait::GetSqlConnectionTrait;
 use crate::repositories::user_repository::AdditionalUserTableMethodTrait;
 use ams_entity::prelude::*;
 use ams_entity::user_table;
 use chrono::Local;
 use sea_orm::ActiveValue::NotSet;
 use sea_orm::ActiveValue::Set;
+use sea_orm::QueryFilter;
+use sea_orm::{EntityTrait, entity::*, query::*};
 
 use crate::repositories::abstract_repository_trait::AbstractRepository;
 
-pub async fn insert_new_user(new_user: user_table::Model) -> i32 {
-    let is_user_exits = UserTable::get_by_id(new_user.id).await.unwrap();
+pub async fn insert_new_user(new_user: user_table::ActiveModel) -> i32 {
+    let conn = UserTable::get_connection().await;
+    let username = new_user.clone().username.unwrap();
 
-    if is_user_exits.is_some() {
-        // user already exist
+    let user_exist = UserTable::find()
+        .filter(user_table::Column::Username.eq(username))
+        .one(conn)
+        .await
+        .unwrap();
+
+    if user_exist.is_some() {
         return 0;
     }
 
-    let active_model: user_table::ActiveModel = new_user.into();
-    let result = UserTable::create(active_model).await.unwrap();
+    let result = UserTable::create(new_user).await.unwrap();
 
     result.id
 }
@@ -48,8 +56,28 @@ pub async fn upsert_user(user: user_table::Model) -> i32 {
 #[cfg(test)]
 mod test {
 
-    #[test]
-    fn insert_new_user() {
-        todo!();
+    use super::*;
+
+    #[tokio::test]
+    async fn command_new_user() {
+        let new_user = user_table::ActiveModel {
+            id: NotSet,
+            username: Set("Melbourne".into()),
+            is_active: Set(true),
+            is_admin: Set(false),
+            money: Set(0),
+            created_date: Set(Local::now().naive_local()),
+            updated_date: Set(Local::now().naive_local()),
+        };
+
+        let result = insert_new_user(new_user).await;
+        println!("result: {result:?}");
+    }
+
+    #[tokio::test]
+    async fn command_get_all_user() {
+        let result = get_all_user().await;
+
+        println!("result: {result:#?}");
     }
 }

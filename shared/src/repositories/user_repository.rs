@@ -23,3 +23,28 @@ impl AdditionalUserTableMethodTrait for UserTable {
     }
 }
 
+#[cfg(test)]
+mod test {
+    use chrono::Local;
+
+    use crate::repositories::abstract_repository_trait::AbstractRepository;
+
+    use super::*;
+
+    #[tokio::test]
+    async fn repo_create_user() {
+        let new_user = user_table::ActiveModel {
+            id: NotSet,
+            username: Set("Ahsanu".into()),
+            is_active: Set(true),
+            is_admin: Set(false),
+            money: Set(100000),
+            created_date: Set(Local::now().naive_local()),
+            updated_date: Set(Local::now().naive_local()),
+        };
+
+        let result = UserTable::create(new_user).await;
+
+        println!("result {result:?}");
+    }
+}

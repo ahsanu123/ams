@@ -1,6 +1,10 @@
 # NOTE: 
 # delete sqlite file before run `mage` command
 
+# run migration and seed data
+mig-and-seed:
+  echo "todo"
+
 # migrate and generate entity
 mage:
   just delete-database-file

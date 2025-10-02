@@ -58,8 +58,19 @@ pub async fn get_all_user_money_history(user_id: i64) -> Vec<money_history_table
 
 #[cfg(test)]
 mod test {
-    #[test]
-    fn name() {
-        todo!();
+    use super::*;
+
+    #[tokio::test]
+    async fn command_add_money() {
+        let result = add_money(1, 4000000).await;
+
+        println!("result: {result:?}");
+    }
+
+    #[tokio::test]
+    async fn command_get_all_user_money() {
+        let user_money = get_all_user_money_history(1).await;
+
+        println!("result: {user_money:?}");
     }
 }
