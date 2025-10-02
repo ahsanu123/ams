@@ -1,15 +1,10 @@
-use ams_entity::prelude::*;
-use ams_entity::taking_record_table;
-use chrono::Datelike;
-use chrono::Local;
-use chrono::Months;
-use chrono::NaiveDateTime;
-use sea_orm::prelude::async_trait;
-use sea_orm::{EntityTrait, entity::*, query::*};
-
-use crate::repositories::abstract_repository_trait::AbstractRepository;
-use crate::repositories::get_sql_connection_trait::GetSqlConnectionTrait;
-use crate::repositories::price_repositories::AdditionalPriceHistoryTableMethodTrait;
+use crate::repositories::{
+    abstract_repository_trait::AbstractRepository, get_sql_connection_trait::GetSqlConnectionTrait,
+    price_repositories::AdditionalPriceHistoryTableMethodTrait,
+};
+use ams_entity::{prelude::*, taking_record_table};
+use chrono::{Datelike, Local, Months, NaiveDateTime};
+use sea_orm::{EntityTrait, entity::*, prelude::async_trait, query::*};
 
 #[async_trait::async_trait]
 pub trait TakingRecordCommandTrait {

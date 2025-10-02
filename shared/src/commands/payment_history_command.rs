@@ -1,9 +1,13 @@
-use crate::repositories::abstract_repository_trait::AbstractRepository;
-use crate::repositories::get_sql_connection_trait::GetSqlConnectionTrait;
+use crate::repositories::{
+    abstract_repository_trait::AbstractRepository, get_sql_connection_trait::GetSqlConnectionTrait,
+};
 use ams_entity::{payment_history_table, prelude::*, taking_record_table};
 use chrono::{Datelike, Days, Months, NaiveDate, NaiveDateTime};
-use sea_orm::prelude::{Expr, async_trait};
-use sea_orm::{EntityTrait, QueryFilter, entity::*};
+use sea_orm::{
+    EntityTrait, QueryFilter,
+    entity::*,
+    prelude::{Expr, async_trait},
+};
 
 #[async_trait::async_trait]
 pub trait PaymentHistoryCommandTrait {
