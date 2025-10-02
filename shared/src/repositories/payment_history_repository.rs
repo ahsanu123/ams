@@ -1,10 +1,9 @@
-use crate::utilities::generate_start_end_month::generate_start_end_month;
 use crate::{
     models::monthly_payment_summary::MonthlyPaymentSummary,
     repositories::abstract_repository_trait::AbstractRepository,
 };
 use ams_entity::{payment_history_table, prelude::*, taking_record_table};
-use chrono::{Datelike, Days, NaiveDateTime};
+use chrono::{Days, NaiveDateTime};
 use sea_orm::{
     entity::*,
     prelude::{Expr, async_trait::async_trait},

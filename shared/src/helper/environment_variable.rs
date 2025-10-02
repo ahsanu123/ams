@@ -17,8 +17,10 @@ impl EnvironmentVariable {
         Self {
             sqlite_connection_string: dotenvy::var("sqlite_connection_string")
                 .expect("sqlite connection must provided!!!"),
+
             postgres_connection_string: dotenvy::var("postgres_connection_string")
                 .expect("postgresql connection must provided!!!"),
+
             ams_database_version: dotenvy::var("ams_database_version")
                 .expect("please provide ams_database_version!!")
                 .parse::<i32>()

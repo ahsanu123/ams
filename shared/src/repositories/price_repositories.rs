@@ -1,4 +1,4 @@
-use ams_entity::{prelude::*, price_history_table, user_table};
+use ams_entity::{prelude::*, price_history_table};
 use sea_orm::{entity::*, prelude::async_trait::async_trait, query::*};
 
 use crate::repositories::get_sql_connection_trait::GetSqlConnectionTrait;
