@@ -64,6 +64,10 @@ where
     responses(
         (status = 200, description = "success"),
         (status = NOT_FOUND, description = "not found")
+    ),
+    request_body(
+        content =  request_model::AddNewTakingRecord,
+        content_type =  "application/json",
     )
 )]
 #[post("/taking-record/add-new-taking-record")]
@@ -80,6 +84,10 @@ pub async fn add_new_taking_record(
     responses(
         (status = 200, description = "success"),
         (status = NOT_FOUND, description = "not found")
+    ),
+    request_body(
+        content =  request_model::GetTakingRecordByUserId,
+        content_type =  "application/json",
     )
 )]
 #[post("/taking-record/get-taking-record-by-user-id")]
@@ -96,6 +104,10 @@ pub async fn get_taking_record_by_user_id(
     responses(
         (status = 200, description = "success"),
         (status = NOT_FOUND, description = "not found")
+    ),
+    request_body(
+        content =  request_model::UpdateTakingRecord,
+        content_type =  "application/json",
     )
 )]
 #[post("/taking-record/upsert-taking-record")]
@@ -112,6 +124,10 @@ pub async fn upsert_taking_record(
     responses(
         (status = 200, description = "success"),
         (status = NOT_FOUND, description = "not found")
+    ),
+    request_body(
+        content =  request_model::GetTakingRecordByMonth,
+        content_type =  "application/json",
     )
 )]
 #[post("/taking-record/get-taking-record-by-date")]
@@ -128,6 +144,10 @@ pub async fn get_taking_record_by_month(
     responses(
         (status = 200, description = "success"),
         (status = NOT_FOUND, description = "not found")
+    ),
+    request_body(
+        content =  request_model::GetTakingRecordByUserIdAndMonth,
+        content_type =  "application/json",
     )
 )]
 #[post("/taking-record/get-taking-record-by-user-id-and-date")]

@@ -44,6 +44,10 @@ where
     responses(
         (status = 200, description = "success"),
         (status = NOT_FOUND, description = "not found")
+    ),
+    request_body(
+        content =  request_model::AddMoney,
+        content_type =  "application/json",
     )
 )]
 #[post("/customer/add-money")]
@@ -60,6 +64,10 @@ pub async fn add_money(request: Json<request_model::AddMoney>) -> impl Responder
     responses(
         (status = 200, description = "success"),
         (status = NOT_FOUND, description = "not found")
+    ),
+    request_body(
+        content =  request_model::GetAllUserMoney,
+        content_type =  "application/json",
     )
 )]
 #[post("/customer/get-all-user-money")]

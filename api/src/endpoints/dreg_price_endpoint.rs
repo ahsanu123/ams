@@ -38,7 +38,7 @@ where
     responses(
         (status = 200, description = "success"),
         (status = NOT_FOUND, description = "not found")
-    )
+    ),
 )]
 #[get("/dreg-price/get-latest-dreg-price")]
 pub async fn get_latest_dreg_price() -> impl Responder {
@@ -52,6 +52,10 @@ pub async fn get_latest_dreg_price() -> impl Responder {
     responses(
         (status = 200, description = "success"),
         (status = NOT_FOUND, description = "not found")
+    ),
+    request_body(
+        content =  request_model::UpdateDregPrice,
+        content_type =  "application/json",
     )
 )]
 #[post("/dreg-price/update-dreg-price")]
@@ -61,7 +65,7 @@ pub async fn update_dreg_price(request: Json<request_model::UpdateDregPrice>) ->
 }
 
 #[utoipa::path(
-    post,
+    get,
     path = "/dreg-price/get-all-price",
     responses(
         (status = 200, description = "success"),

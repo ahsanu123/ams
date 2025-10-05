@@ -74,6 +74,10 @@ where
     responses(
         (status = 200, description = "success"),
         (status = NOT_FOUND, description = "not found")
+    ),
+    request_body(
+        content =  request_model::UpdateDregPrice,
+        content_type =  "application/json",
     )
 )]
 #[post("/payment/get-payment-record")]
@@ -90,6 +94,10 @@ pub async fn get_payment_record_by_user_id(
     responses(
         (status = 200, description = "success"),
         (status = NOT_FOUND, description = "not found")
+    ),
+    request_body(
+        content =  request_model::GetMonthSummaryByDate,
+        content_type =  "application/json",
     )
 )]
 #[post("/payment/get-month-summary")]
@@ -106,6 +114,10 @@ pub async fn get_month_summary(
     responses(
         (status = 200, description = "success"),
         (status = NOT_FOUND, description = "not found")
+    ),
+    request_body(
+        content =  request_model::GetPaymentRecord,
+        content_type =  "application/json",
     )
 )]
 #[post("/payment/get-payment-record")]
@@ -126,6 +138,10 @@ pub async fn get_payment_record_by_user_id_and_month(
     responses(
         (status = 200, description = "success"),
         (status = NOT_FOUND, description = "not found")
+    ),
+    request_body(
+        content =  request_model::GetPaymentRecordByUserId,
+        content_type =  "application/json",
     )
 )]
 #[post("/payment/get-month-summary-by-user-id")]
@@ -144,6 +160,10 @@ pub async fn get_month_summary_by_user_id(
     responses(
         (status = 200, description = "success"),
         (status = NOT_FOUND, description = "not found")
+    ),
+    request_body(
+        content =  request_model::UpdatePaymentRecord,
+        content_type =  "application/json",
     )
 )]
 #[post("/payment/update-payment-record")]
@@ -160,6 +180,10 @@ pub async fn update_payment_record(
     responses(
         (status = 200, description = "success"),
         (status = NOT_FOUND, description = "not found")
+    ),
+    request_body(
+        content =  request_model::UpdateBulkPaymentRecord,
+        content_type =  "application/json",
     )
 )]
 #[post("/payment/update-bulk-payment-record")]

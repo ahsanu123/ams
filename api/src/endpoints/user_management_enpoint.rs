@@ -48,6 +48,10 @@ where
     responses(
         (status = 200, description = "success"),
         (status = NOT_FOUND, description = "not found")
+    ),
+    request_body(
+        content =  request_model::InsertNewUser,
+        content_type =  "application/json",
     )
 )]
 #[post("/user-management/insert-new-user")]
@@ -57,7 +61,7 @@ pub async fn insert_new_user(request: Json<request_model::InsertNewUser>) -> imp
 }
 
 #[utoipa::path(
-    post,
+    get,
     path = "/user-management/get-all-user",
     responses(
         (status = 200, description = "success"),
@@ -71,7 +75,7 @@ pub async fn get_all_user() -> impl Responder {
 }
 
 #[utoipa::path(
-    post,
+    get,
     path = "/user-management/get-all-active-user",
     responses(
         (status = 200, description = "success"),
@@ -90,6 +94,10 @@ pub async fn get_all_active_user() -> impl Responder {
     responses(
         (status = 200, description = "success"),
         (status = NOT_FOUND, description = "not found")
+    ),
+    request_body(
+        content =  request_model::UpsertUser,
+        content_type =  "application/json",
     )
 )]
 #[post("/user-management/upsert-user")]
