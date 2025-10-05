@@ -6,10 +6,11 @@ use actix_web::{
     web::Json,
 };
 use serde::Deserialize;
+use utoipa::{OpenApi, ToSchema};
 
 mod request_model {
     use super::*;
-    #[derive(Deserialize)]
+    #[derive(Deserialize, ToSchema)]
     pub struct UpdateDregPrice {
         new_price: i64,
     }
@@ -30,16 +31,40 @@ where
     }
 }
 
+#[utoipa::path(
+    post,
+    path = "/dreg-price/get-latest-dreg-price",
+    responses(
+        (status = 200, description = "success"),
+        (status = NOT_FOUND, description = "not found")
+    )
+)]
 #[get("/dreg-price/get-latest-dreg-price")]
 pub async fn get_latest_dreg_price() -> impl Responder {
     HttpResponse::Ok()
 }
 
+#[utoipa::path(
+    post,
+    path = "/dreg-price/update-dreg-price",
+    responses(
+        (status = 200, description = "success"),
+        (status = NOT_FOUND, description = "not found")
+    )
+)]
 #[post("/dreg-price/update-dreg-price")]
 pub async fn update_dreg_price(request: Json<request_model::UpdateDregPrice>) -> impl Responder {
     HttpResponse::Ok()
 }
 
+#[utoipa::path(
+    post,
+    path = "/dreg-price/get-all-price",
+    responses(
+        (status = 200, description = "success"),
+        (status = NOT_FOUND, description = "not found")
+    )
+)]
 #[get("/dreg-price/get-all-price")]
 pub async fn get_all_dreg_price() -> impl Responder {
     HttpResponse::Ok()

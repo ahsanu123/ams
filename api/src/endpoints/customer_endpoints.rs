@@ -6,16 +6,17 @@ use actix_web::{
     web::Json,
 };
 use serde::Deserialize;
+use utoipa::{OpenApi, ToSchema};
 
 mod request_model {
     use super::*;
-    #[derive(Deserialize)]
+    #[derive(Deserialize, ToSchema)]
     pub struct AddMoney {
         user_id: i64,
         amount: i64,
     }
 
-    #[derive(Deserialize)]
+    #[derive(Deserialize, ToSchema)]
     pub struct GetAllUserMoney {
         user_id: i64,
     }
@@ -34,11 +35,27 @@ where
     }
 }
 
+#[utoipa::path(
+    post,
+    path = "/customer/add-money",
+    responses(
+        (status = 200, description = "success"),
+        (status = NOT_FOUND, description = "not found")
+    )
+)]
 #[post("/customer/add-money")]
 pub async fn add_money(request: Json<request_model::AddMoney>) -> impl Responder {
     HttpResponse::Ok()
 }
 
+#[utoipa::path(
+    post,
+    path = "/customer/get-all-user-money",
+    responses(
+        (status = 200, description = "success"),
+        (status = NOT_FOUND, description = "not found")
+    )
+)]
 #[post("/customer/get-all-user-money")]
 pub async fn get_all_user_money_history(
     request: Json<request_model::GetAllUserMoney>,

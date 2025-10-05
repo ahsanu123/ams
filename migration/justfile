@@ -24,7 +24,10 @@ run:
   RUST_BACKTRACE=1 cargo run
 
 gen-entity:
-  DATABASE_URL=sqlite://../app/src-tauri/ams.sqlite?mode=rwc sea-orm-cli generate entity  -o ./../entity/ --lib --with-serde both
+  DATABASE_URL=sqlite://../app/src-tauri/ams.sqlite?mode=rwc \
+      sea-orm-cli generate entity  -o ./../entity/ \
+      --lib --with-serde both \
+      --model-extra-derives 'utoipa::ToSchema'
 
 delete-database-file:
   rm ../app/src-tauri/ams.sqlite

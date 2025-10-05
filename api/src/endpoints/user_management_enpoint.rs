@@ -7,16 +7,17 @@ use actix_web::{
 };
 use ams_entity::user_table;
 use serde::Deserialize;
+use utoipa::{OpenApi, ToSchema};
 
 mod request_model {
     use super::*;
 
-    #[derive(Deserialize)]
+    #[derive(Deserialize, ToSchema)]
     pub struct InsertNewUser {
         new_user: user_table::Model,
     }
 
-    #[derive(Deserialize)]
+    #[derive(Deserialize, ToSchema)]
     pub struct UpsertUser {
         user: user_table::Model,
     }
@@ -38,21 +39,53 @@ where
     }
 }
 
+#[utoipa::path(
+    post,
+    path = "/user-management/insert-new-user",
+    responses(
+        (status = 200, description = "success"),
+        (status = NOT_FOUND, description = "not found")
+    )
+)]
 #[post("/user-management/insert-new-user")]
 pub async fn insert_new_user(request: Json<request_model::InsertNewUser>) -> impl Responder {
     HttpResponse::Ok()
 }
 
+#[utoipa::path(
+    post,
+    path = "/user-management/get-all-user",
+    responses(
+        (status = 200, description = "success"),
+        (status = NOT_FOUND, description = "not found")
+    )
+)]
 #[get("/user-management/get-all-user")]
 pub async fn get_all_user() -> impl Responder {
     HttpResponse::Ok()
 }
 
+#[utoipa::path(
+    post,
+    path = "/user-management/get-all-active-user",
+    responses(
+        (status = 200, description = "success"),
+        (status = NOT_FOUND, description = "not found")
+    )
+)]
 #[get("/user-management/get-all-active-user")]
 pub async fn get_all_active_user() -> impl Responder {
     HttpResponse::Ok()
 }
 
+#[utoipa::path(
+    post,
+    path = "/user-management/upsert-user",
+    responses(
+        (status = 200, description = "success"),
+        (status = NOT_FOUND, description = "not found")
+    )
+)]
 #[post("/user-management/upsert-user")]
 pub async fn upsert_user(request: Json<request_model::UpsertUser>) -> impl Responder {
     HttpResponse::Ok()

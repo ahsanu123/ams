@@ -11,6 +11,9 @@ sea-orm = { version = "1.1.16", features = [
   "with-chrono"
 ] }
 serde = "1.0.228"
+utoipa = {version = "5.4.0", features = [
+  "chrono"
+]}
 
 [lib]
 path = "lib.rs"

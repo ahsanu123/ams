@@ -8,38 +8,39 @@ use actix_web::{
 use ams_entity::payment_history_table;
 use chrono::NaiveDateTime;
 use serde::Deserialize;
+use utoipa::{OpenApi, ToSchema};
 
 mod request_model {
     use super::*;
 
-    #[derive(Deserialize)]
+    #[derive(Deserialize, ToSchema)]
     pub struct UpdateDregPrice {
         user_id: i32,
     }
 
-    #[derive(Deserialize)]
+    #[derive(Deserialize, ToSchema)]
     pub struct GetMonthSummaryByDate {
         date: NaiveDateTime,
     }
 
-    #[derive(Deserialize)]
+    #[derive(Deserialize, ToSchema)]
     pub struct GetPaymentRecord {
         user_id: i32,
         date: NaiveDateTime,
     }
 
-    #[derive(Deserialize)]
+    #[derive(Deserialize, ToSchema)]
     pub struct GetPaymentRecordByUserId {
         user_id: i32,
         date: NaiveDateTime,
     }
 
-    #[derive(Deserialize)]
+    #[derive(Deserialize, ToSchema)]
     pub struct UpdatePaymentRecord {
         record: payment_history_table::Model,
     }
 
-    #[derive(Deserialize)]
+    #[derive(Deserialize, ToSchema)]
     pub struct UpdateBulkPaymentRecord {
         records: Vec<payment_history_table::Model>,
         paid: bool,
@@ -64,6 +65,14 @@ where
     }
 }
 
+#[utoipa::path(
+    post,
+    path = "/payment/get-payment-record",
+    responses(
+        (status = 200, description = "success"),
+        (status = NOT_FOUND, description = "not found")
+    )
+)]
 #[post("/payment/get-payment-record")]
 pub async fn get_payment_record_by_user_id(
     request: Json<request_model::UpdateDregPrice>,
@@ -71,6 +80,14 @@ pub async fn get_payment_record_by_user_id(
     HttpResponse::Ok()
 }
 
+#[utoipa::path(
+    post,
+    path = "/payment/get-month-summary",
+    responses(
+        (status = 200, description = "success"),
+        (status = NOT_FOUND, description = "not found")
+    )
+)]
 #[post("/payment/get-month-summary")]
 pub async fn get_month_summary(
     request: Json<request_model::GetMonthSummaryByDate>,
@@ -78,6 +95,14 @@ pub async fn get_month_summary(
     HttpResponse::Ok()
 }
 
+#[utoipa::path(
+    post,
+    path = "/payment/get-payment-record",
+    responses(
+        (status = 200, description = "success"),
+        (status = NOT_FOUND, description = "not found")
+    )
+)]
 #[post("/payment/get-payment-record")]
 pub async fn get_payment_record_by_user_id_and_month(
     request: Json<request_model::GetPaymentRecord>,
@@ -85,6 +110,14 @@ pub async fn get_payment_record_by_user_id_and_month(
     HttpResponse::Ok()
 }
 
+#[utoipa::path(
+    post,
+    path = "/payment/get-month-summary-by-user-id",
+    responses(
+        (status = 200, description = "success"),
+        (status = NOT_FOUND, description = "not found")
+    )
+)]
 #[post("/payment/get-month-summary-by-user-id")]
 pub async fn get_month_summary_by_user_id(
     request: Json<request_model::GetPaymentRecordByUserId>,
@@ -92,6 +125,14 @@ pub async fn get_month_summary_by_user_id(
     HttpResponse::Ok()
 }
 
+#[utoipa::path(
+    post,
+    path = "/payment/update-payment-record",
+    responses(
+        (status = 200, description = "success"),
+        (status = NOT_FOUND, description = "not found")
+    )
+)]
 #[post("/payment/update-payment-record")]
 pub async fn update_payment_record(
     request: Json<request_model::UpdatePaymentRecord>,
@@ -99,6 +140,14 @@ pub async fn update_payment_record(
     HttpResponse::Ok()
 }
 
+#[utoipa::path(
+    post,
+    path = "/payment/update-bulk-payment-record",
+    responses(
+        (status = 200, description = "success"),
+        (status = NOT_FOUND, description = "not found")
+    )
+)]
 #[post("/payment/update-bulk-payment-record")]
 pub async fn update_bulk_payment_record(
     request: Json<request_model::UpdateBulkPaymentRecord>,
