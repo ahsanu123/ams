@@ -8,7 +8,7 @@ use actix_web::{
 use ams_entity::payment_history_table;
 use chrono::NaiveDateTime;
 use serde::Deserialize;
-use utoipa::{OpenApi, ToSchema};
+use utoipa::ToSchema;
 
 mod request_model {
     use super::*;

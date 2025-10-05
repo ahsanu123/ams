@@ -6,7 +6,7 @@ use actix_web::{
     web::Json,
 };
 use serde::Deserialize;
-use utoipa::{OpenApi, ToSchema};
+use utoipa::ToSchema;
 
 mod request_model {
     use super::*;

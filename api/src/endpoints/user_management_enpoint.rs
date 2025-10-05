@@ -7,7 +7,7 @@ use actix_web::{
 };
 use ams_entity::user_table;
 use serde::Deserialize;
-use utoipa::{OpenApi, ToSchema};
+use utoipa::ToSchema;
 
 mod request_model {
     use super::*;

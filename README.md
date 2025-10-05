@@ -109,6 +109,7 @@ flowchart TD
 - make binary runable -> `sudo chmod +x binaryName`
 - to debug output of macro run `dbg!(variable);`
 - **quote!** repetition -> [repetition](https://docs.rs/quote/latest/quote/macro.quote.html#interpolation)
+- swagger ui with utoipa actix swagger-ui `http://localhost:9090/swagger-ui/index.html`
  
 ## ⚓ Reference 
 

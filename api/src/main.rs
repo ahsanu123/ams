@@ -1,4 +1,5 @@
 use actix_web::{App, HttpServer};
+use ams_api::endpoints::ApiDoc;
 use ams_api::endpoints::{
     customer_endpoints::CustomerServiceExtensionTrait,
     dreg_price_endpoint::DregsPriceServiceExtensionTrait,
@@ -7,10 +8,23 @@ use ams_api::endpoints::{
     user_management_enpoint::UserManagementServiceExtensionTrait,
 };
 
+use utoipa::OpenApi;
+use utoipa_actix_web::AppExt;
+use utoipa_swagger_ui::{Config, SwaggerUi};
+
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
-    HttpServer::new(|| {
+    HttpServer::new(move || {
         App::new()
+            .into_utoipa_app()
+            .openapi(ApiDoc::openapi())
+            .openapi_service(|api| {
+                SwaggerUi::new("/swagger-ui/{_:.*}")
+                    .url("/api/openapi.json", api)
+                    .config(Config::default().try_it_out_enabled(true))
+            })
+            .into_app()
+            // register all endpoint here to be able to accessed
             .register_customer_endpoints()
             .register_dregs_price_endpoints()
             .register_payment_endpoints()

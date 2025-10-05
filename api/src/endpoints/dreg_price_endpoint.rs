@@ -6,7 +6,7 @@ use actix_web::{
     web::Json,
 };
 use serde::Deserialize;
-use utoipa::{OpenApi, ToSchema};
+use utoipa::ToSchema;
 
 mod request_model {
     use super::*;
@@ -32,7 +32,7 @@ where
 }
 
 #[utoipa::path(
-    post,
+    get,
     path = "/dreg-price/get-latest-dreg-price",
     responses(
         (status = 200, description = "success"),
