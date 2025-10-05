@@ -5,6 +5,7 @@ use actix_web::{
     get, post,
     web::Json,
 };
+use ams_shared::commands::dreg_price_command::{DregPriceCommand, DregPriceCommandTrait};
 use serde::Deserialize;
 use utoipa::ToSchema;
 
@@ -12,7 +13,7 @@ mod request_model {
     use super::*;
     #[derive(Deserialize, ToSchema)]
     pub struct UpdateDregPrice {
-        new_price: i64,
+        pub new_price: i64,
     }
 }
 
@@ -41,7 +42,8 @@ where
 )]
 #[get("/dreg-price/get-latest-dreg-price")]
 pub async fn get_latest_dreg_price() -> impl Responder {
-    HttpResponse::Ok()
+    let result = DregPriceCommand::get_latest_dreg_price().await.unwrap();
+    HttpResponse::Ok().json(result)
 }
 
 #[utoipa::path(
@@ -54,7 +56,8 @@ pub async fn get_latest_dreg_price() -> impl Responder {
 )]
 #[post("/dreg-price/update-dreg-price")]
 pub async fn update_dreg_price(request: Json<request_model::UpdateDregPrice>) -> impl Responder {
-    HttpResponse::Ok()
+    let result = DregPriceCommand::update_dreg_price(request.new_price).await;
+    HttpResponse::Ok().json(result)
 }
 
 #[utoipa::path(
@@ -67,5 +70,6 @@ pub async fn update_dreg_price(request: Json<request_model::UpdateDregPrice>) ->
 )]
 #[get("/dreg-price/get-all-price")]
 pub async fn get_all_dreg_price() -> impl Responder {
-    HttpResponse::Ok()
+    let result = DregPriceCommand::get_all_dreg_price().await;
+    HttpResponse::Ok().json(result)
 }

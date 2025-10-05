@@ -6,6 +6,9 @@ use actix_web::{
     web::Json,
 };
 use ams_entity::payment_history_table;
+use ams_shared::commands::payment_history_command::{
+    PaymentHistoryCommad, PaymentHistoryCommandTrait,
+};
 use chrono::NaiveDateTime;
 use serde::Deserialize;
 use utoipa::ToSchema;
@@ -15,35 +18,35 @@ mod request_model {
 
     #[derive(Deserialize, ToSchema)]
     pub struct UpdateDregPrice {
-        user_id: i32,
+        pub user_id: i32,
     }
 
     #[derive(Deserialize, ToSchema)]
     pub struct GetMonthSummaryByDate {
-        date: NaiveDateTime,
+        pub date: NaiveDateTime,
     }
 
     #[derive(Deserialize, ToSchema)]
     pub struct GetPaymentRecord {
-        user_id: i32,
-        date: NaiveDateTime,
+        pub user_id: i32,
+        pub date: NaiveDateTime,
     }
 
     #[derive(Deserialize, ToSchema)]
     pub struct GetPaymentRecordByUserId {
-        user_id: i32,
-        date: NaiveDateTime,
+        pub user_id: i32,
+        pub date: NaiveDateTime,
     }
 
     #[derive(Deserialize, ToSchema)]
     pub struct UpdatePaymentRecord {
-        record: payment_history_table::Model,
+        pub record: payment_history_table::Model,
     }
 
     #[derive(Deserialize, ToSchema)]
     pub struct UpdateBulkPaymentRecord {
-        records: Vec<payment_history_table::Model>,
-        paid: bool,
+        pub records: Vec<payment_history_table::Model>,
+        pub paid: bool,
     }
 }
 
@@ -77,7 +80,8 @@ where
 pub async fn get_payment_record_by_user_id(
     request: Json<request_model::UpdateDregPrice>,
 ) -> impl Responder {
-    HttpResponse::Ok()
+    let result = PaymentHistoryCommad::get_payment_record_by_user_id(request.user_id).await;
+    HttpResponse::Ok().json(result)
 }
 
 #[utoipa::path(
@@ -92,7 +96,8 @@ pub async fn get_payment_record_by_user_id(
 pub async fn get_month_summary(
     request: Json<request_model::GetMonthSummaryByDate>,
 ) -> impl Responder {
-    HttpResponse::Ok()
+    let result = PaymentHistoryCommad::get_month_summary(request.date).await;
+    HttpResponse::Ok().json(result)
 }
 
 #[utoipa::path(
@@ -107,7 +112,12 @@ pub async fn get_month_summary(
 pub async fn get_payment_record_by_user_id_and_month(
     request: Json<request_model::GetPaymentRecord>,
 ) -> impl Responder {
-    HttpResponse::Ok()
+    let result = PaymentHistoryCommad::get_payment_record_by_user_id_and_month(
+        request.user_id,
+        request.date,
+    )
+    .await;
+    HttpResponse::Ok().json(result)
 }
 
 #[utoipa::path(
@@ -122,7 +132,10 @@ pub async fn get_payment_record_by_user_id_and_month(
 pub async fn get_month_summary_by_user_id(
     request: Json<request_model::GetPaymentRecordByUserId>,
 ) -> impl Responder {
-    HttpResponse::Ok()
+    let result =
+        PaymentHistoryCommad::get_month_summary_by_user_id(request.user_id, request.date).await;
+
+    HttpResponse::Ok().json(result)
 }
 
 #[utoipa::path(
@@ -137,7 +150,8 @@ pub async fn get_month_summary_by_user_id(
 pub async fn update_payment_record(
     request: Json<request_model::UpdatePaymentRecord>,
 ) -> impl Responder {
-    HttpResponse::Ok()
+    let result = PaymentHistoryCommad::update_payment_record(request.record.clone()).await;
+    HttpResponse::Ok().json(result)
 }
 
 #[utoipa::path(
@@ -152,5 +166,9 @@ pub async fn update_payment_record(
 pub async fn update_bulk_payment_record(
     request: Json<request_model::UpdateBulkPaymentRecord>,
 ) -> impl Responder {
-    HttpResponse::Ok()
+    let result =
+        PaymentHistoryCommad::update_bulk_payment_record(request.records.clone(), request.paid)
+            .await;
+
+    HttpResponse::Ok().json(result)
 }

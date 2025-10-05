@@ -6,6 +6,9 @@ use actix_web::{
     web::Json,
 };
 use ams_entity::user_table;
+use ams_shared::commands::user_management_command::{
+    UserManagementCommand, UserManagementCommandTrait,
+};
 use serde::Deserialize;
 use utoipa::ToSchema;
 
@@ -14,12 +17,12 @@ mod request_model {
 
     #[derive(Deserialize, ToSchema)]
     pub struct InsertNewUser {
-        new_user: user_table::Model,
+        pub new_user: user_table::Model,
     }
 
     #[derive(Deserialize, ToSchema)]
     pub struct UpsertUser {
-        user: user_table::Model,
+        pub user: user_table::Model,
     }
 }
 
@@ -49,7 +52,8 @@ where
 )]
 #[post("/user-management/insert-new-user")]
 pub async fn insert_new_user(request: Json<request_model::InsertNewUser>) -> impl Responder {
-    HttpResponse::Ok()
+    let result = UserManagementCommand::insert_new_user(request.new_user.clone()).await;
+    HttpResponse::Ok().json(result)
 }
 
 #[utoipa::path(
@@ -62,7 +66,8 @@ pub async fn insert_new_user(request: Json<request_model::InsertNewUser>) -> imp
 )]
 #[get("/user-management/get-all-user")]
 pub async fn get_all_user() -> impl Responder {
-    HttpResponse::Ok()
+    let result = UserManagementCommand::get_all_user().await;
+    HttpResponse::Ok().json(result)
 }
 
 #[utoipa::path(
@@ -75,7 +80,8 @@ pub async fn get_all_user() -> impl Responder {
 )]
 #[get("/user-management/get-all-active-user")]
 pub async fn get_all_active_user() -> impl Responder {
-    HttpResponse::Ok()
+    let result = UserManagementCommand::get_all_user().await;
+    HttpResponse::Ok().json(result)
 }
 
 #[utoipa::path(
@@ -88,5 +94,6 @@ pub async fn get_all_active_user() -> impl Responder {
 )]
 #[post("/user-management/upsert-user")]
 pub async fn upsert_user(request: Json<request_model::UpsertUser>) -> impl Responder {
-    HttpResponse::Ok()
+    let result = UserManagementCommand::upsert_user(request.user.clone()).await;
+    HttpResponse::Ok().json(result)
 }

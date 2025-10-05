@@ -6,6 +6,7 @@ use actix_web::{
     web::Json,
 };
 use ams_entity::taking_record_table;
+use ams_shared::commands::taking_record_command::{TakingRecordCommand, TakingRecordCommandTrait};
 use chrono::NaiveDateTime;
 use serde::Deserialize;
 use utoipa::ToSchema;
@@ -26,18 +27,18 @@ mod request_model {
 
     #[derive(Deserialize, ToSchema)]
     pub struct UpdateTakingRecord {
-        record: taking_record_table::Model,
+        pub record: taking_record_table::Model,
     }
 
     #[derive(Deserialize, ToSchema)]
     pub struct GetTakingRecordByMonth {
-        record: taking_record_table::Model,
+        pub date: NaiveDateTime,
     }
 
     #[derive(Deserialize, ToSchema)]
     pub struct GetTakingRecordByUserIdAndMonth {
-        user_id: i32,
-        date: NaiveDateTime,
+        pub user_id: i32,
+        pub date: NaiveDateTime,
     }
 }
 
@@ -69,7 +70,8 @@ where
 pub async fn add_new_taking_record(
     request: Json<request_model::AddNewTakingRecord>,
 ) -> impl Responder {
-    HttpResponse::Ok()
+    let result = TakingRecordCommand::add_new_taking_record(request.user_id, request.amount).await;
+    HttpResponse::Ok().json(result)
 }
 
 #[utoipa::path(
@@ -84,7 +86,8 @@ pub async fn add_new_taking_record(
 pub async fn get_taking_record_by_user_id(
     request: Json<request_model::GetTakingRecordByUserId>,
 ) -> impl Responder {
-    HttpResponse::Ok()
+    let result = TakingRecordCommand::get_taking_record_by_user_id(request.user_id).await;
+    HttpResponse::Ok().json(result)
 }
 
 #[utoipa::path(
@@ -99,7 +102,8 @@ pub async fn get_taking_record_by_user_id(
 pub async fn upsert_taking_record(
     request: Json<request_model::UpdateTakingRecord>,
 ) -> impl Responder {
-    HttpResponse::Ok()
+    let result = TakingRecordCommand::upsert_taking_record(request.record.clone()).await;
+    HttpResponse::Ok().json(result)
 }
 
 #[utoipa::path(
@@ -114,7 +118,8 @@ pub async fn upsert_taking_record(
 pub async fn get_taking_record_by_month(
     request: Json<request_model::GetTakingRecordByMonth>,
 ) -> impl Responder {
-    HttpResponse::Ok()
+    let result = TakingRecordCommand::get_taking_record_by_month(request.date).await;
+    HttpResponse::Ok().json(result)
 }
 
 #[utoipa::path(
@@ -129,5 +134,8 @@ pub async fn get_taking_record_by_month(
 pub async fn get_taking_record_by_user_id_and_month(
     request: Json<request_model::GetTakingRecordByUserIdAndMonth>,
 ) -> impl Responder {
-    HttpResponse::Ok()
+    let result =
+        TakingRecordCommand::get_taking_record_by_user_id_and_month(request.user_id, request.date)
+            .await;
+    HttpResponse::Ok().json(result)
 }

@@ -5,6 +5,9 @@ use actix_web::{
     post,
     web::Json,
 };
+use ams_shared::commands::customer_money_command::{
+    CustomerMoneyCommand, CustomerMoneyCommandTrait,
+};
 use serde::Deserialize;
 use utoipa::ToSchema;
 
@@ -12,13 +15,13 @@ mod request_model {
     use super::*;
     #[derive(Deserialize, ToSchema)]
     pub struct AddMoney {
-        user_id: i64,
-        amount: i64,
+        pub user_id: i64,
+        pub amount: i64,
     }
 
     #[derive(Deserialize, ToSchema)]
     pub struct GetAllUserMoney {
-        user_id: i64,
+        pub user_id: i64,
     }
 }
 
@@ -45,7 +48,10 @@ where
 )]
 #[post("/customer/add-money")]
 pub async fn add_money(request: Json<request_model::AddMoney>) -> impl Responder {
-    HttpResponse::Ok()
+    let result = CustomerMoneyCommand::add_money(request.user_id, request.amount)
+        .await
+        .unwrap();
+    HttpResponse::Ok().json(result)
 }
 
 #[utoipa::path(
@@ -60,5 +66,6 @@ pub async fn add_money(request: Json<request_model::AddMoney>) -> impl Responder
 pub async fn get_all_user_money_history(
     request: Json<request_model::GetAllUserMoney>,
 ) -> impl Responder {
-    HttpResponse::Ok()
+    let result = CustomerMoneyCommand::get_all_user_money_history(request.user_id).await;
+    HttpResponse::Ok().json(result)
 }
