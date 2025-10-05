@@ -5,6 +5,9 @@ edition = "2024"
 
 [dependencies]
 ams_shared = {path = "../shared"}
+ams_entity = {path = "../entity"}
 
+chrono = "0.4.39"
 actix-web = "4"
 serde = "1.0.226"
+async-trait = "0.1.89"
