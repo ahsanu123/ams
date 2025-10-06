@@ -1,3 +1,4 @@
+use actix_cors::Cors;
 use actix_web::{App, HttpServer};
 use ams_api::endpoints::ApiDoc;
 use ams_api::endpoints::{
@@ -15,7 +16,13 @@ use utoipa_swagger_ui::{Config, SwaggerUi};
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
     HttpServer::new(move || {
+        let cors = Cors::default()
+            .allow_any_header()
+            .allow_any_origin()
+            .allow_any_method();
+
         App::new()
+            .wrap(cors)
             .into_utoipa_app()
             .openapi(ApiDoc::openapi())
             .openapi_service(|api| {
