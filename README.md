@@ -14,19 +14,27 @@
 </p>
 
  <img alt="licence" src="./docs/ams-logo.svg">
-  
+
 # 🥔 Introduction
-Ampas Management System (AMS) is a personal project designed to streamline and manage the selling process of soybean dregs (ampas). It simplifies daily operations by providing an efficient way to track sales and manage records.
 
-AMS is a desktop application built with Tauri, leveraging its lightweight, secure, and cross-platform capabilities for an optimal native experience. The frontend is developed using React Router v7 as a framework, utilizing its modern routing and data APIs for a clean, maintainable client-side architecture—without the complexity of server-side rendering (SSR).
+Ampas Management System (AMS) is a personal project built to streamline and manage the selling process of soybean dregs (ampas). It simplifies daily operations by providing an efficient way to track sales and manage records, making day-to-day management easier and more organized.
 
-On the backend, AMS uses:
+AMS is designed as a desktop application powered by Tauri, offering a lightweight, secure, and cross-platform native experience. To accelerate development, the project is structured into three separate modules:
+- Shared – Common data models, utilities, and types used across the system.
+- API – A standalone backend service that can be developed and tested independently.
+- Tauri – The desktop shell that packages the frontend and backend into a native app.
 
-- 🚒 Diesel, a type-safe and efficient query builder for Rust.
-- 🐟 Sea-query, providing flexible and easy-to-manage database migrations.
-- 🩹 React Router V7, modern routing with Suspense Feature.
+This modular setup allows frontend development to be done directly in the browser—interacting with the API via fetch—without needing to recompile Tauri for every change, significantly improving iteration speed.
 
-The goal of AMS is to deliver a simple, fast, and reliable system tailored for personal use in managing the daily sales operations of soybean dregs.
+### 🩼 Tech Stack
+
+- 🐟 SeaORM – A modern, async ORM for Rust that simplifies database operations while maintaining type safety.
+- 🌊 SeaQuery – Flexible and maintainable database migration management.
+- ⚛️ React Router v7 – Provides modern routing, data APIs, and the Suspense feature for a clean, maintainable frontend architecture. 
+
+ ### 🎯 Goal
+
+The goal of AMS is to deliver a simple, fast, and reliable system tailored for personal use, focused on managing and tracking the daily sales operations of soybean dregs efficiently in limited resource device.
 
 ## 🌳 Project Log
 
