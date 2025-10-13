@@ -11,7 +11,7 @@ interface MainAdminPageState extends IBaseState {
   selectedMenu?: FlatMenuTree,
   setSelectedMenu: (menu: FlatMenuTree) => void,
 
-  activeMenu: FlatMenuTree[],
+  // activeMenu: FlatMenuTree[],
   setActiveMenu: (path: string) => void,
 
   getSubMenu: (path: string) => FlatMenuTree[]
@@ -25,16 +25,16 @@ export const useMainAdminPageState = create<MainAdminPageState>()(
 
     reset: () => {
       set((state) => {
-        state.activeMenu = state.getRootMenu()
+        // state.activeMenu = state.getRootMenu()
       })
     },
 
     allMenu: defaultFlatMenuTree,
-    activeMenu: defaultFlatMenuTree.filter(pr => pr.isRoot),
+    // activeMenu: defaultFlatMenuTree.at(0),
 
     setActiveMenu: (path) => {
       set((state) => {
-        state.activeMenu = state.allMenu.filter(pr => pr.path.startsWith(path))
+        // state.activeMenu = state.allMenu.filter(pr => pr.path.startsWith(path))
       })
     },
 
@@ -49,7 +49,7 @@ export const useMainAdminPageState = create<MainAdminPageState>()(
     getRootMenu: () => get().allMenu.filter(pr => pr.isRoot),
     setActiveMenuBackToRoot: () => {
       set((state) => {
-        state.activeMenu = defaultFlatMenuTree.filter(pr => pr.isRoot)
+        // state.activeMenu = defaultFlatMenuTree.filter(pr => pr.isRoot)
       })
     }
 

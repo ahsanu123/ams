@@ -15,27 +15,32 @@ mod request_model {
     use super::*;
 
     #[derive(Deserialize, ToSchema)]
+    #[serde(rename_all = "camelCase")]
     pub struct AddNewTakingRecord {
         pub user_id: i32,
         pub amount: i32,
     }
 
     #[derive(Deserialize, ToSchema)]
+    #[serde(rename_all = "camelCase")]
     pub struct GetTakingRecordByUserId {
         pub user_id: i32,
     }
 
     #[derive(Deserialize, ToSchema)]
+    #[serde(rename_all = "camelCase")]
     pub struct UpdateTakingRecord {
         pub record: taking_record_table::Model,
     }
 
     #[derive(Deserialize, ToSchema)]
+    #[serde(rename_all = "camelCase")]
     pub struct GetTakingRecordByMonth {
         pub date: NaiveDateTime,
     }
 
     #[derive(Deserialize, ToSchema)]
+    #[serde(rename_all = "camelCase")]
     pub struct GetTakingRecordByUserIdAndMonth {
         pub user_id: i32,
         pub date: NaiveDateTime,

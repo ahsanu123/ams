@@ -17,33 +17,39 @@ mod request_model {
     use super::*;
 
     #[derive(Deserialize, ToSchema)]
-    pub struct UpdateDregPrice {
+    #[serde(rename_all = "camelCase")]
+    pub struct GetPaymentRecordByUserId {
         pub user_id: i32,
     }
 
     #[derive(Deserialize, ToSchema)]
+    #[serde(rename_all = "camelCase")]
     pub struct GetMonthSummaryByDate {
         pub date: NaiveDateTime,
     }
 
     #[derive(Deserialize, ToSchema)]
+    #[serde(rename_all = "camelCase")]
     pub struct GetPaymentRecord {
         pub user_id: i32,
         pub date: NaiveDateTime,
     }
 
     #[derive(Deserialize, ToSchema)]
-    pub struct GetPaymentRecordByUserId {
+    #[serde(rename_all = "camelCase")]
+    pub struct GetPaymentRecordByUserIdAndDate {
         pub user_id: i32,
         pub date: NaiveDateTime,
     }
 
     #[derive(Deserialize, ToSchema)]
+    #[serde(rename_all = "camelCase")]
     pub struct UpdatePaymentRecord {
         pub record: payment_history_table::Model,
     }
 
     #[derive(Deserialize, ToSchema)]
+    #[serde(rename_all = "camelCase")]
     pub struct UpdateBulkPaymentRecord {
         pub records: Vec<payment_history_table::Model>,
         pub paid: bool,
@@ -76,13 +82,13 @@ where
         (status = NOT_FOUND, description = "not found")
     ),
     request_body(
-        content =  request_model::UpdateDregPrice,
+        content =  request_model::GetPaymentRecordByUserId,
         content_type =  "application/json",
     )
 )]
 #[post("/payment/get-payment-record")]
 pub async fn get_payment_record_by_user_id(
-    request: Json<request_model::UpdateDregPrice>,
+    request: Json<request_model::GetPaymentRecordByUserId>,
 ) -> impl Responder {
     let result = PaymentHistoryCommad::get_payment_record_by_user_id(request.user_id).await;
     HttpResponse::Ok().json(result)
@@ -140,13 +146,13 @@ pub async fn get_payment_record_by_user_id_and_month(
         (status = NOT_FOUND, description = "not found")
     ),
     request_body(
-        content =  request_model::GetPaymentRecordByUserId,
+        content =  request_model::GetPaymentRecordByUserIdAndDate,
         content_type =  "application/json",
     )
 )]
 #[post("/payment/get-month-summary-by-user-id")]
 pub async fn get_month_summary_by_user_id(
-    request: Json<request_model::GetPaymentRecordByUserId>,
+    request: Json<request_model::GetPaymentRecordByUserIdAndDate>,
 ) -> impl Responder {
     let result =
         PaymentHistoryCommad::get_month_summary_by_user_id(request.user_id, request.date).await;

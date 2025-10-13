@@ -16,11 +16,13 @@ mod request_model {
     use super::*;
 
     #[derive(Deserialize, ToSchema)]
+    #[serde(rename_all = "camelCase")]
     pub struct InsertNewUser {
         pub new_user: user_table::Model,
     }
 
     #[derive(Deserialize, ToSchema)]
+    #[serde(rename_all = "camelCase")]
     pub struct UpsertUser {
         pub user: user_table::Model,
     }

@@ -12,6 +12,7 @@ use utoipa::ToSchema;
 mod request_model {
     use super::*;
     #[derive(Deserialize, ToSchema)]
+    #[serde(rename_all = "camelCase")]
     pub struct UpdateDregPrice {
         pub new_price: i64,
     }

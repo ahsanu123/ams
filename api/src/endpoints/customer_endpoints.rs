@@ -14,12 +14,14 @@ use utoipa::ToSchema;
 mod request_model {
     use super::*;
     #[derive(Deserialize, ToSchema)]
+    #[serde(rename_all = "camelCase")]
     pub struct AddMoney {
         pub user_id: i64,
         pub amount: i64,
     }
 
     #[derive(Deserialize, ToSchema)]
+    #[serde(rename_all = "camelCase")]
     pub struct GetAllUserMoney {
         pub user_id: i64,
     }
