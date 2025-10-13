@@ -1,11 +1,3 @@
-// // user_management_enpoint
-// crate::endpoints::user_management_enpoint::insert_new_user,
-// crate::endpoints::user_management_enpoint::get_all_user,
-// crate::endpoints::user_management_enpoint::get_all_active_user,
-// crate::endpoints::user_management_enpoint::upsert_user,
-
-
-
 // TODO: add return type
 interface IUserManagementApi {
   insertNewUser: (/*request_model::InsertNewUser*/) => void

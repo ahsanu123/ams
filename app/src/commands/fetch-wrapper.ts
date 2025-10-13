@@ -1,5 +1,3 @@
-
-
 export async function get(url: string, requestInit?: RequestInit) {
   const defaultRequestInit: RequestInit = {
     method: 'GET',

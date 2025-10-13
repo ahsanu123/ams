@@ -1,5 +1,14 @@
 # NOTE: 
-# delete sqlite file before run `mage` command
+# Manual run: 
+# - just delete-old-entity 
+# - just delete-database-file
+# - comment ams_entity in cargo.toml 
+# - comment seed in lib.rs 
+# - run just run 
+# - just gen-entity 
+# - uncomment ams_entity in cargo.toml 
+# - uncommnet seed in lib.rs
+# - run just run with seed enabled
 
 # run migration and seed data
 mig-and-seed:
@@ -27,7 +36,8 @@ gen-entity:
   DATABASE_URL=sqlite://../app/src-tauri/ams.sqlite?mode=rwc \
       sea-orm-cli generate entity  -o ./../entity/ \
       --lib --with-serde both \
-      --model-extra-derives 'utoipa::ToSchema'
+      --model-extra-derives 'utoipa::ToSchema' \
+      --model-extra-attributes 'serde(rename_all = "camelCase")'
 
 delete-database-file:
   rm ../app/src-tauri/ams.sqlite

@@ -1,6 +1,5 @@
 import Calendar from "../component/Calendar";
 import { useMainLayoutStore } from "@/state";
-import { getProductCommand, getUserCommand } from "@/commands";
 import type { Route } from "./+types/DashboardPage";
 import { useEffect } from "react";
 import './DashboardPage.css'
@@ -9,17 +8,17 @@ import { EMPTY_HEADER_INFORMATION } from "@/constants";
 import type { User } from "@/model";
 
 export async function clientLoader() {
-  const productCommand = getProductCommand();
-  const userCommand = getUserCommand();
-
-  const listUser = await userCommand.getUsers()
-  const productRecord = await productCommand.getProductRecord()
-  const productPrice = await productCommand.getProductPrice()
+  // const productCommand = getProductCommand();
+  // const userCommand = getUserCommand();
+  //
+  // const listUser = await userCommand.getUsers()
+  // const productRecord = await productCommand.getProductRecord()
+  // const productPrice = await productCommand.getProductPrice()
 
   return {
-    listUser,
-    productRecord,
-    productPrice,
+    // listUser: [],
+    // productRecord,
+    // productPrice,
   }
 }
 
@@ -28,7 +27,7 @@ export default function DashboardPage({
 }: Route.ComponentProps) {
 
   const {
-    listUser,
+    // listUser,
   } = loaderData
 
   const setHeaderInformation = useMainLayoutStore(state => state.setHeaderInformation)
@@ -63,20 +62,20 @@ export default function DashboardPage({
     })
   }
 
-  const showUserSelector = () => (
-    <div className="user-container">
-      {
-        listUser.map((user, index) => (
-          <button
-            key={index}
-            onClick={() => handleOnClickUser(user)}
-          >
-            {user.username}
-          </button>
-        ))
-      }
-    </div>
-  )
+  // const showUserSelector = () => (
+  //   <div className="user-container">
+  //     {
+  //       listUser.map((user, index) => (
+  //         <button
+  //           key={index}
+  //           onClick={() => handleOnClickUser(user)}
+  //         >
+  //           {user.username}
+  //         </button>
+  //       ))
+  //     }
+  //   </div>
+  // )
 
   const showVirtualKeypad = () => (
     <div>
@@ -96,7 +95,7 @@ export default function DashboardPage({
       >
         <main>
           {
-            user ? showVirtualKeypad() : showUserSelector()
+            user ? showVirtualKeypad() : null //showUserSelector()
           }
 
           <div>

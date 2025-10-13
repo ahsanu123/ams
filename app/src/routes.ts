@@ -13,7 +13,8 @@ export enum AppRoutes {
 }
 
 export enum SecretRoutes {
-  AdminLoginPage = "admin-guard-page"
+  AdminLoginPage = "admin-guard-page",
+  ApiTestPage = "api-test-page"
 }
 
 export default [
@@ -41,6 +42,9 @@ export default [
     }),
     route(`${SecretRoutes.AdminLoginPage}`, "./page/AdminGuardPage.tsx", {
       id: SecretRoutes.AdminLoginPage
+    }),
+    route(`${SecretRoutes.ApiTestPage}`, "./page/api-test-page/ApiTestPage.tsx", {
+      id: SecretRoutes.ApiTestPage
     }),
   ]),
 

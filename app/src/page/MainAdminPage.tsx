@@ -1,4 +1,3 @@
-import { getProductCommand, getUserCommand } from "@/commands";
 import type { Route } from "./+types/MainAdminPage";
 import { useMainAdminPageState } from "@/state";
 import type { FlatMenuTree } from "@/model";
@@ -6,8 +5,8 @@ import './MainAdminPage.css';
 import Scroller from "@/component/Scroller";
 
 export async function clientLoader() {
-  const productCommand = getProductCommand();
-  const userCommand = getUserCommand();
+  // const productCommand = getProductCommand();
+  // const userCommand = getUserCommand();
   return {
   }
 }

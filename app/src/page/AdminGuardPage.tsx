@@ -6,15 +6,10 @@ import { useEffect } from 'react';
 import { useNavigate } from 'react-router';
 import VirtualKeypad from '../component/VirtualKeypad';
 import './AdminGuardPage.css';
-import { getUserCommand } from '@/commands';
 import type { Route } from './+types/AdminGuardPage';
 
 export async function clientLoader() {
-  const userCommand = getUserCommand();
-  const listUser = await userCommand.getUsers()
-
   return {
-    listUser,
   }
 }
 
@@ -24,7 +19,6 @@ export default function AdminGuardComponent({
 }: Route.ComponentProps) {
   const navigate = useNavigate();
 
-  const { listUser } = loaderData
 
   const isDialogvisible = useEditPageStore(state => state.isDialogVisible)
 

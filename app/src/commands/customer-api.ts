@@ -1,6 +1,3 @@
-// crate::endpoints::customer_endpoints::add_money,
-// crate::endpoints::customer_endpoints::get_all_user_money_history,
-
 // TODO: add return type
 interface ICustomerApi {
   addMoney: (userId: number, amount: number) => void
