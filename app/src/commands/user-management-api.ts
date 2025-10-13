@@ -1,23 +1,49 @@
+import type { UserModel } from "@/api-models"
+import { asJson, get, post } from "./fetch-wrapper"
+
+const GET_ALL_ACTIVE_USER = "/user-management/get-all-active-user"
+const GET_ALL_USER = "/user-management/get-all-user"
+const INSERT_NEW_USER = "/user-management/insert-new-user"
+const UPSERT_USER = "/user-management/upsert-user"
+
 // TODO: add return type
 interface IUserManagementApi {
-  insertNewUser: (/*request_model::InsertNewUser*/) => void
-  getAllUser: () => void
-  GetAllActiveUser: () => void
-  UpsertUser: (/*request_model::UpsertUser*/) => void
+  getAllUser: () => Promise<Array<UserModel>>
+  GetAllActiveUser: () => Promise<Array<UserModel>>
+  insertNewUser: (user: UserModel) => Promise<number>
+  UpsertUser: (user: UserModel) => Promise<number>
 }
 
 
 export const userManagementApi: IUserManagementApi = {
-  insertNewUser: function (): void {
-    throw new Error("Function not implemented.")
+  getAllUser: async function (): Promise<Array<UserModel>> {
+    const response = await get(GET_ALL_USER)
+
+    return asJson<Array<UserModel>>(response)
   },
-  getAllUser: function (): void {
-    throw new Error("Function not implemented.")
+  GetAllActiveUser: async function (): Promise<Array<UserModel>> {
+    const response = await get(GET_ALL_ACTIVE_USER)
+
+    return asJson<Array<UserModel>>(response)
   },
-  GetAllActiveUser: function (): void {
-    throw new Error("Function not implemented.")
+  insertNewUser: async function (user: UserModel): Promise<number> {
+    const response = await post(INSERT_NEW_USER, {
+      body: JSON.stringify({
+        user
+      })
+    })
+
+    // FIXME:
+    return Promise.resolve(1)
   },
-  UpsertUser: function (): void {
-    throw new Error("Function not implemented.")
+  UpsertUser: async function (user: UserModel): Promise<number> {
+    const response = await post(UPSERT_USER, {
+      body: JSON.stringify({
+        user
+      })
+    })
+
+    // FIXME:
+    return Promise.resolve(1)
   }
 }

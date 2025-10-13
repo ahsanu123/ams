@@ -30,13 +30,6 @@ mod request_model {
 
     #[derive(Deserialize, ToSchema)]
     #[serde(rename_all = "camelCase")]
-    pub struct GetPaymentRecord {
-        pub user_id: i32,
-        pub date: NaiveDateTime,
-    }
-
-    #[derive(Deserialize, ToSchema)]
-    #[serde(rename_all = "camelCase")]
     pub struct GetPaymentRecordByUserIdAndDate {
         pub user_id: i32,
         pub date: NaiveDateTime,
@@ -68,7 +61,7 @@ where
         self.service(get_payment_record_by_user_id)
             .service(get_month_summary)
             .service(get_payment_record_by_user_id_and_month)
-            .service(get_month_summary_by_user_id)
+            // .service(get_month_summary_by_user_id_and_date)
             .service(update_payment_record)
             .service(update_bulk_payment_record)
     }
@@ -116,31 +109,7 @@ pub async fn get_month_summary(
 
 #[utoipa::path(
     post,
-    path = "/payment/get-payment-record",
-    responses(
-        (status = 200, description = "success"),
-        (status = NOT_FOUND, description = "not found")
-    ),
-    request_body(
-        content =  request_model::GetPaymentRecord,
-        content_type =  "application/json",
-    )
-)]
-#[post("/payment/get-payment-record")]
-pub async fn get_payment_record_by_user_id_and_month(
-    request: Json<request_model::GetPaymentRecord>,
-) -> impl Responder {
-    let result = PaymentHistoryCommad::get_payment_record_by_user_id_and_month(
-        request.user_id,
-        request.date,
-    )
-    .await;
-    HttpResponse::Ok().json(result)
-}
-
-#[utoipa::path(
-    post,
-    path = "/payment/get-month-summary-by-user-id",
+    path = "/payment/get-payment-record-by-user-id-and-month",
     responses(
         (status = 200, description = "success"),
         (status = NOT_FOUND, description = "not found")
@@ -150,15 +119,39 @@ pub async fn get_payment_record_by_user_id_and_month(
         content_type =  "application/json",
     )
 )]
-#[post("/payment/get-month-summary-by-user-id")]
-pub async fn get_month_summary_by_user_id(
+#[post("/payment/get-payment-record-by-user-id-and-month")]
+pub async fn get_payment_record_by_user_id_and_month(
     request: Json<request_model::GetPaymentRecordByUserIdAndDate>,
 ) -> impl Responder {
-    let result =
-        PaymentHistoryCommad::get_month_summary_by_user_id(request.user_id, request.date).await;
-
+    let result = PaymentHistoryCommad::get_payment_record_by_user_id_and_month(
+        request.user_id,
+        request.date,
+    )
+    .await;
     HttpResponse::Ok().json(result)
 }
+
+// #[utoipa::path(
+//     post,
+//     path = "/payment/get-month-summary-by-user-id-and-date",
+//     responses(
+//         (status = 200, description = "success"),
+//         (status = NOT_FOUND, description = "not found")
+//     ),
+//     request_body(
+//         content =  request_model::GetPaymentRecordByUserIdAndDate,
+//         content_type =  "application/json",
+//     )
+// )]
+// #[post("/payment/get-month-summary-by-user-id-and-date")]
+// pub async fn get_month_summary_by_user_id_and_date(
+//     request: Json<request_model::GetPaymentRecordByUserIdAndDate>,
+// ) -> impl Responder {
+//     let result =
+//         PaymentHistoryCommad::get_month_summary_by_user_id(request.user_id, request.date).await;
+//
+//     HttpResponse::Ok().json(result)
+// }
 
 #[utoipa::path(
     post,

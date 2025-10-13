@@ -21,7 +21,7 @@ use utoipa::OpenApi;
         crate::endpoints::payment_history_endpoint::get_payment_record_by_user_id,
         crate::endpoints::payment_history_endpoint::get_month_summary,
         crate::endpoints::payment_history_endpoint::get_payment_record_by_user_id_and_month,
-        crate::endpoints::payment_history_endpoint::get_month_summary_by_user_id,
+        // crate::endpoints::payment_history_endpoint::get_month_summary_by_user_id,
         crate::endpoints::payment_history_endpoint::update_payment_record,
         crate::endpoints::payment_history_endpoint::update_bulk_payment_record,
         // taking_record_endpoint
