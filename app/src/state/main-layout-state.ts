@@ -1,11 +1,15 @@
 import { create } from 'zustand'
 import { immer } from 'zustand/middleware/immer'
-import type { Product, User, HeaderInformation } from 'model'
+import type { Product, HeaderInformation } from 'model'
 import { AppRoutes } from '@/routes'
 import { getCookie, type AuthenticationCookieData, type ICalendarCell } from '@/utility'
 import { generateMockProduct } from '@/mock'
+import type { TakingRecordModel, UserModel } from '@/api-models'
 
 interface MainLayoutStore {
+  userTakingRecords: Array<TakingRecordModel>,
+  setUserTakingRecords: (records: Array<TakingRecordModel>) => void,
+
   products: Array<Product>,
   addProduct: (product: Product) => boolean,
   updateProduct: (id: number, productData: Partial<Product>) => boolean,
@@ -15,11 +19,11 @@ interface MainLayoutStore {
   selectedMonth: Date,
   setSelectedDate: (date: Date) => void,
 
-  user?: User,
-  setUser: (user: User | undefined) => void,
+  customer?: UserModel,
+  setCustomer: (user: UserModel | undefined) => void,
 
-  lastSelectedUser?: User,
-  setLastSelectedUser: (user: User | undefined) => void,
+  lastSelectedUser?: UserModel,
+  setLastSelectedUser: (user: UserModel | undefined) => void,
 
   currentPage: AppRoutes,
   pageRoutes: string[],
@@ -30,8 +34,8 @@ interface MainLayoutStore {
   isAuthenticationCookieExist: boolean,
   checkIsAuthenticationCookieExist: () => void,
 
-  listUser: User[],
-  setListUser: (users: User[]) => void,
+  listUser: UserModel[],
+  setListUser: (users: UserModel[]) => void,
 
   productPrice: number,
   setProductPrice: (price: number) => void
@@ -51,6 +55,13 @@ interface MainLayoutStore {
 
 export const useMainLayoutStore = create<MainLayoutStore>()(
   immer((set) => ({
+
+    userTakingRecords: [],
+    setUserTakingRecords: (records: Array<TakingRecordModel>) => {
+      set((state) => {
+        state.userTakingRecords = records
+      })
+    },
 
     // mocked
     products: generateMockProduct(),
@@ -104,9 +115,9 @@ export const useMainLayoutStore = create<MainLayoutStore>()(
     },
 
 
-    setUser: (user) => {
+    setCustomer: (user) => {
       set((state) => {
-        state.user = user
+        state.customer = user
       })
     },
 

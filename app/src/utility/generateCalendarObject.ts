@@ -1,4 +1,4 @@
-import type { Product } from "@/model"
+import type { TakingRecordModel } from "@/api-models"
 import { isSameDay, setDate } from "date-fns"
 
 const TOTAL_DAYS_TO_SHOW = 42
@@ -14,13 +14,13 @@ export interface CalendarObject {
 export type CellType = 'HeaderLabel' | 'ShowDate' | 'HiddenDate'
 
 export interface ICalendarCell {
-  product?: Product,
+  product?: TakingRecordModel,
   headerLabelText?: string,
   date?: Date,
   type: CellType,
 }
 
-export function generateCalendarObject(inputDate: Date, products: Array<Product>) {
+export function generateCalendarObject(inputDate: Date, records: Array<TakingRecordModel>) {
 
   const currentyear = inputDate.getFullYear()
   const currentMonth = inputDate.getMonth()
@@ -65,7 +65,7 @@ export function generateCalendarObject(inputDate: Date, products: Array<Product>
 
     const calendarCell: ICalendarCell = {
       type: isHiddenCell(day) ? 'HiddenDate' : 'ShowDate',
-      product: isCorrectDate(date) ? products.find((item) => isSameDay(item.takenDate, currentDate)) : undefined,
+      product: isCorrectDate(date) ? records?.find((item) => isSameDay(item.takenDate, currentDate)) : undefined,
       date: currentDate,
     }
     return calendarCell

@@ -43,6 +43,7 @@ impl MigratorTrait for MigratorWithSeed {
             //
             Box::new(seeds::price_history_seed::Migration),
             Box::new(seeds::user_seeds::Migration),
+            Box::new(seeds::soybean_price_seed::Migration),
         ]
     }
 }

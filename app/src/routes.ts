@@ -19,7 +19,7 @@ export enum SecretRoutes {
 
 export default [
   layout("./layout/MainLayout.tsx", [
-    index("./page/DashboardPage.tsx", {
+    index("./page/CustomerTakingPage.tsx", {
       id: AppRoutes.PagePrefix
     }),
     route(`${AppRoutes.PagePrefix}${AppRoutes.AccoutancyPage}`, "./page/AccoutancyPage.tsx", {

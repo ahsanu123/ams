@@ -17,7 +17,7 @@ interface CalendarProps {
 export default function Calendar(props: CalendarProps) {
 
   const {
-    showNavigator,
+    showNavigator = false,
     adminMode = false,
     title,
     onPrevMonthClicked,
@@ -25,7 +25,7 @@ export default function Calendar(props: CalendarProps) {
     onCellClicked
   } = props
 
-  const products = useMainLayoutStore(state => state.products);
+  const userTakingRecords = useMainLayoutStore(state => state.userTakingRecords);
   const date = useMainLayoutStore(state => state.selectedMonth)
   const setDate = useMainLayoutStore(state => state.setSelectedDate)
 
@@ -38,14 +38,14 @@ export default function Calendar(props: CalendarProps) {
     const newDate = new Date()
 
     setDate(newDate)
-    setCalendarCells(generateCalendarObject(newDate, products))
+    setCalendarCells(generateCalendarObject(newDate, userTakingRecords))
   }
 
   const handleOnPrevMonthClicked = () => {
     const newDate = addMonths(date, -1)
 
     setDate(newDate)
-    setCalendarCells(generateCalendarObject(newDate, products))
+    setCalendarCells(generateCalendarObject(newDate, userTakingRecords))
     onPrevMonthClicked?.(newDate)
   }
 
@@ -53,15 +53,15 @@ export default function Calendar(props: CalendarProps) {
     const newDate = addMonths(date, 1)
 
     setDate(newDate)
-    setCalendarCells(generateCalendarObject(newDate, products))
+    setCalendarCells(generateCalendarObject(newDate, userTakingRecords))
     onNextMonthClicked?.(newDate)
   }
 
   const headerText = `🌕 ${date.toLocaleDateString("id-id", { month: 'long' })} ${date.toLocaleDateString("id-id", { year: 'numeric' })} ${title ? ` - ${title}` : ""}`
 
   useEffect(() => {
-    setCalendarCells(generateCalendarObject(new Date(), products))
-  }, [products])
+    setCalendarCells(generateCalendarObject(new Date(), userTakingRecords))
+  }, [userTakingRecords])
 
   return (
     <>
@@ -73,33 +73,38 @@ export default function Calendar(props: CalendarProps) {
             {headerText}
           </h5>
 
-          <button
-            onClick={() => handleOnCurrentMonthClicked()}
-          >
-            <b>
-              Bulan Ini
-            </b>
-          </button>
+          {
+            showNavigator &&
+            <>
+              <button
+                onClick={() => handleOnCurrentMonthClicked()}
+              >
+                <b>
+                  Bulan Ini
+                </b>
+              </button>
 
-          {" "}
+              {" "}
 
-          <button
-            onClick={() => handleOnPrevMonthClicked()}
-          >
-            <b>
-              Bulan Lalu
-            </b>
-          </button>
+              <button
+                onClick={() => handleOnPrevMonthClicked()}
+              >
+                <b>
+                  Bulan Lalu
+                </b>
+              </button>
 
-          {" "}
+              {" "}
 
-          <button
-            onClick={() => handleOnNextMonthClicked()}
-          >
-            <b>
-              Bulan Depan
-            </b>
-          </button>
+              <button
+                onClick={() => handleOnNextMonthClicked()}
+              >
+                <b>
+                  Bulan Depan
+                </b>
+              </button>
+            </>
+          }
         </div>
 
         <div>

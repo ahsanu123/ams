@@ -23,11 +23,3 @@ impl AdditionalPriceHistoryTableMethodTrait for PriceHistoryTable {
         latest_price
     }
 }
-
-#[cfg(test)]
-mod test {
-    #[test]
-    fn name() {
-        todo!();
-    }
-}

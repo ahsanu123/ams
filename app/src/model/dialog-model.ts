@@ -1,8 +1,8 @@
-import type { Product, ProductRecord } from "./product-record";
+import type { TakingRecordModel } from "@/api-models";
 import type { User } from "./user-model";
 
 export interface DialogModel {
   date: Date,
-  product: Product,
+  product: TakingRecordModel,
   user: User,
 }

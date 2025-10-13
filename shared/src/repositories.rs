@@ -1,6 +1,8 @@
 pub mod abstract_repository_trait;
 pub mod payment_history_repository;
 pub mod price_repositories;
+pub mod production_record_repository;
+pub mod soybean_price_repository;
 pub mod taking_record_repository;
 pub mod user_repository;
 

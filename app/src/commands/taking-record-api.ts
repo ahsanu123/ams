@@ -1,5 +1,6 @@
 import type { TakingRecordModel } from "@/api-models"
-import { asConstant, asJson, get } from "./fetch-wrapper"
+import { asConstant, asJson, post } from "./fetch-wrapper"
+import { API_ENDPOINT, IS_INSIDE_TAURI } from "@/constants"
 
 const ADD_NEW_TAKING_RECORD = "/taking-record/add-new-taking-record"
 const GET_TAKING_RECORD_BY_DATE = "/taking-record/get-taking-record-by-date"
@@ -16,51 +17,52 @@ interface ITakingRecordApi {
 }
 
 
-export const takingRecordApi: ITakingRecordApi = {
+const takingRecordApi: ITakingRecordApi = {
   addNewTakingRecord: async function (userId: number, amount: number): Promise<number> {
-    const response = await get(ADD_NEW_TAKING_RECORD, {
-      body: JSON.stringify({
-        amount,
-        userId
-      })
+    const response = await post(`${API_ENDPOINT}${ADD_NEW_TAKING_RECORD}`, {
+      amount,
+      userId
     })
 
     return asConstant<number>(response)
   },
-  getTakingRecordByUserId: async function (userId: number): Promise<Array<TakingRecordModel>> {
-    const response = await get(GET_TAKING_RECORD_BY_USER_ID, {
-      body: JSON.stringify({
-        userId
-      })
-    })
 
+  getTakingRecordByUserId: async function (userId: number): Promise<Array<TakingRecordModel>> {
+    const response = await post(`${API_ENDPOINT}${GET_TAKING_RECORD_BY_USER_ID}`, { userId })
     return asJson<Array<TakingRecordModel>>(response)
   },
-  upsertTakingRecord: async function (record: TakingRecordModel): Promise<number> {
-    const response = await get(UPSERT_TAKING_RECORD, {
-      body: JSON.stringify({
-        record
-      })
-    })
 
+  upsertTakingRecord: async function (record: TakingRecordModel): Promise<number> {
+    const response = await post(`${API_ENDPOINT}${UPSERT_TAKING_RECORD}`, { record })
     return asConstant<number>(response)
   },
-  getTakingRecordByMonth: async function (date: Date): Promise<Array<TakingRecordModel>> {
-    const response = await get(GET_TAKING_RECORD_BY_DATE, {
-      body: JSON.stringify({
-        date
-      })
-    })
 
+  getTakingRecordByMonth: async function (date: Date): Promise<Array<TakingRecordModel>> {
+    const response = await post(`${API_ENDPOINT}${GET_TAKING_RECORD_BY_DATE}`, { date })
     return asJson<Array<TakingRecordModel>>(response)
   },
   getTakingRecordByUserIdAndMonth: async function (userId: number, date: Date): Promise<Array<TakingRecordModel>> {
-    const response = await get(GET_TAKING_RECORD_BY_USER_ID_AND_MONTH, {
-      body: JSON.stringify({
-        date
-      })
-    })
-
+    const response = await post(`${API_ENDPOINT}${GET_TAKING_RECORD_BY_USER_ID_AND_MONTH}`, { userId, date })
     return asJson<Array<TakingRecordModel>>(response)
   }
 }
+
+const takingRecordCommand: ITakingRecordApi = {
+  addNewTakingRecord: function (userId: number, amount: number): Promise<number> {
+    throw new Error("Function not implemented.")
+  },
+  getTakingRecordByUserId: function (userId: number): Promise<Array<TakingRecordModel>> {
+    throw new Error("Function not implemented.")
+  },
+  upsertTakingRecord: function (record: TakingRecordModel): Promise<number> {
+    throw new Error("Function not implemented.")
+  },
+  getTakingRecordByMonth: function (date: Date): Promise<Array<TakingRecordModel>> {
+    throw new Error("Function not implemented.")
+  },
+  getTakingRecordByUserIdAndMonth: function (userId: number, date: Date): Promise<Array<TakingRecordModel>> {
+    throw new Error("Function not implemented.")
+  }
+}
+
+export const takingRecord = IS_INSIDE_TAURI ? takingRecordCommand : takingRecordApi

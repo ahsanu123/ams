@@ -4,8 +4,8 @@ import { type ChangeEventHandler } from 'react';
 export default function UserSelector() {
 
   const listUser = useMainLayoutStore(state => state.listUser);
-  const setUser = useMainLayoutStore(state => state.setUser)
-  const selectedUser = useMainLayoutStore(state => state.user)
+  const setUser = useMainLayoutStore(state => state.setCustomer)
+  const selectedUser = useMainLayoutStore(state => state.customer)
 
   const handleOnSelectChange: ChangeEventHandler<HTMLSelectElement> = ({ target }) => {
     const value = parseInt(target.value)

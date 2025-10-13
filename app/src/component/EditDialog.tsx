@@ -14,7 +14,7 @@ export default function EditDialogComponent() {
   const dialogData = useEditPageStore(state => state.dialogData)
   const setDialogData = useEditPageStore(state => state.setDialogData)
 
-  const selectedUser = useMainLayoutStore(state => state.user)
+  const selectedUser = useMainLayoutStore(state => state.customer)
 
   const setDialogVisibility = useEditPageStore(state => state.setDialogVisibility)
   const isDialogVisible = useEditPageStore(state => state.isDialogVisible)
