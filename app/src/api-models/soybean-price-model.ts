@@ -1,4 +1,3 @@
-
 export interface SoybeanPriceModel {
   id: number;
   date: Date;

@@ -1,4 +1,3 @@
-
 export interface ProductionRecordModel {
   id: number;
   date: Date;

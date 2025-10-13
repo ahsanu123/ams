@@ -1,5 +1,5 @@
 import type { TakingRecordModel } from "@/api-models"
-import { asJson, get } from "./fetch-wrapper"
+import { asConstant, asJson, get } from "./fetch-wrapper"
 
 const ADD_NEW_TAKING_RECORD = "/taking-record/add-new-taking-record"
 const GET_TAKING_RECORD_BY_DATE = "/taking-record/get-taking-record-by-date"
@@ -25,8 +25,7 @@ export const takingRecordApi: ITakingRecordApi = {
       })
     })
 
-    // FIXME:
-    return Promise.resolve(1)
+    return asConstant<number>(response)
   },
   getTakingRecordByUserId: async function (userId: number): Promise<Array<TakingRecordModel>> {
     const response = await get(GET_TAKING_RECORD_BY_USER_ID, {
@@ -44,8 +43,7 @@ export const takingRecordApi: ITakingRecordApi = {
       })
     })
 
-    // FIXME:
-    return Promise.resolve(1)
+    return asConstant<number>(response)
   },
   getTakingRecordByMonth: async function (date: Date): Promise<Array<TakingRecordModel>> {
     const response = await get(GET_TAKING_RECORD_BY_DATE, {

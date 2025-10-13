@@ -1,5 +1,5 @@
 import type { UserModel } from "@/api-models"
-import { asJson, get, post } from "./fetch-wrapper"
+import { asConstant, asJson, get, post } from "./fetch-wrapper"
 
 const GET_ALL_ACTIVE_USER = "/user-management/get-all-active-user"
 const GET_ALL_USER = "/user-management/get-all-user"
@@ -33,8 +33,7 @@ export const userManagementApi: IUserManagementApi = {
       })
     })
 
-    // FIXME:
-    return Promise.resolve(1)
+    return asConstant<number>(response)
   },
   UpsertUser: async function (user: UserModel): Promise<number> {
     const response = await post(UPSERT_USER, {
@@ -43,7 +42,6 @@ export const userManagementApi: IUserManagementApi = {
       })
     })
 
-    // FIXME:
-    return Promise.resolve(1)
+    return asConstant<number>(response)
   }
 }

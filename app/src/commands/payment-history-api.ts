@@ -1,6 +1,6 @@
 import type { PaymentHistoryModel } from "@/api-models"
 import { API_ENDPOINT } from "@/constants"
-import { asJson, get } from "./fetch-wrapper"
+import { asConstant, asJson, get } from "./fetch-wrapper"
 
 const GET_MONTH_SUMMARY = "/payment/get-month-summary"
 const GET_PAYMENT_RECORD = "/payment/get-payment-record"
@@ -61,7 +61,6 @@ export const paymentHistoryApi: IPaymentHistoryApi = {
       })
     })
 
-    console.log(response)
-    return Promise.resolve(1)
+    return asConstant<number>(response)
   }
 }

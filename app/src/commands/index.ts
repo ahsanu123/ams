@@ -1,4 +1,3 @@
-export * from './customer-api'
 export * from './dreg-price-api'
 export * from './payment-history-api'
 export * from './taking-record-api'
