@@ -26,7 +26,7 @@ impl MigrationTrait for Migration {
                 username: Set("Ahsanu".into()),
                 is_active: Set(true),
                 is_admin: Set(false),
-                money: Set(100000),
+                money: Set(0),
                 created_date: Set(Local::now().naive_local()),
                 updated_date: Set(Local::now().naive_local()),
             }

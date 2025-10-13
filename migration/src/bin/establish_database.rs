@@ -2,7 +2,7 @@ use std::fs;
 use std::path::Path;
 
 use migration::sea_orm::Database;
-use migration::{Migrator, MigratorTrait};
+use migration::{MigratorTrait, MigratorWithoutSeed};
 
 #[async_std::main]
 async fn main() {
@@ -17,5 +17,5 @@ async fn main() {
 
     // TODO: think on how to migrate old data into new table
     // Migrator::down(&connection, None).await.unwrap();
-    Migrator::up(&connection, None).await.unwrap();
+    MigratorWithoutSeed::up(&connection, None).await.unwrap();
 }

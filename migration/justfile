@@ -1,14 +1,11 @@
 # NOTE: 
-# Manual run: 
-# - just delete-old-entity 
-# - just delete-database-file
-# - comment ams_entity in cargo.toml 
-# - comment seed in lib.rs 
-# - run just run 
-# - just gen-entity 
-# - uncomment ams_entity in cargo.toml 
-# - uncommnet seed in lib.rs
-# - run just run with seed enabled
+# New Flow 
+# - delete-database-file
+# - run establish_database.rs
+# - delete-old-entity
+# - gen-entity 
+# - run seed_database.rs
+# - copy database to api folder
 
 # run migration and seed data
 mig-and-seed:
@@ -17,9 +14,11 @@ mig-and-seed:
 # migrate and generate entity
 mage:
   just delete-database-file
-  just run 
+  cargo run --bin establish_database
   just delete-old-entity
   just gen-entity
+  cargo run --bin seed_database
+  just copy-to-api
 
 delete-old-entity: 
   find ./../entity/ -type f \
@@ -44,3 +43,7 @@ delete-database-file:
 
 copy-to-api: 
   cp ../app/src-tauri/ams.sqlite ../api/
+
+# binary list 
+bl: 
+  cargo run --bin
