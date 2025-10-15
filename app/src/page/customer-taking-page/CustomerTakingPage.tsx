@@ -1,14 +1,14 @@
 import type { TakingRecordModel, UserModel } from "@/api-models";
 import { takingRecord, userManagement } from "@/commands";
+import Calendar from "@/component/Calendar";
 import VirtualKeypad from "@/component/VirtualKeypad";
 import { EMPTY_HEADER_INFORMATION } from "@/constants";
 import { useMainLayoutStore } from "@/state";
+import { fromFormData, toFormData } from "@/utility";
 import { useEffect } from "react";
 import { useFetcher } from "react-router";
-import Calendar from "../component/Calendar";
 import type { Route } from "./+types/CustomerTakingPage";
 import './CustomerTakingPage.css';
-import { fromFormData, toFormData } from "@/utility";
 
 interface IAddTakingRecordClientRequest {
   userId: number,

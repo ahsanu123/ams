@@ -1,3 +1,5 @@
+use itertools::Itertools;
+
 use crate::repositories::{
     abstract_repository_trait::AbstractRepository, get_sql_connection_trait::GetSqlConnectionTrait,
     price_repositories::AdditionalPriceHistoryTableMethodTrait,
@@ -121,7 +123,21 @@ impl TakingRecordCommandTrait for TakingRecordCommand {
             .await
             .unwrap();
 
-        records
+        let summed_records = records
+            .iter()
+            .into_group_map_by(|item| item.taken_date.date())
+            .into_iter()
+            .map(|(_, records)| {
+                let total_taking = records.iter().map(|item| item.amount).sum::<i64>();
+
+                let mut first_data = (*records.first().unwrap()).clone();
+                first_data.amount = total_taking;
+
+                first_data
+            })
+            .collect::<Vec<taking_record_table::Model>>();
+
+        summed_records
     }
 
     async fn get_taking_record_by_month(date: NaiveDateTime) -> Vec<taking_record_table::Model> {
@@ -146,7 +162,21 @@ impl TakingRecordCommandTrait for TakingRecordCommand {
             .await
             .unwrap();
 
-        records
+        let summed_records = records
+            .iter()
+            .into_group_map_by(|item| item.taken_date.date())
+            .into_iter()
+            .map(|(_, records)| {
+                let total_taking = records.iter().map(|item| item.amount).sum::<i64>();
+
+                let mut first_data = (*records.first().unwrap()).clone();
+                first_data.amount = total_taking;
+
+                first_data
+            })
+            .collect::<Vec<taking_record_table::Model>>();
+
+        summed_records
     }
 }
 

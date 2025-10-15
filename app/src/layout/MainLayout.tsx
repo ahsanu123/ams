@@ -10,7 +10,7 @@ export default function HomePage() {
   const headerInformation = useMainLayoutStore(state => state.headerInformation)
 
   const handleAdminLogin = () => {
-    navigate(`${SecretRoutes.AdminLoginPage}`)
+    navigate(`${SecretRoutes.AdminGuardPage}`)
   }
 
   return (

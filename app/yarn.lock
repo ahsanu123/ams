@@ -2441,6 +2441,11 @@ minimist@^1.2.0:
   resolved "https://registry.yarnpkg.com/minipass/-/minipass-7.1.2.tgz#93a9626ce5e5e66bd4db86849e7515e92340a707"
   integrity sha512-qOOzS1cBTWYF4BH8fVePDBOO9iptMnGUEZwNc/cMWnTV2nVLZ7VoNWEPHkYczZA0pdoA7dl6e7FL659nX9S2aw==
 
+mmenu-js@^9.3.0:
+  version "9.3.0"
+  resolved "https://registry.yarnpkg.com/mmenu-js/-/mmenu-js-9.3.0.tgz#6b244dbf21052b3de23e7d584253be9294184ab5"
+  integrity sha512-Pbx+TkzuxRGODngZ0MOfTmZ4W3ugV9SzUllPYz0R5w1NeaXeg57Zfvy1JQ27HYbiUX4u7ROeUrDXNFMzyESLXg==
+
 morgan@^1.10.0:
   version "1.10.0"
   resolved "https://registry.yarnpkg.com/morgan/-/morgan-1.10.0.tgz#091778abc1fc47cd3509824653dae1faab6b17d7"

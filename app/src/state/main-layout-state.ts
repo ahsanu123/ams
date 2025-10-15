@@ -121,7 +121,7 @@ export const useMainLayoutStore = create<MainLayoutStore>()(
       })
     },
 
-    currentPage: AppRoutes.PagePrefix,
+    currentPage: AppRoutes.Root,
     pageRoutes: Object.values(AppRoutes),
 
     setPage: (pageRoute) => {

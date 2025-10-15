@@ -1,8 +1,8 @@
-import { index, layout, route, type RouteConfig } from "@react-router/dev/routes";
+import { index, layout, prefix, route, type RouteConfig } from "@react-router/dev/routes";
 
 // Order in this enum is matter
 export enum AppRoutes {
-  PagePrefix = "/",
+  Root = "/",
 
   ReportPage = "report-page",
   AccoutancyPage = "accoutancy-page",
@@ -13,40 +13,46 @@ export enum AppRoutes {
 }
 
 export enum SecretRoutes {
-  AdminLoginPage = "admin-guard-page",
-  ApiTestPage = "api-test-page"
+  AdminGuardPage = "admin-guard-page",
+}
+
+export enum AdminRoutes {
+  AdminRoot = "/admin",
+
+  ReportPage = "/report-page",
 }
 
 export default [
+  // =========================================================
+  // Customer Routes
+  // =========================================================
   layout("./layout/MainLayout.tsx", [
-    index("./page/CustomerTakingPage.tsx", {
-      id: AppRoutes.PagePrefix
+    index("./page/customer-taking-page/CustomerTakingPage.tsx", {
+      id: AppRoutes.Root
     }),
-    route(`${AppRoutes.PagePrefix}${AppRoutes.AccoutancyPage}`, "./page/AccoutancyPage.tsx", {
-      id: AppRoutes.AccoutancyPage
+
+    route(`${SecretRoutes.AdminGuardPage}`, "./page/admin-guard-page/AdminGuardPage.tsx", {
+      id: SecretRoutes.AdminGuardPage
     }),
-    route(`${AppRoutes.PagePrefix}${AppRoutes.ReportPage}`, "./page/ReportPage.tsx", {
-      id: AppRoutes.ReportPage
-    }),
-    route(`${AppRoutes.PagePrefix}${AppRoutes.EditDataPage}`, "./page/EditDataPage.tsx", {
-      id: AppRoutes.EditDataPage
-    }),
-    route(`${AppRoutes.PagePrefix}${AppRoutes.AdminPage}`, "./page/AdminPage.tsx", {
-      id: AppRoutes.AdminPage
-    }),
-    route(`${AppRoutes.PagePrefix}${AppRoutes.MainAdminPage}`, "./page/MainAdminPage.tsx", {
-      id: AppRoutes.MainAdminPage
-    }),
-    route(`${AppRoutes.PagePrefix}${AppRoutes.EditPickingRecordPage}`, "./page/edit-picking-record-pages/EditPickingRecordPage.tsx", {
-      id: AppRoutes.EditPickingRecordPage
-    }),
-    route(`${SecretRoutes.AdminLoginPage}`, "./page/AdminGuardPage.tsx", {
-      id: SecretRoutes.AdminLoginPage
-    }),
-    route(`${SecretRoutes.ApiTestPage}`, "./page/api-test-page/ApiTestPage.tsx", {
-      id: SecretRoutes.ApiTestPage
-    }),
+
   ]),
 
+  // =========================================================
+  // Admin Routes
+  // =========================================================
+  ...prefix(AdminRoutes.AdminRoot, [
+    layout("./layout/AdminLayout.tsx", [
+
+      index("./page/admin-page/AdminPage.tsx", {
+        id: AdminRoutes.AdminRoot,
+      }),
+
+      route(AdminRoutes.ReportPage, "./page/payment-pages/PaymentPages.tsx", {
+        id: `${AdminRoutes.AdminRoot}${AdminRoutes.ReportPage}`
+      }),
+
+    ]),
+
+  ])
 
 ] satisfies RouteConfig;

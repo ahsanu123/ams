@@ -63,21 +63,12 @@ export function generateCalendarObject(inputDate: Date, records: Array<TakingRec
     const date = day - dayFromPrevMonth + 1
     const currentDate = setDate(inputDate, date)
 
-    const filteredRecords = records.filter((item) => isSameDay(item.takenDate, currentDate))
-
     const calendarCell: ICalendarCell = {
       type: isHiddenCell(day) ? 'HiddenDate' : 'ShowDate',
-      // TODO: tidy this 
-      product: isCorrectDate(date) && records.length > 0
-        ? filteredRecords.reduce((prev, current) => {
-          const result: TakingRecordModel = {
-            ...prev,
-            amount: prev.amount + current.amount
-          }
-          return result
-        }, filteredRecords.at(0)!)
-        : undefined,
       date: currentDate,
+      product: isCorrectDate(date) && records.length > 0
+        ? records.find((item) => isSameDay(item.takenDate, currentDate))
+        : undefined,
     }
     return calendarCell
   });
