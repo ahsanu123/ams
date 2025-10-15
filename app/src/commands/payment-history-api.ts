@@ -1,6 +1,6 @@
 import type { PaymentHistoryModel } from "@/api-models"
 import { API_ENDPOINT, IS_INSIDE_TAURI } from "@/constants"
-import { asConstant, asJson, get, post } from "./fetch-wrapper"
+import { asConstant, asJson, post } from "./fetch-wrapper"
 
 const GET_MONTH_SUMMARY = "/payment/get-month-summary"
 const GET_PAYMENT_RECORD = "/payment/get-payment-record"

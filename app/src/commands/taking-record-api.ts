@@ -1,6 +1,6 @@
 import type { TakingRecordModel } from "@/api-models"
-import { asConstant, asJson, post } from "./fetch-wrapper"
 import { API_ENDPOINT, IS_INSIDE_TAURI } from "@/constants"
+import { asConstant, asJson, post } from "./fetch-wrapper"
 
 const ADD_NEW_TAKING_RECORD = "/taking-record/add-new-taking-record"
 const GET_TAKING_RECORD_BY_DATE = "/taking-record/get-taking-record-by-date"

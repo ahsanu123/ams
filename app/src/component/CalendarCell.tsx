@@ -1,8 +1,8 @@
-import './CalendarCell.css'
+import { useMainLayoutStore } from '@/state';
 import type { ICalendarCell } from "@/utility";
 import { format, isSameDay } from "date-fns";
 import { id } from "date-fns/locale";
-import { useMainLayoutStore } from '@/state';
+import './CalendarCell.css';
 
 interface CalendarCellProps {
   data: ICalendarCell,
@@ -67,9 +67,6 @@ export default function CalendarCellComponent(props: CalendarCellProps) {
     <div
       className="calendar-cell stripe"
     >
-      <h4>
-        🚧
-      </h4>
     </div>
   )
 

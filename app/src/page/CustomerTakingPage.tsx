@@ -17,10 +17,7 @@ interface IAddTakingRecordClientRequest {
 
 export async function clientLoader() {
   const listUser = await userManagement.getAllActiveUser();
-
-  return {
-    listUser
-  }
+  return { listUser }
 }
 
 export async function clientAction({ request }: Route.ClientActionArgs) {
@@ -50,10 +47,6 @@ export default function DashboardPage({
   const setUserTakingRecords = useMainLayoutStore(state => state.setUserTakingRecords)
   const setLastSelectedUser = useMainLayoutStore(state => state.setLastSelectedUser)
 
-  useEffect(() => {
-    setHeaderInformation(EMPTY_HEADER_INFORMATION)
-  }, [])
-
   const handleOnPickDregs = (amount: number) => {
     const serializedData = toFormData({
       userId: customer?.id,
@@ -63,10 +56,6 @@ export default function DashboardPage({
     fetcher.submit(serializedData, {
       method: 'post'
     })
-
-    const fetcherResult = fetcher.data
-    if (fetcherResult !== null)
-      setUserTakingRecords(fetcherResult as Array<TakingRecordModel>)
 
     setCustomer(undefined)
     setHeaderInformation(EMPTY_HEADER_INFORMATION)
@@ -112,6 +101,16 @@ export default function DashboardPage({
     </div>
   )
 
+  useEffect(() => {
+    setHeaderInformation(EMPTY_HEADER_INFORMATION)
+  }, [])
+
+  useEffect(() => {
+    const fetcherResult = fetcher.data
+    if (fetcherResult !== undefined) {
+      setUserTakingRecords(fetcherResult as Array<TakingRecordModel>)
+    }
+  }, [fetcher.data])
   return (
     <>
       <div

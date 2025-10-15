@@ -1,6 +1,6 @@
 import type { MoneyHistoryModel, UserModel } from "@/api-models"
-import { asJson, post } from "./fetch-wrapper"
 import { API_ENDPOINT, IS_INSIDE_TAURI } from "@/constants"
+import { asJson, post } from "./fetch-wrapper"
 
 const CUSTOMER_ADD_MONEY = "/customer/add-money"
 const CUSTOMER_GET_ALL_USER_MONEY = "/customer/get-all-user-money"

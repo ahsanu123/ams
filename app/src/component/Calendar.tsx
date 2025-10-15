@@ -1,9 +1,9 @@
-import React, { useEffect } from "react"
-import { addMonths } from "date-fns"
-import CalendarCellComponent from "./CalendarCell"
 import { useMainLayoutStore } from "@/state"
 import { generateCalendarObject } from "@/utility"
+import { addMonths } from "date-fns"
+import React, { useEffect } from "react"
 import "./Calendar.css"
+import CalendarCellComponent from "./CalendarCell"
 
 interface CalendarProps {
   showNavigator?: boolean

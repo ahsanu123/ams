@@ -1,12 +1,11 @@
-import { useEditPageStore, useMainLayoutStore } from "@/state";
-import { format } from "date-fns";
-import { id } from "date-fns/locale";
-import { formatAsRupiah } from "@/utility";
-import VirtualKeypad from "./VirtualKeypad";
 import type { Product } from "@/model";
-import "./EditDialog.css"
-import UserTakingCard from "./UserTakingCard";
+import { useEditPageStore, useMainLayoutStore } from "@/state";
+import { formatAsRupiah } from "@/utility";
+import { format } from "date-fns";
 import { isSameDay } from "date-fns/fp";
+import { id } from "date-fns/locale";
+import "./EditDialog.css";
+import VirtualKeypad from "./VirtualKeypad";
 
 
 export default function EditDialogComponent() {

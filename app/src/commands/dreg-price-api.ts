@@ -1,6 +1,6 @@
 import type { DregPriceModel } from "@/api-models"
-import { asJson, get, post } from "./fetch-wrapper"
 import { API_ENDPOINT, IS_INSIDE_TAURI } from "@/constants"
+import { asJson, get, post } from "./fetch-wrapper"
 
 const GET_LATEST_DREG_PRICE = "/dreg-price/get-latest-dreg-price"
 const GET_ALL_DREG_PRICE = "/dreg-price/get-all-price"

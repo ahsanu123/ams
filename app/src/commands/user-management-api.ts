@@ -1,6 +1,6 @@
 import type { UserModel } from "@/api-models"
-import { asConstant, asJson, get, post } from "./fetch-wrapper"
 import { API_ENDPOINT, IS_INSIDE_TAURI } from "@/constants"
+import { asConstant, asJson, get, post } from "./fetch-wrapper"
 
 const GET_ALL_ACTIVE_USER = "/user-management/get-all-active-user"
 const GET_ALL_USER = "/user-management/get-all-user"
