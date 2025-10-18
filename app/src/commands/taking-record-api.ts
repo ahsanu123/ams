@@ -47,7 +47,7 @@ const takingRecordApi: ITakingRecordApi = {
   }
 }
 
-const takingRecordCommand: ITakingRecordApi = {
+const takingRecordTauriCommand: ITakingRecordApi = {
   addNewTakingRecord: function (userId: number, amount: number): Promise<number> {
     throw new Error("Function not implemented.")
   },
@@ -65,4 +65,4 @@ const takingRecordCommand: ITakingRecordApi = {
   }
 }
 
-export const takingRecord = IS_INSIDE_TAURI ? takingRecordCommand : takingRecordApi
+export const takingRecordCommand = IS_INSIDE_TAURI ? takingRecordTauriCommand : takingRecordApi

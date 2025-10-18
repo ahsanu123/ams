@@ -26,7 +26,7 @@ const customerMoneyApi: ICustomerMoneyApi = {
   }
 }
 
-const customerMoneyCommand: ICustomerMoneyApi = {
+const customerMoneyTauriCommand: ICustomerMoneyApi = {
   addMoney: function (userId: number, amount: number): Promise<UserModel> {
     throw new Error("Function not implemented.")
   },
@@ -35,4 +35,4 @@ const customerMoneyCommand: ICustomerMoneyApi = {
   }
 }
 
-export const customerMoney = IS_INSIDE_TAURI ? customerMoneyCommand : customerMoneyApi
+export const customerMoneyCommand = IS_INSIDE_TAURI ? customerMoneyTauriCommand : customerMoneyApi

@@ -4,6 +4,7 @@ use ams_api::endpoints::ApiDoc;
 use ams_api::endpoints::{
     customer_endpoints::CustomerServiceExtensionTrait,
     dreg_price_endpoint::DregsPriceServiceExtensionTrait,
+    make_payment_page_endpoint::MakePaymentPageServiceExtensionTrait,
     payment_history_endpoint::PaymentServiceExtensionTrait,
     taking_record_endpoint::TakingRecordServiceExtensionTrait,
     user_management_enpoint::UserManagementServiceExtensionTrait,
@@ -37,6 +38,7 @@ async fn main() -> std::io::Result<()> {
             .register_payment_endpoints()
             .register_taking_record_endpoints()
             .register_user_management_endpoints()
+            .register_make_payment_page_endpoints()
     })
     .bind(("127.0.0.1", 9090))?
     .run()

@@ -9,63 +9,83 @@ interface ITreeMenu {
   path: string,
 }
 
-export enum ETreeMenuList {
+export enum TreeMenuList {
 
   Root = "",
 
   Payment = "payment",
-  SubPayment1 = "sub-payment1",
-  SubPayment2 = "sub-payment2",
-  SubSubPayment2 = "sub-sub-payment2",
-  SubSubSubPayment2 = "sub-sub-sub-payment2",
+  MakePayment = "make-payment",
+  ListPayment = "list-payment",
+  EditPayment = "edit-payment",
 
-  Edit = "edit",
-  SubEdit1 = "sub-edit1",
-  SubEdit2 = "sub-edit2",
+  TakingRecord = "taking-record",
+  UpdateTakingRecord = "update-taking-record",
+  TakingRecordInformation = "taking-record-info",
+
+  CustomerManagement = "customer-management",
+  EditCustomer = "edit-customer",
+  CreateCustomer = "create-customer",
+  CustomerMoney = "customer-money",
 }
 
 const paymentMenu: Array<ITreeMenu> = [
   {
     title: 'Payment Menu',
-    path: ETreeMenuList.Payment,
+    path: TreeMenuList.Payment,
   },
   {
-    title: 'Sub Payment Menu 1',
-    path: `${ETreeMenuList.Payment}/${ETreeMenuList.SubPayment1}`,
+    title: 'Make Payment',
+    path: `${TreeMenuList.Payment}/${TreeMenuList.MakePayment}`,
+    id: `${AdminRoutes.AdminRoot}${AdminRoutes.MakePaymentPage}`
   },
   {
-    title: 'Sub Payment Menu 2',
-    path: `${ETreeMenuList.Payment}/${ETreeMenuList.SubPayment2}`,
+    title: 'List Payment',
+    path: `${TreeMenuList.Payment}/${TreeMenuList.ListPayment}`,
   },
   {
-    title: 'Sub sub Payment Menu 2',
-    path: `${ETreeMenuList.Payment}/${ETreeMenuList.SubPayment2}/${ETreeMenuList.SubSubPayment2}`,
-  },
-  {
-    id: `${AdminRoutes.AdminRoot}${AdminRoutes.ReportPage}`,
-    title: 'weird menu title',
-    path: `${ETreeMenuList.Payment}/${ETreeMenuList.SubPayment2}/${ETreeMenuList.SubSubPayment2}/${ETreeMenuList.SubSubSubPayment2}`,
+    title: 'Edit Payment',
+    path: `${TreeMenuList.Payment}/${TreeMenuList.EditPayment}`,
   },
 ]
 
-const editMenu: Array<ITreeMenu> = [
+const takingRecordMenu: Array<ITreeMenu> = [
   {
-    title: 'Edit Menu',
-    path: ETreeMenuList.Edit,
+    title: 'Taking Menu',
+    path: TreeMenuList.TakingRecord,
   },
   {
-    title: 'Sub edit Menu 1',
-    path: `${ETreeMenuList.Edit}/${ETreeMenuList.SubEdit1}`,
+    title: 'Update Taking Record',
+    path: `${TreeMenuList.TakingRecord}/${TreeMenuList.UpdateTakingRecord}`,
   },
   {
-    title: 'Sub edit Menu 2',
-    path: `${ETreeMenuList.Edit}/${ETreeMenuList.SubEdit2}`,
+    title: 'Taking Record Info',
+    path: `${TreeMenuList.TakingRecord}/${TreeMenuList.TakingRecordInformation}`,
+  },
+]
+
+const customerManagement: Array<ITreeMenu> = [
+  {
+    title: 'Customer Management',
+    path: TreeMenuList.CustomerManagement,
+  },
+  {
+    title: 'Create Customer',
+    path: `${TreeMenuList.CustomerManagement}/${TreeMenuList.CreateCustomer}`,
+  },
+  {
+    title: 'Edit Customer',
+    path: `${TreeMenuList.CustomerManagement}/${TreeMenuList.EditCustomer}`,
+  },
+  {
+    title: 'Customer Money',
+    path: `${TreeMenuList.CustomerManagement}/${TreeMenuList.CustomerMoney}`,
   },
 ]
 
 export const defaultTreeMenu: Array<ITreeMenu> = [
   ...paymentMenu,
-  ...editMenu
+  ...takingRecordMenu,
+  ...customerManagement
 ]
 
 export default function TreeMenuComponent() {
@@ -82,7 +102,7 @@ export default function TreeMenuComponent() {
 
   const renderTreeMenu = (menus: Array<ITreeMenu>) => {
 
-    if (menuPath === ETreeMenuList.Root) {
+    if (menuPath === TreeMenuList.Root) {
       const rootMenu = menus.filter(pr => !pr.path.includes('/'))
 
       return (
@@ -121,7 +141,7 @@ export default function TreeMenuComponent() {
   }
 
   const handleOnBackButtonClicked = (path: string) => {
-    if (!path.includes('/')) setMenuPath(ETreeMenuList.Root)
+    if (!path.includes('/')) setMenuPath(TreeMenuList.Root)
     else {
       const parentPath = path.split('/').slice(0, -1)
       setMenuPath(parentPath.join('/'))
@@ -129,7 +149,7 @@ export default function TreeMenuComponent() {
   }
 
   useEffect(() => {
-    setTreeMenuVisibility(!(menuPath === ETreeMenuList.Root))
+    setTreeMenuVisibility(!(menuPath === TreeMenuList.Root))
   }, [menuPath])
 
   const handleOnBreadCrumbsClick = (item: string) => {
@@ -141,7 +161,7 @@ export default function TreeMenuComponent() {
   const breadCrumbs = () => (
     <>
       {
-        menuPath !== ETreeMenuList.Root
+        menuPath !== TreeMenuList.Root
         && menuPath.split('/').map((item) => (
           <button
             className='bread-crumbs'

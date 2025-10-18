@@ -1,6 +1,6 @@
 import { AdminMenus, UserManagementMenu, type MenuTree } from "@/model";
 import EditPickingRecordPage from "@/page/edit-picking-record-pages/EditPickingRecordPage";
-import PaymentPage from "@/page/payment-pages/PaymentPages";
+import MakePaymentPage from "@/page/make-payment-pages/MakePaymentPages";
 import PrintDataPage from "@/page/print-data-pages/PrintDataPages";
 import CreateNewUserPage from "@/page/user-management-pages/CreateNewUserPage";
 import DeleteUserPage from "@/page/user-management-pages/DeleteUserPage";
@@ -43,7 +43,7 @@ const editPickingRecordMenu: MenuTree = {
 const paymentMenu: MenuTree = {
   key: AdminMenus.PaymentMenu,
   isRoot: true,
-  component: <PaymentPage />
+  component: <MakePaymentPage />
 }
 
 const printDataMenu: MenuTree = {

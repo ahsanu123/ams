@@ -1,13 +1,16 @@
+import { isValid, parseISO } from "date-fns";
+
 export async function fetchWithDateTimeCompitable(url: string, requestInit: RequestInit, body?: object) {
   let transformedBody: string | undefined
 
-  if (body !== null)
+  if (body !== undefined)
     transformedBody = JSON.stringify(transformObjectDates(body));
 
-  if (requestInit.method == 'GET')
+  if (requestInit.method === 'GET')
     return fetch(url, { ...requestInit });
 
-  return fetch(url, { ...requestInit, body: transformedBody });
+  else
+    return fetch(url, { ...requestInit, body: transformedBody });
 }
 
 function transformObjectDates(obj: any) {
@@ -16,6 +19,12 @@ function transformObjectDates(obj: any) {
   for (const key in transformed) {
     if (transformed[key] instanceof Date) {
       transformed[key] = transformed[key].toISOString().replace('Z', '');
+    }
+    else if (typeof (transformed[key]) === "string") {
+      const date = parseISO(transformed[key])
+      const validDate = isValid(date)
+      if (validDate)
+        transformed[key] = date.toISOString().replace('Z', '');
     } else if (typeof transformed[key] === 'object' && transformed[key] !== null) {
       transformed[key] = transformObjectDates(transformed[key]);
     }

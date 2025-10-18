@@ -1,4 +1,4 @@
-import { dregPrice } from "@/commands";
+import { dregPriceCommand } from "@/commands";
 import { test, expect, describe, beforeAll } from "vitest";
 
 describe("dreg-api-test", () => {
@@ -7,17 +7,17 @@ describe("dreg-api-test", () => {
   });
 
   test("get_all_dreg_price", async () => {
-    const allPrice = await dregPrice.getAllDregPrice()
+    const allPrice = await dregPriceCommand.getAllDregPrice()
     console.log(allPrice)
   });
 
   test("get_latest_dreg_price", async () => {
-    const latestPrice = await dregPrice.getLatestDregPrice()
+    const latestPrice = await dregPriceCommand.getLatestDregPrice()
     console.log(latestPrice)
   });
 
   test("update_dreg_price", async () => {
-    const updatedPrice = await dregPrice.updateDregPrice(20000);
+    const updatedPrice = await dregPriceCommand.updateDregPrice(20000);
     console.log(updatedPrice)
   });
 })

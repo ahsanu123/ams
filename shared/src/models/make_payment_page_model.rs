@@ -1,0 +1,24 @@
+use ams_entity::{price_history_table, taking_record_table, user_table};
+use serde::Serialize;
+
+#[derive(Debug, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct DetailInformation {
+    pub total_bill_for_current_month: i64,
+    pub taking_count_for_current_month: i64,
+}
+
+#[derive(Debug, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct TakingRecordWithPrice {
+    pub taking_record: taking_record_table::Model,
+    pub price: price_history_table::Model,
+}
+
+#[derive(Debug, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct MakePaymentPageModel {
+    pub taking_records: Vec<TakingRecordWithPrice>,
+    pub detail_information: DetailInformation,
+    pub customers: Vec<user_table::Model>,
+}

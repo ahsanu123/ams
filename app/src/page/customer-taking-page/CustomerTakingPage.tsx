@@ -1,5 +1,5 @@
 import type { TakingRecordModel, UserModel } from "@/api-models";
-import { takingRecord, userManagement } from "@/commands";
+import { takingRecordCommand, userManagementCommand } from "@/commands";
 import Calendar from "@/component/Calendar";
 import VirtualKeypad from "@/component/VirtualKeypad";
 import { EMPTY_HEADER_INFORMATION } from "@/constants";
@@ -16,15 +16,16 @@ interface IAddTakingRecordClientRequest {
 }
 
 export async function clientLoader() {
-  const listUser = await userManagement.getAllActiveUser();
+  const listUser = await userManagementCommand.getAllActiveUser();
   return { listUser }
 }
 
 export async function clientAction({ request }: Route.ClientActionArgs) {
   const data = await fromFormData<IAddTakingRecordClientRequest>(request)
-  await takingRecord.addNewTakingRecord(data.userId, data.amount)
+  console.log(data)
+  await takingRecordCommand.addNewTakingRecord(data.userId, data.amount)
 
-  const takingRecords = await takingRecord.getTakingRecordByUserIdAndMonth(data.userId, new Date())
+  const takingRecords = await takingRecordCommand.getTakingRecordByUserIdAndMonth(data.userId, new Date())
 
   return takingRecords
 }

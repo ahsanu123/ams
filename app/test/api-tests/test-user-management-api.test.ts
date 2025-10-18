@@ -1,16 +1,16 @@
 import type { UserModel } from "@/api-models";
-import { userManagement } from "@/commands";
+import { userManagementCommand } from "@/commands";
 import { test, expect, describe, beforeAll } from "vitest";
 
 describe("user_management_api_test", () => {
   test("get_all_active_user", async () => {
-    const result = await userManagement.getAllActiveUser()
+    const result = await userManagementCommand.getAllActiveUser()
 
     console.log(result)
   });
 
   test("get_all_user", async () => {
-    const result = await userManagement.getAllUser()
+    const result = await userManagementCommand.getAllUser()
 
     console.log(result)
   });
@@ -25,7 +25,7 @@ describe("user_management_api_test", () => {
       createdDate: new Date(),
       updatedDate: new Date()
     }
-    const result = await userManagement.insertNewUser(newUser)
+    const result = await userManagementCommand.insertNewUser(newUser)
 
     console.log(result)
   });
@@ -40,7 +40,7 @@ describe("user_management_api_test", () => {
       createdDate: new Date(),
       updatedDate: new Date()
     }
-    const result = await userManagement.UpsertUser(newUser)
+    const result = await userManagementCommand.UpsertUser(newUser)
 
     console.log(result)
   });

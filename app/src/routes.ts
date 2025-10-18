@@ -20,6 +20,7 @@ export enum AdminRoutes {
   AdminRoot = "/admin",
 
   ReportPage = "/report-page",
+  MakePaymentPage = "/make-payment-page",
 }
 
 export default [
@@ -47,8 +48,8 @@ export default [
         id: AdminRoutes.AdminRoot,
       }),
 
-      route(AdminRoutes.ReportPage, "./page/payment-pages/PaymentPages.tsx", {
-        id: `${AdminRoutes.AdminRoot}${AdminRoutes.ReportPage}`
+      route(AdminRoutes.MakePaymentPage, "./page/make-payment-pages/MakePaymentPages.tsx", {
+        id: `${AdminRoutes.AdminRoot}${AdminRoutes.MakePaymentPage}`
       }),
 
     ]),

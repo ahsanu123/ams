@@ -73,6 +73,7 @@ dependencies = [
  "itertools",
  "once_cell",
  "sea-orm",
+ "serde",
  "tokio",
 ]
 

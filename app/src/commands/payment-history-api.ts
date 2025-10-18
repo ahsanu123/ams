@@ -49,7 +49,7 @@ const paymentHistoryApi: IPaymentHistoryApi = {
   }
 }
 
-const paymentHistoryCommand: IPaymentHistoryApi = {
+const paymentHistoryTauriCommand: IPaymentHistoryApi = {
   getMonthSummary: function (date: Date): Promise<Array<PaymentHistoryModel>> {
     throw new Error("Function not implemented.")
   },
@@ -67,4 +67,4 @@ const paymentHistoryCommand: IPaymentHistoryApi = {
   }
 }
 
-export const paymentHistory = IS_INSIDE_TAURI ? paymentHistoryCommand : paymentHistoryApi 
+export const paymentHistoryCommand = IS_INSIDE_TAURI ? paymentHistoryTauriCommand : paymentHistoryApi 

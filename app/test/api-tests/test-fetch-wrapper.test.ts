@@ -1,4 +1,4 @@
-import { dregPrice } from "@/commands";
+import { dregPriceCommand } from "@/commands";
 import { fetchWithDateTimeCompitable } from "@/commands/fetch-wrapper";
 import { test, expect, describe, beforeAll } from "vitest";
 

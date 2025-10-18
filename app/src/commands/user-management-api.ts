@@ -39,7 +39,7 @@ const userManagementApi: IUserManagementApi = {
   }
 }
 
-const userManagementCommand: IUserManagementApi = {
+const userManagementTauriCommand: IUserManagementApi = {
   getAllUser: function (): Promise<Array<UserModel>> {
     throw new Error("Function not implemented.")
   },
@@ -54,4 +54,4 @@ const userManagementCommand: IUserManagementApi = {
   }
 }
 
-export const userManagement = IS_INSIDE_TAURI ? userManagementCommand : userManagementApi
+export const userManagementCommand = IS_INSIDE_TAURI ? userManagementTauriCommand : userManagementApi

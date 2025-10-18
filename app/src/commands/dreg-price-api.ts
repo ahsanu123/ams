@@ -27,7 +27,7 @@ const dregPriceApi: IDregPriceApi = {
   }
 }
 
-const dregPriceCommand: IDregPriceApi = {
+const dregPriceTauriCommand: IDregPriceApi = {
   getLatestDregPrice: function (): Promise<DregPriceModel> {
     throw new Error("Function not implemented.")
   },
@@ -39,4 +39,4 @@ const dregPriceCommand: IDregPriceApi = {
   }
 }
 
-export const dregPrice = IS_INSIDE_TAURI ? dregPriceCommand : dregPriceApi
+export const dregPriceCommand = IS_INSIDE_TAURI ? dregPriceTauriCommand : dregPriceApi

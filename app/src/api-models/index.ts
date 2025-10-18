@@ -1,4 +1,5 @@
 export * from './dreg-price-model'
+export * from './make-payment-page-model'
 export * from './user-model'
 export * from './money-history-model'
 export * from './payment-history-model'
