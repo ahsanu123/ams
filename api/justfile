@@ -1,0 +1,3 @@
+# run debug
+rd: 
+  RUST_LOG=debug cargo run

@@ -29,7 +29,7 @@ export default function Scroller(props: ScrollerProps) {
 
   return (
     <>
-      {title && <h1>{title}</h1>}
+      {title && <h4>{title}</h4>}
       {description && <sub>{description}</sub>}
 
       <sub>{description}</sub>

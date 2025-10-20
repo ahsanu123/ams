@@ -40,7 +40,7 @@ describe("user_management_api_test", () => {
       createdDate: new Date(),
       updatedDate: new Date()
     }
-    const result = await userManagementCommand.UpsertUser(newUser)
+    const result = await userManagementCommand.upsertUser(newUser)
 
     console.log(result)
   });

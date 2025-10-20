@@ -70,7 +70,7 @@ pub async fn payment_page_get_page_model(
         content_type =  "application/json",
     )
 )]
-#[get("/make-payment-page/make-payment")]
+#[post("/make-payment-page/make-payment")]
 pub async fn payment_page_make_payment(
     request: Json<request_model::UserIdAndDateRequestModel>,
 ) -> impl Responder {

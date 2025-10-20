@@ -1,5 +1,5 @@
 use actix_cors::Cors;
-use actix_web::{App, HttpServer};
+use actix_web::{App, HttpServer, middleware::Logger};
 use ams_api::endpoints::ApiDoc;
 use ams_api::endpoints::{
     customer_endpoints::CustomerServiceExtensionTrait,
@@ -16,6 +16,8 @@ use utoipa_swagger_ui::{Config, SwaggerUi};
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
+    env_logger::init_from_env(env_logger::Env::new().default_filter_or("debug"));
+
     HttpServer::new(move || {
         let cors = Cors::default()
             .allow_any_header()
@@ -24,6 +26,7 @@ async fn main() -> std::io::Result<()> {
 
         App::new()
             .wrap(cors)
+            .wrap(Logger::new("%a %{User-Agent}i"))
             .into_utoipa_app()
             .openapi(ApiDoc::openapi())
             .openapi_service(|api| {

@@ -70,8 +70,38 @@ impl MakePaymentCommandTrait for MakePaymentCommand {
             })
             .sum::<i64>();
 
+        let total_paid_bill = taking_record_with_price
+            .iter()
+            .filter(|pr| pr.taking_record.is_paid)
+            .map(|record| {
+                let bill = record.taking_record.amount * record.price.price;
+                bill
+            })
+            .sum::<i64>();
+
+        let total_unpaid_bill = taking_record_with_price
+            .iter()
+            .filter(|pr| !pr.taking_record.is_paid)
+            .map(|record| {
+                let bill = record.taking_record.amount * record.price.price;
+                bill
+            })
+            .sum::<i64>();
+
         let total_amount = taking_record_with_price
             .iter()
+            .map(|record| record.taking_record.amount)
+            .sum::<i64>();
+
+        let total_paid_amount = taking_record_with_price
+            .iter()
+            .filter(|pr| pr.taking_record.is_paid)
+            .map(|record| record.taking_record.amount)
+            .sum::<i64>();
+
+        let total_unpaid_amount = taking_record_with_price
+            .iter()
+            .filter(|pr| !pr.taking_record.is_paid)
             .map(|record| record.taking_record.amount)
             .sum::<i64>();
 
@@ -81,8 +111,12 @@ impl MakePaymentCommandTrait for MakePaymentCommand {
             taking_records: taking_record_with_price,
             customers: active_customer,
             detail_information: DetailInformation {
-                total_bill_for_current_month: total_bill,
-                taking_count_for_current_month: total_amount,
+                total_bill: total_bill,
+                total_amount: total_amount,
+                paid_bill: total_paid_bill,
+                paid_amount: total_paid_amount,
+                unpaid_bill: total_unpaid_bill,
+                unpaid_amount: total_unpaid_amount,
             },
         })
     }
@@ -110,15 +144,6 @@ impl MakePaymentCommandTrait for MakePaymentCommand {
 
         let customer = customer.unwrap();
 
-        let _updated_taking_record = TakingRecordTable::update_many()
-            .col_expr(taking_record_table::Column::IsPaid, Expr::value(true))
-            .filter(taking_record_table::Column::UserId.eq(user_id))
-            .filter(taking_record_table::Column::TakenDate.gte(start_month))
-            .filter(taking_record_table::Column::TakenDate.lt(end_month))
-            .exec(conn)
-            .await
-            .unwrap();
-
         let taking_record_with_price = TakingRecordTable::find()
             .filter(taking_record_table::Column::IsPaid.eq(false))
             .filter(taking_record_table::Column::UserId.eq(user_id))
@@ -135,12 +160,19 @@ impl MakePaymentCommandTrait for MakePaymentCommand {
             })
             .collect::<Vec<TakingRecordWithPrice>>();
 
+        let _updated_taking_record = TakingRecordTable::update_many()
+            .col_expr(taking_record_table::Column::IsPaid, Expr::value(true))
+            .filter(taking_record_table::Column::UserId.eq(user_id))
+            .filter(taking_record_table::Column::TakenDate.gte(start_month))
+            .filter(taking_record_table::Column::TakenDate.lt(end_month))
+            .filter(taking_record_table::Column::IsPaid.eq(false))
+            .exec(conn)
+            .await
+            .unwrap();
+
         let total_bill = taking_record_with_price
             .iter()
-            .map(|record| {
-                let bill = record.taking_record.amount * record.price.price;
-                bill
-            })
+            .map(|record| record.taking_record.amount * record.price.price)
             .sum::<i64>();
 
         // doesnt need to update anything

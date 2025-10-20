@@ -1,23 +1,34 @@
+import type { MakePaymentPageModel, TakingRecordWithPrice, UserModel } from "@/api-models"
+import { makePaymentCommand, userManagementCommand } from "@/commands"
+import Scroller from "@/component/Scroller"
+import Tab from "@/component/Tab"
 import { EMPTY_HEADER_INFORMATION } from "@/constants"
 import { useMainLayoutStore } from "@/state"
-import { useEffect, useState } from "react"
-import Scroller from "@/component/Scroller"
-import DatePicker from "react-datepicker"
-import "react-datepicker/dist/react-datepicker.css";
-import './MakePaymentPages.css'
 import { formatAsRupiah, fromFormData, toFormData } from "@/utility"
-import { useMakePaymentPageState } from "./make-payment-page-state"
 import { format } from "date-fns"
 import { id } from "date-fns/locale"
-import type { Route } from "./+types/MakePaymentPages"
-import { makePaymentCommand, userManagementCommand } from "@/commands"
+import React, { useEffect, useState } from "react"
+import DatePicker from "react-datepicker"
+import "react-datepicker/dist/react-datepicker.css"
 import { useFetcher } from "react-router"
-import type { MakePaymentPageModel, TakingRecordWithPrice } from "@/api-models"
-import React from "react"
+import type { Route } from "./+types/MakePaymentPages"
+import { useMakePaymentPageState } from "./make-payment-page-state"
+import './MakePaymentPages.css'
+
+enum ListActionEnum {
+  GetPageModel = 'GetPageModel',
+  MakePayment = 'MakePayment'
+}
+
+interface IFetcherActionResult {
+  pageModel: MakePaymentPageModel,
+  customerData: UserModel
+}
 
 interface IGetPageModelClientRequest {
   userId: number,
-  date: Date
+  date: Date,
+  _action: ListActionEnum,
 }
 
 export async function clientLoader() {
@@ -27,11 +38,38 @@ export async function clientLoader() {
   }
 }
 
-export async function clientAction({ request }: Route.ClientActionArgs): Promise<MakePaymentPageModel> {
-  const data = await fromFormData<IGetPageModelClientRequest>(request)
-  const pageModel = await makePaymentCommand.getPageModel(data.userId, data.date)
+export async function clientAction({ request }: Route.ClientActionArgs): Promise<IFetcherActionResult> {
+  const parsedRequest = await fromFormData<IGetPageModelClientRequest>(request)
+  // FIXME: 
+  // for now use if else, 
+  // think better approach of it
 
-  return pageModel
+  if (parsedRequest._action === ListActionEnum.MakePayment) {
+    const pageModel = await makePaymentCommand.makePayment(parsedRequest.userId, parsedRequest.date)
+    const customerData = await userManagementCommand.getById(parsedRequest.userId)
+
+    return {
+      pageModel,
+      customerData
+    }
+  }
+  // ListActionEnum.GetPageModel
+  else {
+    const pageModel = await makePaymentCommand.getPageModel(parsedRequest.userId, parsedRequest.date)
+    const customerData = await userManagementCommand.getById(parsedRequest.userId)
+
+    return {
+      pageModel,
+      customerData
+    }
+  }
+
+
+}
+
+enum ListTabEnum {
+  CustomerTakingRecordDetail = 'List Record',
+  CustomerDetailInformation = 'Customer Information'
 }
 
 export default function MakePaymentPage({
@@ -40,7 +78,7 @@ export default function MakePaymentPage({
 
   const { activeCustomer } = loaderData
 
-  const fetcher = useFetcher<MakePaymentPageModel>()
+  const fetcher = useFetcher<IFetcherActionResult>()
 
   const setHeaderInformation = useMainLayoutStore(state => state.setHeaderInformation)
 
@@ -60,6 +98,7 @@ export default function MakePaymentPage({
   const setPageModel = useMakePaymentPageState(state => state.setPageModel)
 
   const [dateOpen, setDateOpen] = useState(false)
+  const [activeTab, setActiveTab] = useState<string>(ListTabEnum.CustomerTakingRecordDetail)
 
   const handleOnDatePickerChange = (date: Date | null) => {
     if (date) {
@@ -70,9 +109,21 @@ export default function MakePaymentPage({
   }
 
   const handleOnPayButtonClicked = () => {
-    // TODO:
+    if (selectedCustomer === undefined) return;
 
-    console.log(selectedCustomer, selectedDate)
+    const serializedData = toFormData({
+      userId: selectedCustomer.id,
+      date: selectedDate,
+      _action: ListActionEnum.MakePayment
+    })
+
+    fetcher.submit(serializedData, {
+      method: 'post',
+    })
+  }
+
+  const handleOnActiveTabChange = (title: string) => {
+    setActiveTab(title)
   }
 
   const isPayButtonDisabled = () =>
@@ -81,7 +132,7 @@ export default function MakePaymentPage({
     || (pageModel && pageModel.takingRecords.every(pr => pr.takingRecord.isPaid === true))
 
   const detailedCard = (record: TakingRecordWithPrice) => (
-    <div className="detailed-card">
+    <div className={`detailed-card ${record.takingRecord.isPaid ? 'paid' : ''}`} >
       <div>
         <h2>{selectedCustomer?.username} {record.takingRecord.isPaid && " - Lunas"}</h2>
         <p>{format(record.takingRecord.takenDate, "PPPP", { locale: id })}</p>
@@ -93,7 +144,46 @@ export default function MakePaymentPage({
         <br />
         <b>Ampas</b>
       </div>
-    </div>
+    </div >
+  )
+
+  const userDetailComponent = () => (
+    <>
+      {selectedCustomer !== undefined && (
+        <div>
+          <ul>
+            <li>
+              Nama: <b>{selectedCustomer.username}</b>
+            </li>
+            <li>
+              {selectedCustomer.money >= 0 ? 'Memiliki Uang ' : 'Kekurangan Uang '} Sebesar:
+              <b>{formatAsRupiah(selectedCustomer.money)}</b>
+            </li>
+          </ul>
+        </div>
+      )}
+    </>
+  )
+  const scrollerUserTakingRecordComponent = () => (
+    <>
+      {pageModel !== undefined && (
+        <Scroller
+          title="Catatan"
+        >
+          {pageModel.takingRecords.length <= 0 && (<b>Data Kosong</b>)}
+
+          {pageModel.takingRecords.length > 0 &&
+            pageModel.takingRecords.map((record, index) => (
+              <React.Fragment
+                key={index}
+              >
+                {detailedCard(record)}
+              </React.Fragment>
+            ))
+          }
+        </Scroller>
+      )}
+    </>
   )
 
   useEffect(() => {
@@ -114,11 +204,12 @@ export default function MakePaymentPage({
     if (selectedCustomer !== undefined && selectedDate !== undefined) {
       const serializedData = toFormData({
         userId: selectedCustomer.id,
-        date: selectedDate
+        date: selectedDate,
+        _action: ListActionEnum.GetPageModel
       })
 
       fetcher.submit(serializedData, {
-        method: 'post'
+        method: 'post',
       })
     }
 
@@ -127,7 +218,7 @@ export default function MakePaymentPage({
   useEffect(() => {
 
     if (fetcher.data !== undefined) {
-      setPageModel(fetcher.data)
+      setPageModel(fetcher.data.pageModel)
       setShowDetailTaking(true)
     }
 
@@ -179,10 +270,30 @@ export default function MakePaymentPage({
           {showDetailTaking && pageModel && (
             <>
               <h3>Total Ambil</h3>
-              <b>{pageModel.detailInformation.takingCountForCurrentMonth} Ampas</b>
+              <ul>
+                <li>
+                  Total: <b>{pageModel.detailInformation.totalAmount} Ampas</b>
+                </li>
+                <li>
+                  Terbayar: <b>{pageModel.detailInformation.paidAmount} Ampas</b>
+                </li>
+                <li>
+                  Belum Terbayar: <b>{pageModel.detailInformation.unpaidAmount} Ampas</b>
+                </li>
+              </ul>
 
               <h3>Tagihan</h3>
-              <b>{formatAsRupiah(pageModel.detailInformation.totalBillForCurrentMonth)}</b>
+              <ul>
+                <li>
+                  Total: <b>{formatAsRupiah(pageModel.detailInformation.totalBill)}</b>
+                </li>
+                <li>
+                  Terbayar: <b>{formatAsRupiah(pageModel.detailInformation.paidBill)}</b>
+                </li>
+                <li>
+                  Belum Terbayar: <b>{formatAsRupiah(pageModel.detailInformation.unpaidBill)}</b>
+                </li>
+              </ul>
               <br />
 
               <hr />
@@ -199,22 +310,21 @@ export default function MakePaymentPage({
         </div>
 
         {showDetailTaking && pageModel !== undefined && (
-          <div>
-            <Scroller
-              title="Catatan"
-            >
-              {pageModel.takingRecords.length <= 0 && (<b>Data Kosong</b>)}
-
-              {pageModel.takingRecords.length > 0 &&
-                pageModel.takingRecords.map((record, index) => (
-                  <React.Fragment
-                    key={index}
-                  >
-                    {detailedCard(record)}
-                  </React.Fragment>
-                ))
-              }
-            </Scroller>
+          <div className="container-item">
+            <Tab
+              activeTab={activeTab}
+              handleOnActiveTabChange={handleOnActiveTabChange}
+              data={[
+                {
+                  title: ListTabEnum.CustomerTakingRecordDetail,
+                  component: () => scrollerUserTakingRecordComponent(),
+                },
+                {
+                  title: ListTabEnum.CustomerDetailInformation,
+                  component: () => userDetailComponent()
+                }
+              ]}
+            />
           </div>
         )}
 

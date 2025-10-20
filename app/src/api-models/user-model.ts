@@ -3,7 +3,7 @@ export interface UserModel {
   username: string;
   isActive: boolean;
   isAdmin: boolean;
-  money: bigint;
+  money: number;
   createdDate: Date;
   updatedDate: Date;
 }

@@ -3,8 +3,12 @@ import type { TakingRecordModel } from "./taking-record-model";
 import type { UserModel } from "./user-model";
 
 export interface DetailInformation {
-  totalBillForCurrentMonth: number;
-  takingCountForCurrentMonth: number;
+  totalBill: number;
+  totalAmount: number;
+  paidBill: number,
+  paidAmount: number
+  unpaidBill: number,
+  unpaidAmount: number,
 }
 
 export interface TakingRecordWithPrice {

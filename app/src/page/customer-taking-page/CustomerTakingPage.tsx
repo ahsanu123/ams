@@ -117,7 +117,6 @@ export default function DashboardPage({
       <div
         className="customer-taking-page"
       >
-        {fetcher.state == "submitting" && <h1> wait loading broo</h1>}
         <main>
           {
             customer ? showVirtualKeypad() : showUserSelector()

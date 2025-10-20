@@ -26,6 +26,12 @@ mod request_model {
     pub struct UpsertUser {
         pub user: user_table::Model,
     }
+
+    #[derive(Deserialize, ToSchema)]
+    #[serde(rename_all = "camelCase")]
+    pub struct UserIdRequest {
+        pub user_id: i32,
+    }
 }
 
 pub trait UserManagementServiceExtensionTrait {
@@ -41,6 +47,7 @@ where
             .service(get_all_user)
             .service(get_all_active_user)
             .service(upsert_user)
+            .service(get_by_user_id)
     }
 }
 
@@ -105,5 +112,23 @@ pub async fn get_all_active_user() -> impl Responder {
 #[post("/user-management/upsert-user")]
 pub async fn upsert_user(request: Json<request_model::UpsertUser>) -> impl Responder {
     let result = UserManagementCommand::upsert_user(request.user.clone()).await;
+    HttpResponse::Ok().json(result)
+}
+
+#[utoipa::path(
+    post,
+    path = "/user-management/get-by-user-id",
+    responses(
+        (status = 200, description = "success"),
+        (status = NOT_FOUND, description = "not found")
+    ),
+    request_body(
+        content =  request_model::UserIdRequest ,
+        content_type =  "application/json",
+    )
+)]
+#[post("/user-management/get-by-user-id")]
+pub async fn get_by_user_id(request: Json<request_model::UserIdRequest>) -> impl Responder {
+    let result = UserManagementCommand::get_by_user_id(request.user_id).await;
     HttpResponse::Ok().json(result)
 }

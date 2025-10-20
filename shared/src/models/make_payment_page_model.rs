@@ -4,8 +4,12 @@ use serde::Serialize;
 #[derive(Debug, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct DetailInformation {
-    pub total_bill_for_current_month: i64,
-    pub taking_count_for_current_month: i64,
+    pub total_bill: i64,
+    pub total_amount: i64,
+    pub paid_bill: i64,
+    pub paid_amount: i64,
+    pub unpaid_bill: i64,
+    pub unpaid_amount: i64,
 }
 
 #[derive(Debug, Serialize)]

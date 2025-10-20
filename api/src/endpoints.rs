@@ -36,6 +36,7 @@ use utoipa::OpenApi;
         crate::endpoints::user_management_enpoint::get_all_user,
         crate::endpoints::user_management_enpoint::get_all_active_user,
         crate::endpoints::user_management_enpoint::upsert_user,
+        crate::endpoints::user_management_enpoint::get_by_user_id,
         // make_payment_page_endpoint 
         crate::endpoints::make_payment_page_endpoint::payment_page_get_page_model,
         crate::endpoints::make_payment_page_endpoint::payment_page_make_payment

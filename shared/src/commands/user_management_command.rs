@@ -15,6 +15,7 @@ pub trait UserManagementCommandTrait {
     async fn get_all_user() -> Vec<user_table::Model>;
     async fn get_all_active_user() -> Vec<user_table::Model>;
     async fn upsert_user(user: user_table::Model) -> i32;
+    async fn get_by_user_id(id: i32) -> Option<user_table::Model>;
 }
 
 pub struct UserManagementCommand;
@@ -73,6 +74,10 @@ impl UserManagementCommandTrait for UserManagementCommand {
         let result = UserTable::update_by_model(active_model).await.unwrap();
 
         result.id
+    }
+
+    async fn get_by_user_id(id: i32) -> Option<user_table::Model> {
+        UserTable::get_by_id(id).await.unwrap()
     }
 }
 
