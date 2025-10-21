@@ -41,6 +41,7 @@ const paymentMenu: Array<ITreeMenu> = [
   {
     title: 'List Payment',
     path: `${TreeMenuList.Payment}/${TreeMenuList.ListPayment}`,
+    id: `${AdminRoutes.AdminRoot}${AdminRoutes.ListPaymentPage}`
   },
   {
     title: 'Edit Payment',

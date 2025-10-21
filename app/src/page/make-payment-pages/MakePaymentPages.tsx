@@ -40,9 +40,6 @@ export async function clientLoader() {
 
 export async function clientAction({ request }: Route.ClientActionArgs): Promise<IFetcherActionResult> {
   const parsedRequest = await fromFormData<IGetPageModelClientRequest>(request)
-  // FIXME: 
-  // for now use if else, 
-  // think better approach of it
 
   if (parsedRequest._action === ListActionEnum.MakePayment) {
     const pageModel = await makePaymentCommand.makePayment(parsedRequest.userId, parsedRequest.date)
@@ -53,6 +50,7 @@ export async function clientAction({ request }: Route.ClientActionArgs): Promise
       customerData
     }
   }
+
   // ListActionEnum.GetPageModel
   else {
     const pageModel = await makePaymentCommand.getPageModel(parsedRequest.userId, parsedRequest.date)
@@ -63,7 +61,6 @@ export async function clientAction({ request }: Route.ClientActionArgs): Promise
       customerData
     }
   }
-
 
 }
 
@@ -134,9 +131,10 @@ export default function MakePaymentPage({
   const detailedCard = (record: TakingRecordWithPrice) => (
     <div className={`detailed-card ${record.takingRecord.isPaid ? 'paid' : ''}`} >
       <div>
-        <h2>{selectedCustomer?.username} {record.takingRecord.isPaid && " - Lunas"}</h2>
+        <h4>{selectedCustomer?.username} {record.takingRecord.isPaid && " - Lunas"}</h4>
         <p>{format(record.takingRecord.takenDate, "PPPP", { locale: id })}</p>
         <p>{format(record.takingRecord.takenDate, "p", { locale: id })}</p>
+        <sub>{formatAsRupiah(record.price.price)}</sub>
       </div>
 
       <div className="record">
@@ -147,23 +145,26 @@ export default function MakePaymentPage({
     </div >
   )
 
-  const userDetailComponent = () => (
-    <>
-      {selectedCustomer !== undefined && (
-        <div>
-          <ul>
-            <li>
-              Nama: <b>{selectedCustomer.username}</b>
-            </li>
-            <li>
-              {selectedCustomer.money >= 0 ? 'Memiliki Uang ' : 'Kekurangan Uang '} Sebesar:
-              <b>{formatAsRupiah(selectedCustomer.money)}</b>
-            </li>
-          </ul>
-        </div>
-      )}
-    </>
-  )
+  const userDetailComponent = () => {
+    const customerData = pageModel?.customers.find(pr => pr.id === selectedCustomer?.id)
+    return (
+      <>
+        {customerData !== undefined && (
+          <div>
+            <ul>
+              <li>
+                Nama: <b>{customerData.username}</b>
+              </li>
+              <li>
+                {customerData.money >= 0 ? 'Memiliki Uang ' : 'Kekurangan Uang '} Sebesar:
+                <b>{formatAsRupiah(customerData.money)}</b>
+              </li>
+            </ul>
+          </div>
+        )}
+      </>
+    )
+  }
   const scrollerUserTakingRecordComponent = () => (
     <>
       {pageModel !== undefined && (
