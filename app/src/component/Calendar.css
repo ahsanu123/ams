@@ -6,6 +6,18 @@
   }
 }
 
+.calendar {
+  .calendar-flex {
+    align-items: center;
+    padding: 10px 0;
+    gap: 30px;
+
+    .calendar-navigation {
+      column-gap: 20px;
+    }
+  }
+}
+
 .calendar-heading {
   display: flex;
   justify-content: space-between;
@@ -30,6 +42,7 @@
 }
 
 .ams-calendar {
+  max-width: 550px;
   display: grid;
   grid-template-columns: repeat(7, 1fr);
   gap: 10px;

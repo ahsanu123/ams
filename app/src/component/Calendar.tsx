@@ -1,14 +1,20 @@
-import { useMainLayoutStore } from "@/state"
-import { generateCalendarObject } from "@/utility"
+import type { TakingRecordModel, UserModel } from "@/api-models"
+import { generateCalendarObject, type ICalendarCell } from "@/utility"
+import { Box, Button, Flex, Heading, Text } from "@chakra-ui/react"
 import { addMonths } from "date-fns"
-import React, { useEffect } from "react"
-import "./Calendar.css"
+import React, { useEffect, useState } from "react"
 import CalendarCellComponent from "./CalendarCell"
+import "./Calendar.css"
+import { AiOutlineCaretLeft, AiOutlineCaretRight, AiOutlineEnvironment } from "react-icons/ai"
 
 interface CalendarProps {
+  takingRecords?: TakingRecordModel[],
+  user?: UserModel,
+  isAdmin?: boolean,
+
   showNavigator?: boolean
   title?: string,
-  adminMode?: boolean,
+
   onPrevMonthClicked?: (date: Date) => void
   onNextMonthClicked?: (date: Date) => void
   onCellClicked?: (date?: Date) => void
@@ -17,35 +23,31 @@ interface CalendarProps {
 export default function Calendar(props: CalendarProps) {
 
   const {
+    takingRecords,
+    user,
+    isAdmin = false,
     showNavigator = false,
-    adminMode = false,
     title,
     onPrevMonthClicked,
     onNextMonthClicked,
     onCellClicked
   } = props
 
-  const userTakingRecords = useMainLayoutStore(state => state.userTakingRecords);
-  const date = useMainLayoutStore(state => state.selectedMonth)
-  const setDate = useMainLayoutStore(state => state.setSelectedDate)
-
-  const calendarCells = useMainLayoutStore(state => state.calendarCells)
-  const setCalendarCells = useMainLayoutStore(state => state.setCalendarCells)
-
-  const lastSelectedUser = useMainLayoutStore(state => state.lastSelectedUser)
+  const [calendarCells, setCalendarCells] = useState<ICalendarCell[]>(generateCalendarObject(new Date(), takingRecords ?? []));
+  const [date, setDate] = useState<Date>(new Date());
 
   const handleOnCurrentMonthClicked = () => {
     const newDate = new Date()
 
-    setDate(newDate)
-    setCalendarCells(generateCalendarObject(newDate, userTakingRecords))
+    setDate?.(newDate)
+    setCalendarCells(generateCalendarObject(newDate, takingRecords ?? []))
   }
 
   const handleOnPrevMonthClicked = () => {
     const newDate = addMonths(date, -1)
 
-    setDate(newDate)
-    setCalendarCells(generateCalendarObject(newDate, userTakingRecords))
+    setDate?.(newDate)
+    setCalendarCells(generateCalendarObject(newDate, takingRecords ?? []))
     onPrevMonthClicked?.(newDate)
   }
 
@@ -53,66 +55,53 @@ export default function Calendar(props: CalendarProps) {
     const newDate = addMonths(date, 1)
 
     setDate(newDate)
-    setCalendarCells(generateCalendarObject(newDate, userTakingRecords))
+    setCalendarCells(generateCalendarObject(newDate, takingRecords ?? []))
     onNextMonthClicked?.(newDate)
   }
 
+  useEffect(() => {
+    setCalendarCells(generateCalendarObject(new Date(), takingRecords ?? []));
+  }, [takingRecords])
+
   const headerText = `🌕 ${date.toLocaleDateString("id-id", { month: 'long' })} ${date.toLocaleDateString("id-id", { year: 'numeric' })} ${title ? ` - ${title}` : ""}`
 
-  useEffect(() => {
-    setCalendarCells(generateCalendarObject(new Date(), userTakingRecords))
-  }, [userTakingRecords])
-
   return (
-    <>
-      <div
-        className="calendar-heading"
-      >
-        <div>
-          <h5>
-            {headerText}
-          </h5>
+    <Box className="calendar">
+      <Flex className="calendar-flex">
+        <Heading minWidth={200}>
+          {headerText}
+        </Heading>
 
-          {
-            showNavigator &&
-            <>
-              <button
+        {
+          showNavigator && (
+            <Flex className="calendar-navigation">
+              <Button
                 onClick={() => handleOnCurrentMonthClicked()}
               >
-                <b>
-                  Bulan Ini
-                </b>
-              </button>
+                <AiOutlineEnvironment />
+                Bulan Ini
+              </Button>
 
-              {" "}
-
-              <button
+              <Button
                 onClick={() => handleOnPrevMonthClicked()}
               >
-                <b>
-                  Bulan Lalu
-                </b>
-              </button>
+                <AiOutlineCaretLeft />
+                Bulan Lalu
+              </Button>
 
-              {" "}
-
-              <button
+              <Button
                 onClick={() => handleOnNextMonthClicked()}
               >
-                <b>
-                  Bulan Depan
-                </b>
-              </button>
-            </>
-          }
-        </div>
+                <AiOutlineCaretRight />
+                Bulan Depan
+              </Button>
+            </Flex>
+          )
+        }
+        <Text textStyle={'md'}>{user?.username}</Text>
+      </Flex>
 
-        <div>
-          <b>{lastSelectedUser?.username}</b>
-        </div>
-      </div>
-
-      <div
+      <Box
         className="ams-calendar"
       >
         {calendarCells && calendarCells.map((cell, index) => (
@@ -122,10 +111,11 @@ export default function Calendar(props: CalendarProps) {
             <CalendarCellComponent
               data={cell}
               onCellClicked={onCellClicked}
+              isAdmin={isAdmin}
             />
           </React.Fragment>
         ))}
-      </div>
-    </>
+      </Box>
+    </Box>
   )
 }

@@ -1,11 +1,12 @@
-import { useMainLayoutStore } from '@/state';
 import type { ICalendarCell } from "@/utility";
 import { format, isSameDay } from "date-fns";
 import { id } from "date-fns/locale";
+import { Text } from "@chakra-ui/react";
 import './CalendarCell.css';
 
 interface CalendarCellProps {
   data: ICalendarCell,
+  isAdmin?: boolean,
   onCellClicked?: (date?: Date) => void
 }
 
@@ -13,10 +14,9 @@ export default function CalendarCellComponent(props: CalendarCellProps) {
 
   const {
     data,
-    onCellClicked
+    onCellClicked,
+    isAdmin = false,
   } = props
-
-  const isAdmin = useMainLayoutStore(state => state.isAdmin)
 
   const highlightCurrentDay = data.date && isSameDay(data.date, new Date())
 
@@ -40,9 +40,9 @@ export default function CalendarCellComponent(props: CalendarCellProps) {
             </div>
 
             <div className='taking-amount'>
-              <h2>
+              <Text textStyle={'2xl'} fontWeight={'bold'}>
                 {data.product?.amount}
-              </h2>
+              </Text>
             </div>
           </div>
 
@@ -57,6 +57,7 @@ export default function CalendarCellComponent(props: CalendarCellProps) {
                 {data.date && format(data.date, "dd", { locale: id })}
               </sub>
             </div>
+
           </div>
         )
       }

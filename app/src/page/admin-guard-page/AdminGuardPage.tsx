@@ -6,6 +6,7 @@ import { useEffect } from 'react';
 import { useNavigate } from 'react-router';
 import VirtualKeypad from '../../component/VirtualKeypad';
 import './AdminGuardPage.css';
+import { Box, Button } from '@chakra-ui/react';
 
 
 export default function AdminGuardComponent() {
@@ -41,23 +42,23 @@ export default function AdminGuardComponent() {
 
 
   return (
-    <div
+    <Box
       className='admin-guard'
     >
-      <button
+      <Button
         onClick={() => handleOnBackButtonClicked()}
       >
         Back
-      </button>
-      <div className='main-container'>
+      </Button>
+      <Box className='main-container'>
         <div>
           <VirtualKeypad
             inputType='number'
             handleOnConfirm={handleOnConfirmPassword}
           />
         </div>
-      </div>
+      </Box>
 
-    </div>
+    </Box>
   )
 }

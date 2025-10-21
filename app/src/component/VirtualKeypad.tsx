@@ -1,6 +1,7 @@
 import { useState } from "react"
 import "./VirtualKeypad.css"
 import React from "react"
+import { Button, Heading } from "@chakra-ui/react"
 
 type OkOrHapus = "Hapus" | "Ok"
 const MAX_AMOUNT = 10
@@ -69,13 +70,13 @@ export default function VirtualKeypad(props: VirtualKeypadProps) {
       {
         !!warning
           ? (
-            <h4>
+            <Heading>
               {warning}
-            </h4>
+            </Heading>
           )
           : (
             <>
-              <h5>{title}</h5>
+              <Heading>{title}</Heading>
               <sub>{description}</sub>
             </>
           )
@@ -97,19 +98,19 @@ export default function VirtualKeypad(props: VirtualKeypadProps) {
           >
             {(typeof (key) === 'string')
               ? (
-                <button
-                  className="cmd-button"
+                <Button
                   onClick={() => handleOnCmdButtonClicked(key as OkOrHapus)}
                 >
                   {key}
-                </button>
+                </Button>
               )
               : (
-                <button
+                <Button
                   onClick={() => handleOnNumberClick(key)}
+                  colorPalette={'teal'}
                 >
                   {key}
-                </button>
+                </Button>
               )
             }
           </React.Fragment>

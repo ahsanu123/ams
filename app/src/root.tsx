@@ -8,10 +8,17 @@ import {
 } from "react-router";
 import type { Route } from "./+types/root";
 import asmLogo from './svg/ams-icon.svg'
-import './root.css'
+// import './root.css'
+import { ChakraProvider, createSystem, defaultConfig } from "@chakra-ui/react";
+
+const system = createSystem(defaultConfig);
 
 export default function Root() {
-  return <Outlet />
+  return (
+    <ChakraProvider value={system}>
+      <Outlet />
+    </ChakraProvider>
+  )
 }
 
 // The Layout component is a special export for the root route.

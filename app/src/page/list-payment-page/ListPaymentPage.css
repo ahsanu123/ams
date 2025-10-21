@@ -1,0 +1,60 @@
+.list-payment-page {
+  .name-and-date-picker {
+    display: flex;
+
+    input,
+    select {
+      border: gray solid 1px;
+      margin: 10px 15px;
+      font-size: 1.5em;
+      width: 100%;
+    }
+  }
+
+  .detailed-card {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 10px;
+    border-radius: 15px;
+    padding: 5px 15px;
+    border: 1px gray solid;
+
+    .record {
+      padding: 10px;
+      text-align: center;
+    }
+
+    p {
+      margin: 0;
+    }
+
+    b {
+      all: unset;
+    }
+  }
+
+  .react-datepicker {
+    font-size: 1.2rem;
+    transform: scale(3);
+  }
+
+  .react-datepicker__day,
+  .react-datepicker__day-name,
+  .react-datepicker__current-month,
+  .react-datepicker__time-name {
+    font-size: 1.2rem;
+  }
+
+  .react-datepicker__month-container {
+    width: 300px;
+
+    .react-datepicker__year-option {
+      font-size: 20px
+    }
+
+    .react-datepicker__day-name,
+    .react-datepicker__week {
+      font-size: 20px !important;
+    }
+  }
+}

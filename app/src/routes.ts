@@ -21,6 +21,8 @@ export enum AdminRoutes {
 
   ReportPage = "/report-page",
   MakePaymentPage = "/make-payment-page",
+  ListPaymentPage = "/list-payment-page",
+  UpdateTakingRecord = "/update-taking-record",
 }
 
 export default [
@@ -50,6 +52,14 @@ export default [
 
       route(AdminRoutes.MakePaymentPage, "./page/make-payment-pages/MakePaymentPages.tsx", {
         id: `${AdminRoutes.AdminRoot}${AdminRoutes.MakePaymentPage}`
+      }),
+
+      route(AdminRoutes.ListPaymentPage, "./page/list-payment-page/ListPaymentPage.tsx", {
+        id: `${AdminRoutes.AdminRoot}${AdminRoutes.ListPaymentPage}`
+      }),
+
+      route(AdminRoutes.UpdateTakingRecord, "./page/update-taking-record-page/UpdateTakingRecordPage.tsx", {
+        id: `${AdminRoutes.AdminRoot}/${AdminRoutes.UpdateTakingRecord}`
       }),
 
     ]),

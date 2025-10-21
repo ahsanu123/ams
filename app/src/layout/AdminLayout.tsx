@@ -1,12 +1,13 @@
-import TreeMenuComponent from "@/page/admin-page/components/TreeMenu";
 import { AppRoutes } from "@/routes";
 import { useMainLayoutStore } from "@/state";
 import { Outlet, useNavigate } from "react-router";
 import Clock from "../component/Clock";
 import amsLogo from "../svg/ams-icon.svg";
-import "./AdminLayout.css";
 import { useAdminPageStore } from "@/page";
 import { useEffect } from "react";
+import "./AdminLayout.css";
+import { Button, Flex, Stack, Image, Heading, Box, Text, Breadcrumb } from "@chakra-ui/react";
+import TreeMenuComponent from "@/page/admin-page/components/TreeMenu";
 
 export default function AdminLayout() {
   const navigate = useNavigate();
@@ -25,64 +26,71 @@ export default function AdminLayout() {
   }, [menuPath])
 
   return (
-    <>
-      <header>
-        <div>
-          <div>
-            <div
-              className="logo-name"
-            >
-              <img
-                height={55}
-                width={56}
-                src={amsLogo}
-              />
-              <h1>
-                AMS
-              </h1>
-            </div>
-          </div>
+    <Box className="admin-header">
+      <Flex
+        className="logo-and-info">
+        <Stack>
+          <Flex>
+            <Image
+              src={amsLogo}
+              height={25}
+              width={26}
+            />
+            <Heading size={"2xl"}>
+              AMS
+            </Heading>
+          </Flex>
 
-          <div>
-            <Clock />
-          </div>
+          <Clock />
 
-          <div>
-            <sub>🏠 {menuPath.replaceAll('/', '➡️')}</sub>
-          </div>
-        </div>
+          <Breadcrumb.Root>
+            <Breadcrumb.List>
+              <Breadcrumb.Item>
+                🏠
+              </Breadcrumb.Item>
+              {menuPath.split('/').map((path) =>
+                <>
+                  <Breadcrumb.Item>
+                    {path.replaceAll('-', ' ')}
+                  </Breadcrumb.Item>
+                  <Breadcrumb.Separator />
+                </>
+              )}
+            </Breadcrumb.List>
+          </Breadcrumb.Root>
+        </Stack>
 
-        <div className='header-information'>
-          <h2>{headerInformation.title}</h2>
+        <Box>
+          <Heading>{headerInformation.title}</Heading>
           <sub>{headerInformation.description}</sub>
-        </div>
-
-      </header>
-
+        </Box>
+      </Flex>
       <hr />
 
-      <div className="outlet">
-        <div style={{ flex: 1 }}>
+      <Flex
+        className="menu-and-outlet"
+      >
+        <Box flex={1}>
           <TreeMenuComponent />
-        </div>
-        <hr />
-        <div
-          className="button-container"
-          style={{ flex: 5 }}>
+        </Box>
+        <Box flex={5}>
           <Outlet />
-        </div>
-      </div>
+        </Box>
+      </Flex>
 
       <footer>
-        <sub>
-          <button
+        <Flex alignItems={'center'}>
+          <Button
+            variant={'ghost'}
             onClick={() => handleOnBackToCustomerTakingPage()}
-            className="button-transparent"
-          > ©️</button>
-          Copyright {new Date().getFullYear()}
-        </sub>
+          >
+            ©️
+          </Button>
+          <Text>
+            Copyright {new Date().getFullYear()}
+          </Text>
+        </Flex>
       </footer>
-    </>
+    </Box>
   )
-
 }

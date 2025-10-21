@@ -1,4 +1,14 @@
 .make-payment-page {
+
+  .tabs-container {
+    margin: 0 20px;
+    width: 100%;
+  }
+
+  .left-container {
+    min-width: 400px;
+  }
+
   .detailed-info-container {
     justify-content: space-between;
     display: flex;
@@ -10,6 +20,8 @@
 
     input,
     select {
+      border-radius: 5px;
+      padding: 5px 10px;
       border: gray solid 1px;
       margin: 10px 15px;
       font-size: 1.5em;
@@ -29,6 +41,11 @@
       padding: 5px 15px;
       border: 1px gray solid;
 
+      .card-header {
+        justify-content: space-between;
+        align-items: center;
+      }
+
       .record {
         padding: 10px;
         text-align: center;
@@ -45,12 +62,6 @@
 
     .paid {
       border-left: 5px solid green;
-    }
-
-    b {
-      border: 1px gray solid;
-      border-radius: 15px;
-      padding: 5px 15px;
     }
 
     button {

@@ -1,11 +1,12 @@
-import Clock from "../component/Clock";
-import { Outlet, useNavigate } from "react-router";
-import amsLogo from "../svg/ams-icon.svg"
-import { useMainLayoutStore } from "@/state";
 import { SecretRoutes } from "@/routes";
-import "./MainLayout.css";
+import { useMainLayoutStore } from "@/state";
+import { Box, Button, Flex, Heading, Image, Stack, Text } from "@chakra-ui/react";
+import { Outlet, useNavigate } from "react-router";
+import Clock from "../component/Clock";
+import amsLogo from "../svg/ams-icon.svg";
+import "./AdminLayout.css";
 
-export default function HomePage() {
+export default function AdminLayout() {
   const navigate = useNavigate();
   const headerInformation = useMainLayoutStore(state => state.headerInformation)
 
@@ -14,51 +15,49 @@ export default function HomePage() {
   }
 
   return (
-    <>
-      <header>
-        <div>
-          <div>
-            <div
-              className="logo-name"
-            >
-              <img
-                height={55}
-                width={56}
-                src={amsLogo}
-              />
-              <h1>
-                AMS
-              </h1>
-            </div>
-            <sub>Ampas Management System</sub>
-          </div>
+    <Box className="admin-header">
+      <Flex
+        className="logo-and-info">
+        <Stack>
+          <Flex>
+            <Image
+              src={amsLogo}
+              height={25}
+              width={26}
+            />
+            <Heading size={"2xl"}>
+              AMS
+            </Heading>
+          </Flex>
 
-          <div>
-            <Clock />
-          </div>
-        </div>
+          <Clock />
 
-        <div className='header-information'>
-          <h2>{headerInformation.title}</h2>
+        </Stack>
+
+        <Box>
+          <Heading>{headerInformation.title}</Heading>
           <sub>{headerInformation.description}</sub>
-        </div>
-
-      </header>
-
+        </Box>
+      </Flex>
       <hr />
 
-      <Outlet />
+      <Box>
+        <Outlet />
+      </Box>
 
       <footer>
-        <sub>
-          <button
+        <Flex alignItems={'center'}>
+          <Button
+            variant={'ghost'}
             onClick={() => handleAdminLogin()}
-            className="button-transparent"
-          > ©️</button>
-          Copyright {new Date().getFullYear()}
-        </sub>
+          >
+            ©️
+          </Button>
+          <Text>
+            Copyright {new Date().getFullYear()}
+          </Text>
+        </Flex>
       </footer>
-    </>
+    </Box>
   )
-
 }

@@ -1,4 +1,6 @@
+import { Box, Button, Heading, Text } from '@chakra-ui/react'
 import { useRef } from 'react'
+import { AiFillCaretDown, AiFillCaretUp } from 'react-icons/ai'
 import './Scroller.css'
 
 export interface ScrollerProps {
@@ -28,9 +30,9 @@ export default function Scroller(props: ScrollerProps) {
   }
 
   return (
-    <>
-      {title && <h4>{title}</h4>}
-      {description && <sub>{description}</sub>}
+    <Box>
+      {title && <Heading>{title}</Heading>}
+      {description && <Text>{description}</Text>}
 
       <sub>{description}</sub>
       <div className="scroller-container">
@@ -42,18 +44,20 @@ export default function Scroller(props: ScrollerProps) {
         </div>
 
         <div className='navigation-button'>
-          <button
+          <Button
+            colorPalette={'teal'}
             onClick={() => onButtonUpClicked()}
           >
-            ⬆️
-          </button>
-          <button
+            <AiFillCaretUp />
+          </Button>
+          <Button
+            colorPalette={'teal'}
             onClick={() => onButtonDownClicked()}
           >
-            ⬇️
-          </button>
+            <AiFillCaretDown />
+          </Button>
         </div>
       </div>
-    </>
+    </Box>
   )
 }

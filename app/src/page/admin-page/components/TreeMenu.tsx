@@ -1,11 +1,13 @@
-import { useEffect } from 'react';
-import './TreeMenu.css'
+import { AdminRoutes } from '@/routes';
+import { Button, IconButton, Stack, Text } from '@chakra-ui/react';
+import { useEffect, type JSX } from 'react';
+import { AiFillApi, AiFillCaretLeft, AiFillCreditCard, AiFillDatabase, AiFillDropboxSquare, AiFillEdit, AiFillInfoCircle, AiOutlineDollar, AiOutlineShoppingCart, AiOutlineUser, AiOutlineUserAdd, AiOutlineUserSwitch } from "react-icons/ai";
 import { useAdminPageStore } from '../admin-page-state';
-import { AdminRoutes, AppRoutes } from '@/routes';
+import './TreeMenu.css';
 
 interface ITreeMenu {
   id?: string,
-  title: string,
+  title: string | JSX.Element,
   path: string,
 }
 
@@ -30,54 +32,101 @@ export enum TreeMenuList {
 
 const paymentMenu: Array<ITreeMenu> = [
   {
-    title: 'Payment Menu',
+    title:
+      <>
+        <AiOutlineDollar />
+        <Text>Payment Menu</Text>
+      </>,
     path: TreeMenuList.Payment,
   },
   {
-    title: 'Make Payment',
+    title:
+      <>
+        <AiOutlineShoppingCart />
+        <Text>Make Payment</Text>
+      </>,
     path: `${TreeMenuList.Payment}/${TreeMenuList.MakePayment}`,
     id: `${AdminRoutes.AdminRoot}${AdminRoutes.MakePaymentPage}`
   },
   {
-    title: 'List Payment',
+    title:
+      <>
+        <AiFillDatabase />
+        <Text>List Payment</Text>
+      </>,
     path: `${TreeMenuList.Payment}/${TreeMenuList.ListPayment}`,
+    id: `${AdminRoutes.AdminRoot}${AdminRoutes.ListPaymentPage}`
   },
   {
-    title: 'Edit Payment',
+    title:
+      <>
+        <AiFillEdit />
+        <Text>Edit Payment</Text>
+      </>,
     path: `${TreeMenuList.Payment}/${TreeMenuList.EditPayment}`,
   },
 ]
 
 const takingRecordMenu: Array<ITreeMenu> = [
   {
-    title: 'Taking Menu',
+    title:
+      <>
+        <AiFillDropboxSquare />
+        <Text>Taking Menu</Text>
+      </>,
     path: TreeMenuList.TakingRecord,
   },
   {
-    title: 'Update Taking Record',
+
+    title:
+      <>
+        <AiFillApi />
+        <Text>Update Taking Record</Text>
+      </>,
     path: `${TreeMenuList.TakingRecord}/${TreeMenuList.UpdateTakingRecord}`,
+    id: `${AdminRoutes.AdminRoot}${AdminRoutes.UpdateTakingRecord}`
   },
   {
-    title: 'Taking Record Info',
+    title:
+      <>
+        <AiFillInfoCircle />
+        <Text>Taking Record Info</Text>
+      </>,
     path: `${TreeMenuList.TakingRecord}/${TreeMenuList.TakingRecordInformation}`,
   },
 ]
 
 const customerManagement: Array<ITreeMenu> = [
   {
-    title: 'Customer Management',
+    title:
+      <>
+        <AiOutlineUser />
+        <Text>Customer Management</Text>
+      </>,
     path: TreeMenuList.CustomerManagement,
   },
   {
-    title: 'Create Customer',
+    title:
+      <>
+        <AiOutlineUserAdd />
+        <Text>Create Customer</Text>
+      </>,
     path: `${TreeMenuList.CustomerManagement}/${TreeMenuList.CreateCustomer}`,
   },
   {
-    title: 'Edit Customer',
+    title:
+      <>
+        <AiOutlineUserSwitch />
+        <Text>Edit Customer</Text>
+      </>,
     path: `${TreeMenuList.CustomerManagement}/${TreeMenuList.EditCustomer}`,
   },
   {
-    title: 'Customer Money',
+    title:
+      <>
+        <AiFillCreditCard />
+        <Text>Customer Money</Text>
+      </>,
     path: `${TreeMenuList.CustomerManagement}/${TreeMenuList.CustomerMoney}`,
   },
 ]
@@ -108,11 +157,11 @@ export default function TreeMenuComponent() {
       return (
         <>
           {rootMenu.map((item, index) => (
-            <button
+            <Button
               key={index}
               onClick={() => handleOnNavigateButtonClicked(item.path)}>
               {item.title}
-            </button>
+            </Button>
           ))}
         </>
       )
@@ -129,11 +178,11 @@ export default function TreeMenuComponent() {
       return (
         <>
           {subMenus.map((item, index) => (
-            <button
+            <Button
               key={index}
               onClick={() => handleOnNavigateButtonClicked(item.path)}>
               {item.title}
-            </button>
+            </Button>
           ))}
         </>
       )
@@ -152,42 +201,22 @@ export default function TreeMenuComponent() {
     setTreeMenuVisibility(!(menuPath === TreeMenuList.Root))
   }, [menuPath])
 
-  const handleOnBreadCrumbsClick = (item: string) => {
-    const menu = defaultTreeMenu.find(pr => pr.path.endsWith(item))
-    if (menu !== undefined) setMenuPath(menu.path)
-  }
-
-  // TODO:
-  const breadCrumbs = () => (
-    <>
-      {
-        menuPath !== TreeMenuList.Root
-        && menuPath.split('/').map((item) => (
-          <button
-            className='bread-crumbs'
-            onClick={() => handleOnBreadCrumbsClick(item)}
-          >
-            {item}
-          </button>
-        ))
-      }
-    </>
-  )
   return (
-    <div className='tree-menu'>
+    <Stack
+      className='tree-menu'
+    >
       {
         treeMenuVisible
         && (
-          <button
-            onClick={() => handleOnBackButtonClicked(menuPath)}
-          >
+          <IconButton
+            onClick={() => handleOnBackButtonClicked(menuPath)}>
+            <AiFillCaretLeft />
             Back
-          </button>
+          </IconButton>
         )
       }
 
       {renderTreeMenu(defaultTreeMenu)}
-
-    </div>
+    </Stack>
   )
 }

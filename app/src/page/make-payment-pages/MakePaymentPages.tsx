@@ -1,19 +1,22 @@
-import type { MakePaymentPageModel, TakingRecordWithPrice, UserModel } from "@/api-models"
+import type { MakePaymentPageModel, TakingRecordModel, TakingRecordWithPrice, UserModel } from "@/api-models"
 import { makePaymentCommand, userManagementCommand } from "@/commands"
 import Scroller from "@/component/Scroller"
-import Tab from "@/component/Tab"
 import { EMPTY_HEADER_INFORMATION } from "@/constants"
 import { useMainLayoutStore } from "@/state"
 import { formatAsRupiah, fromFormData, toFormData } from "@/utility"
+import { Badge, Box, Button, Card, DataList, Flex, Heading, Stack, Tabs, Text } from "@chakra-ui/react"
 import { format } from "date-fns"
 import { id } from "date-fns/locale"
 import React, { useEffect, useState } from "react"
 import DatePicker from "react-datepicker"
 import "react-datepicker/dist/react-datepicker.css"
+import Plot from 'react-plotly.js'
 import { useFetcher } from "react-router"
 import type { Route } from "./+types/MakePaymentPages"
 import { useMakePaymentPageState } from "./make-payment-page-state"
 import './MakePaymentPages.css'
+import Calendar from "@/component/Calendar"
+import { AiFillCalendar, AiFillDollarCircle, AiFillGolden, AiFillNotification, AiFillSliders } from "react-icons/ai"
 
 enum ListActionEnum {
   GetPageModel = 'GetPageModel',
@@ -40,9 +43,6 @@ export async function clientLoader() {
 
 export async function clientAction({ request }: Route.ClientActionArgs): Promise<IFetcherActionResult> {
   const parsedRequest = await fromFormData<IGetPageModelClientRequest>(request)
-  // FIXME: 
-  // for now use if else, 
-  // think better approach of it
 
   if (parsedRequest._action === ListActionEnum.MakePayment) {
     const pageModel = await makePaymentCommand.makePayment(parsedRequest.userId, parsedRequest.date)
@@ -53,6 +53,7 @@ export async function clientAction({ request }: Route.ClientActionArgs): Promise
       customerData
     }
   }
+
   // ListActionEnum.GetPageModel
   else {
     const pageModel = await makePaymentCommand.getPageModel(parsedRequest.userId, parsedRequest.date)
@@ -64,12 +65,12 @@ export async function clientAction({ request }: Route.ClientActionArgs): Promise
     }
   }
 
-
 }
 
 enum ListTabEnum {
-  CustomerTakingRecordDetail = 'List Record',
-  CustomerDetailInformation = 'Customer Information'
+  CustomerTakingRecordDetail = 'Daftar Ambil',
+  CustomerDetailInformation = 'Informasi Pelanggan',
+  CustomerTakingCalendar = 'Kalender'
 }
 
 export default function MakePaymentPage({
@@ -98,7 +99,6 @@ export default function MakePaymentPage({
   const setPageModel = useMakePaymentPageState(state => state.setPageModel)
 
   const [dateOpen, setDateOpen] = useState(false)
-  const [activeTab, setActiveTab] = useState<string>(ListTabEnum.CustomerTakingRecordDetail)
 
   const handleOnDatePickerChange = (date: Date | null) => {
     if (date) {
@@ -106,6 +106,9 @@ export default function MakePaymentPage({
       setSelectedDate(new Date(utcTime))
       setDateOpen(false)
     }
+  }
+
+  const handleOnPayIndividualItem = (takingRecord: TakingRecordModel) => {
   }
 
   const handleOnPayButtonClicked = () => {
@@ -122,48 +125,73 @@ export default function MakePaymentPage({
     })
   }
 
-  const handleOnActiveTabChange = (title: string) => {
-    setActiveTab(title)
-  }
-
   const isPayButtonDisabled = () =>
     selectedDate === undefined
     || (pageModel && pageModel.takingRecords.length <= 0)
     || (pageModel && pageModel.takingRecords.every(pr => pr.takingRecord.isPaid === true))
 
   const detailedCard = (record: TakingRecordWithPrice) => (
-    <div className={`detailed-card ${record.takingRecord.isPaid ? 'paid' : ''}`} >
-      <div>
-        <h2>{selectedCustomer?.username} {record.takingRecord.isPaid && " - Lunas"}</h2>
-        <p>{format(record.takingRecord.takenDate, "PPPP", { locale: id })}</p>
-        <p>{format(record.takingRecord.takenDate, "p", { locale: id })}</p>
-      </div>
+    <Card.Root className={`detailed-card ${record.takingRecord.isPaid ? 'paid' : ''}`} >
+      <Card.Header>
+        <Flex className="card-header">
+          <Heading>
+            {selectedCustomer?.username}
+          </Heading>
+          {
+            record.takingRecord.isPaid
+              ? <Badge size={'lg'} colorPalette="green">Terbayar</Badge>
+              : <Badge size={'lg'} colorPalette="red">Belum Terbayar</Badge>
+          }
+        </Flex>
+      </Card.Header>
+      <Card.Body>
+        <Flex justifyContent={'space-between'}>
+          <Box>
+            <Text>{format(record.takingRecord.takenDate, "PPPP", { locale: id })}</Text>
+            <Text>{format(record.takingRecord.takenDate, "p", { locale: id })}</Text>
+            <Text>{formatAsRupiah(record.price.price)}</Text>
+          </Box>
 
-      <div className="record">
-        <h2>{record.takingRecord.amount}</h2>
-        <br />
-        <b>Ampas</b>
-      </div>
-    </div >
+          <Box justifyItems={'center'}>
+            <Heading size={'4xl'}>{record.takingRecord.amount}</Heading>
+            <Text textStyle={'xl'}>Ampas</Text>
+          </Box>
+        </Flex>
+        {
+          !record.takingRecord.isPaid && (
+            <Button
+              onClick={() => handleOnPayIndividualItem(record.takingRecord)}
+            >
+              <AiFillDollarCircle />
+              Bayar Hari Ini
+            </Button>
+          )
+        }
+      </Card.Body>
+
+    </Card.Root>
   )
 
-  const userDetailComponent = () => (
-    <>
-      {selectedCustomer !== undefined && (
-        <div>
-          <ul>
-            <li>
-              Nama: <b>{selectedCustomer.username}</b>
-            </li>
-            <li>
-              {selectedCustomer.money >= 0 ? 'Memiliki Uang ' : 'Kekurangan Uang '} Sebesar:
-              <b>{formatAsRupiah(selectedCustomer.money)}</b>
-            </li>
-          </ul>
-        </div>
-      )}
-    </>
-  )
+  const userDetailComponent = () => {
+    const customerData = pageModel?.customers.find(pr => pr.id === selectedCustomer?.id)
+    return (
+      <>
+        {customerData !== undefined && (
+          <div>
+
+            <DataList.Root>
+              {dataListItemValue('Nama', `${customerData.username}`)}
+              {dataListItemValue(
+                `${customerData.money >= 0 ? 'Memiliki Uang ' : 'Kekurangan Uang '} Sebesar: `,
+                `${formatAsRupiah(customerData.money)}`
+              )}
+            </DataList.Root>
+          </div>
+        )}
+      </>
+    )
+  }
+
   const scrollerUserTakingRecordComponent = () => (
     <>
       {pageModel !== undefined && (
@@ -185,6 +213,11 @@ export default function MakePaymentPage({
       )}
     </>
   )
+
+  const customerCalendar = () =>
+    <Stack>
+      <Calendar />
+    </Stack>
 
   useEffect(() => {
     setListCustomer(activeCustomer)
@@ -225,35 +258,53 @@ export default function MakePaymentPage({
   }, [fetcher.data])
 
 
+  const dataListItemValue = (item: string, value: string) =>
+    <DataList.Item>
+
+      <DataList.ItemLabel>
+        <Text textStyle={'lg'} fontWeight={'bold'}>
+          {item}
+        </Text>
+      </DataList.ItemLabel>
+
+      <DataList.ItemValue>
+        <Text textStyle={'lg'} fontWeight={'bold'}>
+          {value}
+        </Text>
+      </DataList.ItemValue>
+
+    </DataList.Item>
 
   return (
     <div className="make-payment-page">
 
-      <div className="detailed-info-container">
-        <div>
+      <Stack direction={'row'} className="detailed-info-container">
+        <Stack className="left-container">
 
-          <label>
+          <Heading>
             Pilih Nama
-            <br />
-            <select
-              onChange={(event) => setSelectedCustomer(listCustomer.find(pr => pr.id === Number(event.currentTarget.value)))}
-            >
-              <option value="">Nama</option>
-              {
-                listCustomer.map((customer, index) => (
-                  <option
-                    key={index}
-                    value={customer.id}
-                  >
-                    {customer.username}
-                  </option>
-                ))
-              }
-            </select>
-          </label>
+          </Heading>
+          <select
+            onChange={(event) => setSelectedCustomer(listCustomer.find(pr => pr.id === Number(event.currentTarget.value)))}
+          >
+            <option value="">Nama</option>
+            {
+              listCustomer.map((customer, index) => (
+                <option
+                  key={index}
+                  value={customer.id}
+                >
+                  {customer.username}
+                </option>
+              ))
+            }
+          </select>
+
+          <Heading>
+            Pilih Bulan dan Tahun
+          </Heading>
 
           <label>
-            Pilih Bulan dan Tahun
             <DatePicker
               placeholderText="Bulan Dan Tahun"
               dateFormat="dd MMMM yyyy "
@@ -268,67 +319,96 @@ export default function MakePaymentPage({
           </label>
 
           {showDetailTaking && pageModel && (
-            <>
-              <h3>Total Ambil</h3>
-              <ul>
-                <li>
-                  Total: <b>{pageModel.detailInformation.totalAmount} Ampas</b>
-                </li>
-                <li>
-                  Terbayar: <b>{pageModel.detailInformation.paidAmount} Ampas</b>
-                </li>
-                <li>
-                  Belum Terbayar: <b>{pageModel.detailInformation.unpaidAmount} Ampas</b>
-                </li>
-              </ul>
+            <Card.Root>
+              <Flex>
+                <Box>
+                  <Card.Header>
+                    <Heading>
+                      Total Ambil
+                    </Heading>
+                  </Card.Header>
 
-              <h3>Tagihan</h3>
-              <ul>
-                <li>
-                  Total: <b>{formatAsRupiah(pageModel.detailInformation.totalBill)}</b>
-                </li>
-                <li>
-                  Terbayar: <b>{formatAsRupiah(pageModel.detailInformation.paidBill)}</b>
-                </li>
-                <li>
-                  Belum Terbayar: <b>{formatAsRupiah(pageModel.detailInformation.unpaidBill)}</b>
-                </li>
-              </ul>
-              <br />
+                  <Card.Body>
+                    <DataList.Root>
 
-              <hr />
-              <button
-                onClick={() => handleOnPayButtonClicked()}
-                disabled={isPayButtonDisabled()}
-                className="pay-button"
-              >
-                Bayar Bulan {selectedDate && format(selectedDate, 'MMMM yyyy', { locale: id })}
-              </button>
-            </>
+                      {dataListItemValue('Total', `${pageModel.detailInformation.totalAmount} Ampas`)}
+                      {dataListItemValue('Terbayar', `${pageModel.detailInformation.paidAmount} Ampas`)}
+                      {dataListItemValue('Belum Terbayar', `${pageModel.detailInformation.unpaidAmount} Ampas`)}
+
+                    </DataList.Root>
+                  </Card.Body>
+                </Box>
+
+                <Box>
+                  <Card.Header>
+                    <Heading>
+                      Tagihan
+                    </Heading>
+                  </Card.Header>
+
+                  <Card.Body>
+                    <DataList.Root>
+
+                      {dataListItemValue('Total', `${formatAsRupiah(pageModel.detailInformation.totalBill)}`)}
+                      {dataListItemValue('Terbayar', `${formatAsRupiah(pageModel.detailInformation.paidBill)}`)}
+                      {dataListItemValue('Belum Terbayar', `${formatAsRupiah(pageModel.detailInformation.unpaidBill)}`)}
+
+                    </DataList.Root>
+                  </Card.Body>
+                </Box>
+              </Flex>
+
+              <Card.Footer>
+                <Button
+                  onClick={() => handleOnPayButtonClicked()}
+                  disabled={isPayButtonDisabled()}
+                >
+                  <AiFillGolden />
+                  Bayar Bulan {selectedDate && format(selectedDate, 'MMMM yyyy', { locale: id })}
+                </Button>
+              </Card.Footer>
+            </Card.Root>
           )}
 
-        </div>
+        </Stack>
 
         {showDetailTaking && pageModel !== undefined && (
-          <div className="container-item">
-            <Tab
-              activeTab={activeTab}
-              handleOnActiveTabChange={handleOnActiveTabChange}
-              data={[
-                {
-                  title: ListTabEnum.CustomerTakingRecordDetail,
-                  component: () => scrollerUserTakingRecordComponent(),
-                },
-                {
-                  title: ListTabEnum.CustomerDetailInformation,
-                  component: () => userDetailComponent()
-                }
-              ]}
-            />
-          </div>
-        )}
+          <Box className="tabs-container">
+            <Tabs.Root defaultValue={ListTabEnum.CustomerTakingRecordDetail}>
 
-      </div>
+              <Tabs.List>
+                <Tabs.Trigger value={ListTabEnum.CustomerTakingRecordDetail}>
+                  <AiFillSliders />
+                  {ListTabEnum.CustomerTakingRecordDetail}
+                </Tabs.Trigger>
+
+                <Tabs.Trigger value={ListTabEnum.CustomerDetailInformation}>
+                  <AiFillNotification />
+                  {ListTabEnum.CustomerDetailInformation}
+                </Tabs.Trigger>
+
+                <Tabs.Trigger value={ListTabEnum.CustomerTakingCalendar}>
+                  <AiFillCalendar />
+                  {ListTabEnum.CustomerTakingCalendar}
+                </Tabs.Trigger>
+              </Tabs.List>
+
+              <Tabs.Content value={ListTabEnum.CustomerTakingRecordDetail}>
+                {scrollerUserTakingRecordComponent()}
+              </Tabs.Content>
+
+              <Tabs.Content value={ListTabEnum.CustomerDetailInformation}>
+                {userDetailComponent()}
+              </Tabs.Content>
+
+              <Tabs.Content value={ListTabEnum.CustomerTakingCalendar}>
+                {customerCalendar()}
+              </Tabs.Content>
+
+            </Tabs.Root>
+          </Box>
+        )}
+      </Stack>
     </div>
   )
 }

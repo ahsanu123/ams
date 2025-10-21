@@ -1,75 +1,9 @@
-header {
-  display: flex;
-  justify-content: space-between;
+.admin-header {
+  padding: 30px;
 
-  h1,
-  h2,
-  img {
-    margin: 0;
+  .logo-and-info {
+    align-items: center;
+    justify-content: space-between;
   }
 
-  .logo-name {
-    display: flex;
-
-    img {
-      margin-right: 10px;
-      margin-bottom: -10px;
-    }
-  }
-
-
-  h5 {
-    margin: 0;
-  }
-
-  sub {
-    display: block;
-  }
-
-}
-
-body {
-  max-width: 90em;
-}
-
-footer {
-  sub {
-    margin-top: 10px;
-  }
-
-  display: flex;
-  justify-content: space-between;
-  align-content: center;
-}
-
-.button-transparent {
-  border: 0px;
-  background-color: transparent;
-  border: none;
-  box-shadow: none;
-}
-
-.button-transparent:hover {
-  border: none;
-  box-shadow: none;
-  border: 0px;
-  top: 0px;
-  background: transparent;
-}
-
-.button-icon-with-background {
-  margin-top: 5px;
-  border: 0px;
-  background-color: #731651;
-  float: right;
-}
-
-button[disabled] {
-  background-color: gray;
-  cursor: not-allowed;
-}
-
-.outlet {
-  display: flex;
-  gap: 20px;
 }

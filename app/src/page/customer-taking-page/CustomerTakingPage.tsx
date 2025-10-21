@@ -9,6 +9,7 @@ import { useEffect } from "react";
 import { useFetcher } from "react-router";
 import type { Route } from "./+types/CustomerTakingPage";
 import './CustomerTakingPage.css';
+import { Button, Grid, GridItem } from "@chakra-ui/react";
 
 interface IAddTakingRecordClientRequest {
   userId: number,
@@ -48,6 +49,15 @@ export default function DashboardPage({
   const setUserTakingRecords = useMainLayoutStore(state => state.setUserTakingRecords)
   const setLastSelectedUser = useMainLayoutStore(state => state.setLastSelectedUser)
 
+  const userTakingRecords = useMainLayoutStore(state => state.userTakingRecords);
+  const date = useMainLayoutStore(state => state.selectedMonth)
+  const setDate = useMainLayoutStore(state => state.setSelectedDate)
+
+  const calendarCells = useMainLayoutStore(state => state.calendarCells)
+  const setCalendarCells = useMainLayoutStore(state => state.setCalendarCells)
+
+  const lastSelectedUser = useMainLayoutStore(state => state.lastSelectedUser)
+
   const handleOnPickDregs = (amount: number) => {
     const serializedData = toFormData({
       userId: customer?.id,
@@ -77,18 +87,21 @@ export default function DashboardPage({
   }
 
   const showUserSelector = () => (
-    <div className="user-container">
+    <Grid className="user-container">
       {
         listUser.map((user, index) => (
-          <button
-            key={index}
-            onClick={() => handleOnClickUser(user)}
-          >
-            {user.username}
-          </button>
+          <GridItem>
+            <Button
+              key={index}
+              onClick={() => handleOnClickUser(user)}
+              colorPalette={'teal'}
+            >
+              {user.username}
+            </Button>
+          </GridItem>
         ))
       }
-    </div>
+    </Grid>
   )
 
   const showVirtualKeypad = () => (
@@ -123,7 +136,10 @@ export default function DashboardPage({
           }
 
           <div>
-            <Calendar />
+            <Calendar
+              user={lastSelectedUser}
+              takingRecords={userTakingRecords}
+            />
           </div>
         </main>
       </div>
