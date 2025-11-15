@@ -1,4 +1,13 @@
 .list-payment-page {
+  .flex-left-and-right {
+    justify-content: start;
+    gap: 40px;
+
+    .name-and-date-picker {
+      min-width: 400px;
+    }
+  }
+
   .name-and-date-picker {
     display: flex;
 
@@ -34,22 +43,21 @@
   }
 
   .react-datepicker {
-    font-size: 1.2rem;
-    transform: scale(3);
+    font-size: 1.8rem;
   }
 
   .react-datepicker__day,
   .react-datepicker__day-name,
   .react-datepicker__current-month,
   .react-datepicker__time-name {
-    font-size: 1.2rem;
+    font-size: 1.8rem;
   }
 
   .react-datepicker__month-container {
-    width: 300px;
+    width: 400px;
 
     .react-datepicker__year-option {
-      font-size: 20px
+      font-size: 40px !important;
     }
 
     .react-datepicker__day-name,

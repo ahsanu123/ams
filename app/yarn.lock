@@ -5460,6 +5460,11 @@ react-router@^7.3.0:
     set-cookie-parser "^2.6.0"
     turbo-stream "2.4.0"
 
+react-simple-keyboard@^3.8.134:
+  version "3.8.134"
+  resolved "https://registry.yarnpkg.com/react-simple-keyboard/-/react-simple-keyboard-3.8.134.tgz#dfc0bbe138023c44c83665f4ca1e73a68f5e36bb"
+  integrity sha512-qmBoelrfBQEP2YJm0q8E+vRULJqt1L/MG2WDaNJ/VqAgCTeUqlagX/mxt9C1pljJG/7b3vU3IB6k/1JFeDGIPg==
+
 react-test-renderer@^19.0.0:
   version "19.0.0"
   resolved "https://registry.yarnpkg.com/react-test-renderer/-/react-test-renderer-19.0.0.tgz#ca6fa322c58d4bfa34635788fe242a8c3daa4c7d"

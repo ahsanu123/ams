@@ -1,5 +1,1 @@
-export * from './DeleteUserPage'
-export * from './EditUserPage'
-export * from './ListUserPage'
 export * from './UserManagementPage'
-export * from './CreateNewUserPage'

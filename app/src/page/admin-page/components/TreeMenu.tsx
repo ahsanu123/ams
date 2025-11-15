@@ -27,7 +27,7 @@ export enum TreeMenuList {
   CustomerManagement = "customer-management",
   EditCustomer = "edit-customer",
   CreateCustomer = "create-customer",
-  CustomerMoney = "customer-money",
+  UserManagement = "user-management",
 }
 
 const paymentMenu: Array<ITreeMenu> = [
@@ -100,6 +100,15 @@ const customerManagement: Array<ITreeMenu> = [
   {
     title:
       <>
+        <AiFillCreditCard />
+        <Text>User Management</Text>
+      </>,
+    path: `${TreeMenuList.CustomerManagement}/${TreeMenuList.UserManagement}`,
+    id: `${AdminRoutes.AdminRoot}${AdminRoutes.UserManagementPage}`
+  },
+  {
+    title:
+      <>
         <AiOutlineUser />
         <Text>Customer Management</Text>
       </>,
@@ -120,14 +129,6 @@ const customerManagement: Array<ITreeMenu> = [
         <Text>Edit Customer</Text>
       </>,
     path: `${TreeMenuList.CustomerManagement}/${TreeMenuList.EditCustomer}`,
-  },
-  {
-    title:
-      <>
-        <AiFillCreditCard />
-        <Text>Customer Money</Text>
-      </>,
-    path: `${TreeMenuList.CustomerManagement}/${TreeMenuList.CustomerMoney}`,
   },
 ]
 

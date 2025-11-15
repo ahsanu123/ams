@@ -1,10 +1,11 @@
-import { Box, Button, Heading, Text } from '@chakra-ui/react'
+import { Box, Button, Heading, Stack, Text } from '@chakra-ui/react'
 import { useRef } from 'react'
 import { AiFillCaretDown, AiFillCaretUp } from 'react-icons/ai'
 import './Scroller.css'
 
 export interface ScrollerProps {
   title?: string,
+  leftNavigation?: boolean,
   description?: string,
   children?: React.ReactNode
 }
@@ -12,7 +13,8 @@ export default function Scroller(props: ScrollerProps) {
 
   const { children,
     title,
-    description
+    description,
+    leftNavigation = false,
   } = props
 
   const contentRef = useRef<HTMLDivElement>(null)
@@ -29,6 +31,22 @@ export default function Scroller(props: ScrollerProps) {
     })
   }
 
+  const navigationButton = () =>
+    <div className='navigation-button'>
+      <Button
+        colorPalette={'teal'}
+        onClick={() => onButtonUpClicked()}
+      >
+        <AiFillCaretUp />
+      </Button>
+      <Button
+        colorPalette={'teal'}
+        onClick={() => onButtonDownClicked()}
+      >
+        <AiFillCaretDown />
+      </Button>
+    </div>
+
   return (
     <Box>
       {title && <Heading>{title}</Heading>}
@@ -36,27 +54,18 @@ export default function Scroller(props: ScrollerProps) {
 
       <sub>{description}</sub>
       <div className="scroller-container">
-        <div
+        {leftNavigation && navigationButton()}
+
+        <Stack
+          gap={5}
           className='content'
           ref={contentRef}
         >
           {children}
-        </div>
+        </Stack>
 
-        <div className='navigation-button'>
-          <Button
-            colorPalette={'teal'}
-            onClick={() => onButtonUpClicked()}
-          >
-            <AiFillCaretUp />
-          </Button>
-          <Button
-            colorPalette={'teal'}
-            onClick={() => onButtonDownClicked()}
-          >
-            <AiFillCaretDown />
-          </Button>
-        </div>
+        {!leftNavigation && navigationButton()}
+
       </div>
     </Box>
   )

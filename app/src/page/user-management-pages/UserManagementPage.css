@@ -1,0 +1,7 @@
+.create-new-user-tab-content {
+  margin: 0 20px;
+
+  .keyboard-container {
+    min-width: 700px;
+  }
+}

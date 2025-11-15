@@ -8,8 +8,8 @@ import { fromFormData, toFormData } from "@/utility";
 import { useEffect } from "react";
 import { useFetcher } from "react-router";
 import type { Route } from "./+types/CustomerTakingPage";
+import { Box, Button, Flex, Grid, GridItem, Stack } from "@chakra-ui/react";
 import './CustomerTakingPage.css';
-import { Button, Grid, GridItem } from "@chakra-ui/react";
 
 interface IAddTakingRecordClientRequest {
   userId: number,
@@ -31,7 +31,7 @@ export async function clientAction({ request }: Route.ClientActionArgs) {
   return takingRecords
 }
 
-export default function DashboardPage({
+export default function CustomerTakingPage({
   loaderData
 }: Route.ComponentProps) {
 
@@ -50,11 +50,6 @@ export default function DashboardPage({
   const setLastSelectedUser = useMainLayoutStore(state => state.setLastSelectedUser)
 
   const userTakingRecords = useMainLayoutStore(state => state.userTakingRecords);
-  const date = useMainLayoutStore(state => state.selectedMonth)
-  const setDate = useMainLayoutStore(state => state.setSelectedDate)
-
-  const calendarCells = useMainLayoutStore(state => state.calendarCells)
-  const setCalendarCells = useMainLayoutStore(state => state.setCalendarCells)
 
   const lastSelectedUser = useMainLayoutStore(state => state.lastSelectedUser)
 
@@ -105,15 +100,22 @@ export default function DashboardPage({
   )
 
   const showVirtualKeypad = () => (
-    <div>
+    <Stack>
       <VirtualKeypad
         title="Ambil Berapa?"
         inputType='number'
         handleOnConfirm={handleOnPickDregs}
         validatorFunction={valueMustBeNonZero}
       />
-    </div>
+    </Stack>
   )
+
+  const onCalendarUserIdChange = (userId: number) => {
+    takingRecordCommand.getTakingRecordByUserIdAndMonth(
+      userId,
+      new Date()
+    ).then((value) => setUserTakingRecords(value))
+  }
 
   useEffect(() => {
     setHeaderInformation(EMPTY_HEADER_INFORMATION)
@@ -125,24 +127,24 @@ export default function DashboardPage({
       setUserTakingRecords(fetcherResult as Array<TakingRecordModel>)
     }
   }, [fetcher.data])
-  return (
-    <>
-      <div
-        className="customer-taking-page"
-      >
-        <main>
-          {
-            customer ? showVirtualKeypad() : showUserSelector()
-          }
 
-          <div>
-            <Calendar
-              user={lastSelectedUser}
-              takingRecords={userTakingRecords}
-            />
-          </div>
-        </main>
-      </div>
-    </>
+
+  return (
+    <Box
+      className="customer-taking-page"
+    >
+      <Flex justifyContent={'space-evenly'} className="keyboard-and-calendar">
+        {
+          customer ? showVirtualKeypad() : showUserSelector()
+        }
+
+        <Calendar
+          customerMode
+          user={lastSelectedUser}
+          takingRecords={userTakingRecords}
+          onCustomerIdChange={onCalendarUserIdChange}
+        />
+      </Flex>
+    </Box >
   )
 }

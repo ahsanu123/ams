@@ -7,6 +7,8 @@
 }
 
 .calendar {
+  min-width: 950px;
+
   .calendar-flex {
     align-items: center;
     padding: 10px 0;

@@ -1,11 +1,13 @@
 .customer-taking-page {
+  padding: 0 15px;
+
   header {
     h1 {
       margin-bottom: -10px;
     }
   }
 
-  main {
+  .keyboard-and-calendar {
     display: flex;
     gap: 20px;
 

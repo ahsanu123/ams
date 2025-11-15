@@ -4,13 +4,12 @@ import Scroller from "@/component/Scroller"
 import { EMPTY_HEADER_INFORMATION } from "@/constants"
 import { useMainLayoutStore } from "@/state"
 import { formatAsRupiah, fromFormData, toFormData } from "@/utility"
-import { Badge, Box, Button, Card, DataList, Flex, Heading, Stack, Tabs, Text } from "@chakra-ui/react"
+import { Badge, Box, Button, Card, DataList, Flex, Heading, Stack, Table, Tabs, Text } from "@chakra-ui/react"
 import { format } from "date-fns"
 import { id } from "date-fns/locale"
 import React, { useEffect, useState } from "react"
 import DatePicker from "react-datepicker"
 import "react-datepicker/dist/react-datepicker.css"
-import Plot from 'react-plotly.js'
 import { useFetcher } from "react-router"
 import type { Route } from "./+types/MakePaymentPages"
 import { useMakePaymentPageState } from "./make-payment-page-state"
@@ -174,11 +173,17 @@ export default function MakePaymentPage({
 
   const userDetailComponent = () => {
     const customerData = pageModel?.customers.find(pr => pr.id === selectedCustomer?.id)
+    const items = [
+      { id: 1, name: "Laptop", category: "Electronics", price: 999.99 },
+      { id: 2, name: "Coffee Maker", category: "Home Appliances", price: 49.99 },
+      { id: 3, name: "Desk Chair", category: "Furniture", price: 150.0 },
+      { id: 4, name: "Smartphone", category: "Electronics", price: 799.99 },
+      { id: 5, name: "Headphones", category: "Accessories", price: 199.99 },
+    ]
     return (
       <>
         {customerData !== undefined && (
-          <div>
-
+          <Stack>
             <DataList.Root>
               {dataListItemValue('Nama', `${customerData.username}`)}
               {dataListItemValue(
@@ -186,7 +191,27 @@ export default function MakePaymentPage({
                 `${formatAsRupiah(customerData.money)}`
               )}
             </DataList.Root>
-          </div>
+
+            <Table.Root size="sm">
+              <Table.Header>
+                <Table.Row>
+                  <Table.ColumnHeader>Product</Table.ColumnHeader>
+                  <Table.ColumnHeader>Category</Table.ColumnHeader>
+                  <Table.ColumnHeader textAlign="end">Price</Table.ColumnHeader>
+                </Table.Row>
+              </Table.Header>
+              <Table.Body>
+                {items.map((item) => (
+                  <Table.Row key={item.id}>
+                    <Table.Cell>{item.name}</Table.Cell>
+                    <Table.Cell>{item.category}</Table.Cell>
+                    <Table.Cell textAlign="end">{item.price}</Table.Cell>
+                  </Table.Row>
+                ))}
+              </Table.Body>
+            </Table.Root>
+
+          </Stack>
         )}
       </>
     )
@@ -216,7 +241,10 @@ export default function MakePaymentPage({
 
   const customerCalendar = () =>
     <Stack>
-      <Calendar />
+      <Calendar
+        user={selectedCustomer}
+        month={selectedDate}
+      />
     </Stack>
 
   useEffect(() => {

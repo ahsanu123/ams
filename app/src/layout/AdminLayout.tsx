@@ -1,13 +1,14 @@
-import { AppRoutes } from "@/routes";
+import { useAdminPageStore } from "@/page";
+import TreeMenuComponent from "@/page/admin-page/components/TreeMenu";
+import { AdminRoutes, AppRoutes } from "@/routes";
 import { useMainLayoutStore } from "@/state";
+import { Box, Breadcrumb, Button, Flex, Heading, Image, Stack, Text } from "@chakra-ui/react";
+import { useEffect } from "react";
 import { Outlet, useNavigate } from "react-router";
 import Clock from "../component/Clock";
 import amsLogo from "../svg/ams-icon.svg";
-import { useAdminPageStore } from "@/page";
-import { useEffect } from "react";
 import "./AdminLayout.css";
-import { Button, Flex, Stack, Image, Heading, Box, Text, Breadcrumb } from "@chakra-ui/react";
-import TreeMenuComponent from "@/page/admin-page/components/TreeMenu";
+import { AiFillCopyrightCircle } from "react-icons/ai";
 
 export default function AdminLayout() {
   const navigate = useNavigate();
@@ -28,49 +29,62 @@ export default function AdminLayout() {
   return (
     <Box className="admin-header">
       <Flex
+        width={'100%'}
+        padding={'0 20px'}
+        backgroundImage={'url(/ams-hero-4.png)'}
+        backgroundSize={'contain'}
+        height={'120px'}
+        backgroundColor={'#becda8'}
         className="logo-and-info">
-        <Stack>
-          <Flex>
-            <Image
-              src={amsLogo}
-              height={25}
-              width={26}
-            />
-            <Heading size={"2xl"}>
-              AMS
-            </Heading>
+
+        <Stack className="logo-and-breadcrumbs">
+          <Stack direction={'row'} alignItems={'center'}>
+            <Button
+              variant={'ghost'}
+              onClick={() => navigate(`${AdminRoutes.AdminRoot}`)}
+            >
+              <Image
+                src={amsLogo}
+                height={30}
+                width={35}
+              />
+              <Heading size={"2xl"}>
+                AMS
+              </Heading>
+            </Button>
+
+            <Clock />
+
+            <Breadcrumb.Root>
+              <Breadcrumb.List>
+                <Breadcrumb.Item>
+                  🏠
+                </Breadcrumb.Item>
+                {menuPath.split('/').map((path) =>
+                  <>
+                    <Breadcrumb.Item>
+                      {path.replaceAll('-', ' ')}
+                    </Breadcrumb.Item>
+                    <Breadcrumb.Separator />
+                  </>
+                )}
+              </Breadcrumb.List>
+            </Breadcrumb.Root>
+
+          </Stack>
+          <Flex justifyContent={'start'} gap={2} alignItems={'center'}>
+            <Heading>{headerInformation.title}</Heading>
+            <Text>{headerInformation.description}</Text>
           </Flex>
-
-          <Clock />
-
-          <Breadcrumb.Root>
-            <Breadcrumb.List>
-              <Breadcrumb.Item>
-                🏠
-              </Breadcrumb.Item>
-              {menuPath.split('/').map((path) =>
-                <>
-                  <Breadcrumb.Item>
-                    {path.replaceAll('-', ' ')}
-                  </Breadcrumb.Item>
-                  <Breadcrumb.Separator />
-                </>
-              )}
-            </Breadcrumb.List>
-          </Breadcrumb.Root>
         </Stack>
 
-        <Box>
-          <Heading>{headerInformation.title}</Heading>
-          <sub>{headerInformation.description}</sub>
-        </Box>
       </Flex>
       <hr />
 
       <Flex
         className="menu-and-outlet"
       >
-        <Box flex={1}>
+        <Box width={'280px'}>
           <TreeMenuComponent />
         </Box>
         <Box flex={5}>
@@ -84,7 +98,7 @@ export default function AdminLayout() {
             variant={'ghost'}
             onClick={() => handleOnBackToCustomerTakingPage()}
           >
-            ©️
+            <AiFillCopyrightCircle />
           </Button>
           <Text>
             Copyright {new Date().getFullYear()}

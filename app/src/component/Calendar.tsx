@@ -1,16 +1,20 @@
 import type { TakingRecordModel, UserModel } from "@/api-models"
 import { generateCalendarObject, type ICalendarCell } from "@/utility"
-import { Box, Button, Flex, Heading, Text } from "@chakra-ui/react"
+import { Avatar, Box, Button, Flex, Heading, Text } from "@chakra-ui/react"
 import { addMonths } from "date-fns"
 import React, { useEffect, useState } from "react"
 import CalendarCellComponent from "./CalendarCell"
 import "./Calendar.css"
-import { AiOutlineCaretLeft, AiOutlineCaretRight, AiOutlineEnvironment } from "react-icons/ai"
+import { AiFillCaretLeft, AiFillCaretRight, AiOutlineCaretLeft, AiOutlineCaretRight, AiOutlineEnvironment, AiOutlineUser } from "react-icons/ai"
+import { userManagementCommand } from '../commands/user-management-api'
+import { takingRecordCommand } from "@/commands"
 
 interface CalendarProps {
   takingRecords?: TakingRecordModel[],
   user?: UserModel,
   isAdmin?: boolean,
+  customerMode?: boolean,
+  month?: Date,
 
   showNavigator?: boolean
   title?: string,
@@ -18,6 +22,8 @@ interface CalendarProps {
   onPrevMonthClicked?: (date: Date) => void
   onNextMonthClicked?: (date: Date) => void
   onCellClicked?: (date?: Date) => void
+
+  onCustomerIdChange?: (id: number) => void
 }
 
 export default function Calendar(props: CalendarProps) {
@@ -26,28 +32,35 @@ export default function Calendar(props: CalendarProps) {
     takingRecords,
     user,
     isAdmin = false,
+    customerMode = false,
     showNavigator = false,
+    month,
     title,
+    onCustomerIdChange,
     onPrevMonthClicked,
     onNextMonthClicked,
-    onCellClicked
+    onCellClicked,
   } = props
+
 
   const [calendarCells, setCalendarCells] = useState<ICalendarCell[]>(generateCalendarObject(new Date(), takingRecords ?? []));
   const [date, setDate] = useState<Date>(new Date());
+  const [listCustomer, setListCustomer] = useState<UserModel[]>([])
+  const [selectedCustomer, setSelectedCustomer] = useState<UserModel | undefined>(user)
+  const [internalTakingRecord, setInternalTakingRecord] = useState<TakingRecordModel[]>(takingRecords ?? [])
 
   const handleOnCurrentMonthClicked = () => {
     const newDate = new Date()
 
     setDate?.(newDate)
-    setCalendarCells(generateCalendarObject(newDate, takingRecords ?? []))
+    setCalendarCells(generateCalendarObject(newDate, internalTakingRecord))
   }
 
   const handleOnPrevMonthClicked = () => {
     const newDate = addMonths(date, -1)
 
     setDate?.(newDate)
-    setCalendarCells(generateCalendarObject(newDate, takingRecords ?? []))
+    setCalendarCells(generateCalendarObject(newDate, internalTakingRecord))
     onPrevMonthClicked?.(newDate)
   }
 
@@ -55,20 +68,89 @@ export default function Calendar(props: CalendarProps) {
     const newDate = addMonths(date, 1)
 
     setDate(newDate)
-    setCalendarCells(generateCalendarObject(newDate, takingRecords ?? []))
+    setCalendarCells(generateCalendarObject(newDate, internalTakingRecord))
     onNextMonthClicked?.(newDate)
+  }
+
+  const handleOnPrevCustomer = () => {
+    if (selectedCustomer === undefined) return
+
+    let currentIndex = listCustomer.findIndex(pr => pr.id === selectedCustomer.id)
+    if (currentIndex <= 0) {
+      const customer = listCustomer[listCustomer.length - 1]
+
+      setSelectedCustomer(customer)
+      onCustomerIdChange?.(customer.id!)
+    }
+    else {
+      const customer = listCustomer[currentIndex - 1]
+
+      setSelectedCustomer(customer)
+      onCustomerIdChange?.(customer.id!)
+    }
+  }
+  const handleOnNextCustomer = () => {
+    if (selectedCustomer === undefined) return
+
+    let currentIndex = listCustomer.findIndex(pr => pr.id === selectedCustomer.id)
+    if (currentIndex >= listCustomer.length - 1) {
+      const customer = listCustomer[0]
+      setSelectedCustomer(customer)
+      onCustomerIdChange?.(customer.id!)
+    }
+    else {
+      const customer = listCustomer[currentIndex + 1]
+      setSelectedCustomer(customer)
+      onCustomerIdChange?.(customer.id!)
+    }
   }
 
   useEffect(() => {
     setCalendarCells(generateCalendarObject(new Date(), takingRecords ?? []));
+
+    if (takingRecords)
+      setInternalTakingRecord(takingRecords)
   }, [takingRecords])
 
-  const headerText = `🌕 ${date.toLocaleDateString("id-id", { month: 'long' })} ${date.toLocaleDateString("id-id", { year: 'numeric' })} ${title ? ` - ${title}` : ""}`
+  useEffect(() => {
+    userManagementCommand.getAllActiveUser()
+      .then((customers) => {
+        setListCustomer(customers)
+
+        if (customers.length > 0) {
+          const customer = customers[0]
+          setSelectedCustomer(customer)
+          onCustomerIdChange?.(customer.id!)
+        }
+      });
+  }, [])
+
+  useEffect(() => {
+    setSelectedCustomer(user)
+    if (user)
+      onCustomerIdChange?.(user.id!)
+
+    if (user && month) {
+      setDate(month)
+      takingRecordCommand.getTakingRecordByUserIdAndMonth(user.id!, month)
+        .then((value) => {
+          setInternalTakingRecord(value)
+          setCalendarCells(generateCalendarObject(month, value))
+        }
+        )
+    }
+
+  }, [user, month])
+
+  const headerText = `🌕 
+                      ${date.toLocaleDateString("id-id", { month: 'long' })} 
+                      ${date.toLocaleDateString("id-id", { year: 'numeric' })} 
+                      ${title ? ` - ${title}` : ""}`
 
   return (
     <Box className="calendar">
       <Flex className="calendar-flex">
-        <Heading minWidth={200}>
+        <Heading minWidth={250} size={'2xl'}>
           {headerText}
         </Heading>
 
@@ -98,7 +180,37 @@ export default function Calendar(props: CalendarProps) {
             </Flex>
           )
         }
-        <Text textStyle={'md'}>{user?.username}</Text>
+
+        {
+          customerMode && (
+            <Flex gap={5}>
+              <Button
+                onClick={() => handleOnPrevCustomer()}
+              >
+                <AiFillCaretLeft />
+                Sebelumnya
+              </Button>
+              <Button
+                onClick={() => handleOnNextCustomer()}
+              >
+                Selanjutnya
+                <AiFillCaretRight />
+              </Button>
+            </Flex>
+          )
+        }
+
+        {
+          selectedCustomer &&
+          <>
+            <Avatar.Root>
+              <Avatar.Fallback name={selectedCustomer.username} />
+            </Avatar.Root>
+            <Text textStyle={'md'} fontWeight={'bold'}>
+              {selectedCustomer.username}
+            </Text>
+          </>
+        }
       </Flex>
 
       <Box

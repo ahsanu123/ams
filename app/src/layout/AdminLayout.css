@@ -1,9 +1,21 @@
 .admin-header {
-  padding: 30px;
+  .logo-and-breadcrumbs {
+    min-width: 250px;
+    background-color: white;
+    padding: 10px;
+    border-radius: 10px;
+    justify-items: center;
+  }
 
   .logo-and-info {
     align-items: center;
-    justify-content: space-between;
+    justify-content: flex-start;
+    gap: 50px;
   }
 
+  footer {
+    position: absolute;
+    float: left;
+    bottom: 0;
+  }
 }

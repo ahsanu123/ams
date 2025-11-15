@@ -13,6 +13,7 @@ import { formatAsRupiah, fromFormData, toFormData } from "@/utility";
 import { format } from "date-fns";
 import { id } from "date-fns/locale";
 import React from "react";
+import { Avatar, Image, Box, Text, Flex, Heading, Stack, Tabs, Button } from "@chakra-ui/react";
 
 enum IClientActionType {
   GetRecordByUserId,
@@ -81,20 +82,54 @@ export default function ListPaymentPage({
     }
   }
 
-  const detailedCard = (record: PaymentHistoryModel) => (
-    <div className='detailed-card' >
-      <div>
-        <h4>{selectedCustomer?.username}</h4>
-        <p>{format(record.date, "PPPP", { locale: id })}</p>
-      </div>
+  const detailedCard = () => (
+    <Stack className='detailed-card' >
+      <Flex gap={5} alignItems={'center'} justifyContent={'space-between'}>
+        <Avatar.Root>
+          <Avatar.Fallback name="O A" />
+        </Avatar.Root>
 
-      <div className="record">
-        <h2>{record.billAmount}</h2>
-        <br />
-        <b>Ampas</b>
-      </div>
-    </div >
+        <Box>
+          <Heading>User Name</Heading>
+          <Text>{format(new Date(), "PPPP", { locale: id })}</Text>
+        </Box>
+
+        <Button>
+          Edit
+        </Button>
+      </Flex>
+
+      <Stack>
+        <Flex alignItems={'center'} gap={'20px'}>
+          <Heading>129391</Heading>
+          <br />
+          <Text>Ampas</Text>
+        </Flex>
+
+        <Flex alignItems={'center'} gap={'20px'}>
+          <Heading>Sejumlah</Heading>
+          <br />
+          <Text>Rp.123901</Text>
+        </Flex>
+      </Stack>
+
+    </Stack >
   )
+
+  const catatanPembayaran = () =>
+    <Box >
+      <Scroller
+        title="Catatan Pembayaran"
+      >
+        {paymentRecords.length <= 0 && (<b>Data Kosong</b>)}
+
+        {/* {paymentRecords.length > 0 && */}
+        {/*   paymentRecords.map((record, index) => ( */}
+        {detailedCard()}
+        {/*   )) */}
+        {/* } */}
+      </Scroller>
+    </Box>
 
   useEffect(() => {
     // if (selectedCustomer !== undefined) {
@@ -149,12 +184,13 @@ export default function ListPaymentPage({
   }, [fetcher.data])
 
   return (
-    <div className="list-payment-page">
+    <Box className="list-payment-page">
 
-      <div className="name-and-date-picker">
-        <label>
-          Pilih Nama
-          <br />
+      <Flex className="flex-left-and-right">
+        <Stack className="name-and-date-picker">
+          <Heading>
+            Pilih Nama
+          </Heading>
           <select
             onChange={(event) => setSelectedCustomer(listCustomer.find(pr => pr.id === Number(event.currentTarget.value)))}
           >
@@ -170,45 +206,26 @@ export default function ListPaymentPage({
               ))
             }
           </select>
-        </label>
 
-        <label>
-          Pilih Bulan dan Tahun
-          <DatePicker
-            placeholderText="Bulan Dan Tahun"
-            dateFormat="dd MMMM yyyy "
-            selected={selectedDate}
-            onChange={(date) => handleOnDatePickerChange(date)}
-            showMonthYearPicker
-            withPortal
-            open={dateOpen}
-            onClickOutside={() => setDateOpen(false)}
-            onInputClick={() => setDateOpen(true)}
-          />
-        </label>
-      </div>
+          <Heading>
+            Pilih Bulan dan Tahun
+          </Heading>
+          <label>
+            <DatePicker
+              placeholderText="Bulan Dan Tahun"
+              dateFormat="dd MMMM yyyy "
+              selected={selectedDate}
+              onChange={(date) => handleOnDatePickerChange(date)}
+              showMonthYearPicker
+              inline
+            />
+          </label>
+        </Stack>
 
-      <div>
-        {
-          selectedDate && selectedCustomer && (
-            <Scroller
-              title="Catatan Pembayaran"
-            >
-              {paymentRecords.length <= 0 && (<b>Data Kosong</b>)}
+        {catatanPembayaran()}
 
-              {paymentRecords.length > 0 &&
-                paymentRecords.map((record, index) => (
-                  <React.Fragment
-                    key={index}
-                  >
-                    {detailedCard(record)}
-                  </React.Fragment>
-                ))
-              }
-            </Scroller>
-          )
-        }
-      </div>
-    </div>
+      </Flex>
+
+    </Box>
   )
 }

@@ -40,7 +40,7 @@ export default function CalendarCellComponent(props: CalendarCellProps) {
             </div>
 
             <div className='taking-amount'>
-              <Text textStyle={'2xl'} fontWeight={'bold'}>
+              <Text textStyle={'6xl'} fontWeight={'bold'}>
                 {data.product?.amount}
               </Text>
             </div>
