@@ -186,6 +186,9 @@ export default function MakePaymentPage({
                 `${formatAsRupiah(customerData.money)}`
               )}
             </DataList.Root>
+
+            TODO: tambahkan table yg menampilkan pengambilan 1 tahun terakhir
+            dari januari sampai bulan ini
           </div>
         )}
       </>

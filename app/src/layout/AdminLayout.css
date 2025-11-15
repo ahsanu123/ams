@@ -3,7 +3,8 @@
 
   .logo-and-info {
     align-items: center;
-    justify-content: space-between;
+    justify-content: flex-start;
+    gap: 50px;
   }
 
 }

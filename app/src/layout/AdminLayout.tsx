@@ -33,8 +33,8 @@ export default function AdminLayout() {
           <Flex>
             <Image
               src={amsLogo}
-              height={25}
-              width={26}
+              height={30}
+              width={35}
             />
             <Heading size={"2xl"}>
               AMS
