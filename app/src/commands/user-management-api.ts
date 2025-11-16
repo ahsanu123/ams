@@ -8,7 +8,6 @@ const INSERT_NEW_USER = "/user-management/insert-new-user"
 const UPSERT_USER = "/user-management/upsert-user"
 const GET_BY_USER_ID = "/user-management/get-by-user-id"
 
-// TODO: add return type
 interface IUserManagementApi {
   getAllUser: () => Promise<Array<UserModel>>
   getAllActiveUser: () => Promise<Array<UserModel>>

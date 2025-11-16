@@ -8,14 +8,15 @@ import {
 } from "react-router";
 import type { Route } from "./+types/root";
 import asmLogo from './svg/ams-icon.svg'
-// import './root.css'
 import { ChakraProvider, createSystem, defaultConfig } from "@chakra-ui/react";
+import { Toaster } from "./utility";
 
 const system = createSystem(defaultConfig);
 
 export default function Root() {
   return (
     <ChakraProvider value={system}>
+      <Toaster />
       <Outlet />
     </ChakraProvider>
   )

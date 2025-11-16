@@ -38,12 +38,14 @@ mod request_model {
     #[derive(Deserialize, ToSchema)]
     #[serde(rename_all = "camelCase")]
     pub struct UpdatePaymentRecord {
+        #[schema(inline)]
         pub record: payment_history_table::Model,
     }
 
     #[derive(Deserialize, ToSchema)]
     #[serde(rename_all = "camelCase")]
     pub struct UpdateBulkPaymentRecord {
+        #[schema(inline)]
         pub records: Vec<payment_history_table::Model>,
         pub paid: bool,
     }

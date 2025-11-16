@@ -1,12 +1,12 @@
 import { create } from 'zustand'
 import { immer } from 'zustand/middleware/immer'
 
-interface IUserManagementPageState {
+interface ICreateNewCustomerTabState {
   newUserName: string,
   setNewUserName: (name: string) => void
 }
 
-export const useUserManagementPageState = create<IUserManagementPageState>()(
+export const useCreateNewCustomerTabState = create<ICreateNewCustomerTabState>()(
   immer((set, get) => ({
 
     newUserName: '',

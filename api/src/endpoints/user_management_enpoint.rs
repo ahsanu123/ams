@@ -18,12 +18,14 @@ mod request_model {
     #[derive(Deserialize, ToSchema)]
     #[serde(rename_all = "camelCase")]
     pub struct InsertNewUser {
+        #[schema(inline)]
         pub new_user: user_table::Model,
     }
 
     #[derive(Deserialize, ToSchema)]
     #[serde(rename_all = "camelCase")]
     pub struct UpsertUser {
+        #[schema(inline)]
         pub user: user_table::Model,
     }
 

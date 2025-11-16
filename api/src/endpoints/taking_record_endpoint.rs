@@ -5,6 +5,7 @@ use actix_web::{
     post,
     web::Json,
 };
+
 use ams_entity::taking_record_table;
 use ams_shared::commands::taking_record_command::{TakingRecordCommand, TakingRecordCommandTrait};
 use chrono::NaiveDateTime;
@@ -30,6 +31,7 @@ mod request_model {
     #[derive(Deserialize, ToSchema)]
     #[serde(rename_all = "camelCase")]
     pub struct UpdateTakingRecord {
+        #[schema(inline)]
         pub record: taking_record_table::Model,
     }
 
@@ -111,8 +113,8 @@ pub async fn get_taking_record_by_user_id(
         (status = NOT_FOUND, description = "not found")
     ),
     request_body(
-        content =  request_model::UpdateTakingRecord,
-        content_type =  "application/json",
+        content = request_model::UpdateTakingRecord ,
+        content_type = "application/json",
     )
 )]
 #[post("/taking-record/upsert-taking-record")]
