@@ -9,6 +9,7 @@ import Clock from "../component/Clock";
 import amsLogo from "../svg/ams-icon.svg";
 import "./AdminLayout.css";
 import { AiFillCopyrightCircle } from "react-icons/ai";
+import React from "react";
 
 export default function AdminLayout() {
   const navigate = useNavigate();
@@ -61,12 +62,12 @@ export default function AdminLayout() {
                   🏠
                 </Breadcrumb.Item>
                 {menuPath.split('/').map((path) =>
-                  <>
+                  <React.Fragment key={path}>
                     <Breadcrumb.Item>
                       {path.replaceAll('-', ' ')}
                     </Breadcrumb.Item>
                     <Breadcrumb.Separator />
-                  </>
+                  </React.Fragment>
                 )}
               </Breadcrumb.List>
             </Breadcrumb.Root>

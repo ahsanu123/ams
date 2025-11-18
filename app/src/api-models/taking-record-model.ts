@@ -1,8 +1,8 @@
 export interface TakingRecordModel {
   id: number;
-  userId: bigint;
-  priceId: bigint;
-  amount: bigint;
+  userId: number;
+  priceId: number;
+  amount: number;
   productionDate: Date;
   takenDate: Date;
   description: string;

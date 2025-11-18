@@ -1,7 +1,7 @@
 import { LOGGED_ADMIN_INFORMATION_MESSAGE, NOT_LOGGED_ADMIN_INFORMATION_MESSAGE } from '@/constants';
 import { AdminRoutes, AppRoutes } from '@/routes';
 import { useMainLayoutStore } from '@/state';
-import { calculatePassword } from '@/utility';
+import { calculatePassword, toaster } from '@/utility';
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router';
 import VirtualKeypad from '../../component/VirtualKeypad';
@@ -22,12 +22,17 @@ export default function AdminGuardComponent() {
     if (value === password) {
       setHeaderInformation(LOGGED_ADMIN_INFORMATION_MESSAGE)
       setIsAdmin(true)
+      toaster.create({
+        title: 'Welcome',
+        type: 'success'
+      })
       navigate(`${AdminRoutes.AdminRoot}`)
     }
-    else setHeaderInformation({
-      ...NOT_LOGGED_ADMIN_INFORMATION_MESSAGE,
-      description: 'wrong password'
-    })
+    else
+      toaster.create({
+        title: 'wrong password',
+        type: 'error'
+      })
   }
 
   const handleOnLogOut = () => {

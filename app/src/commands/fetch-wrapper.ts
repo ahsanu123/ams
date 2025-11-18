@@ -1,4 +1,6 @@
-import { isValid, parseISO } from "date-fns";
+import { format, isValid, parseISO } from "date-fns";
+
+const DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss"
 
 export async function fetchWithDateTimeCompitable(url: string, requestInit: RequestInit, body?: object) {
   let transformedBody: string | undefined
@@ -18,13 +20,13 @@ function transformObjectDates(obj: any) {
 
   for (const key in transformed) {
     if (transformed[key] instanceof Date) {
-      transformed[key] = transformed[key].toISOString().replace('Z', '');
+      transformed[key] = format(transformed[key], DATE_FORMAT);
     }
     else if (typeof (transformed[key]) === "string") {
       const date = parseISO(transformed[key])
       const validDate = isValid(date)
       if (validDate)
-        transformed[key] = date.toISOString().replace('Z', '');
+        transformed[key] = format(date, DATE_FORMAT);
     } else if (typeof transformed[key] === 'object' && transformed[key] !== null) {
       transformed[key] = transformObjectDates(transformed[key]);
     }
@@ -57,6 +59,16 @@ export async function get(url: string) {
 export async function post(url: string, body?: object) {
   const defaultRequestInit: RequestInit = {
     method: 'POST',
+    headers: {
+      "Content-Type": "application/json",
+    },
+  }
+  return fetchWithDateTimeCompitable(url, defaultRequestInit, body)
+}
+
+export async function del(url: string, body?: object) {
+  const defaultRequestInit: RequestInit = {
+    method: 'DELETE',
     headers: {
       "Content-Type": "application/json",
     },

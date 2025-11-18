@@ -13,7 +13,7 @@ use chrono::NaiveDateTime;
 use serde::Deserialize;
 use utoipa::ToSchema;
 
-static TAG_NAME: &str = "Make Payment Endpoint";
+static TAG_NAME: &str = "Payment History Endpoint";
 
 mod request_model {
     use super::*;

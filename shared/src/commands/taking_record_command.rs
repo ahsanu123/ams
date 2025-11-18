@@ -5,18 +5,26 @@ use crate::repositories::{
     price_repositories::AdditionalPriceHistoryTableMethodTrait,
 };
 use ams_entity::{prelude::*, taking_record_table};
-use chrono::{Datelike, Local, Months, NaiveDateTime};
+use chrono::{Datelike, Days, Local, Months, NaiveDateTime};
 use sea_orm::{EntityTrait, entity::*, prelude::async_trait, query::*};
 
 #[async_trait::async_trait]
 pub trait TakingRecordCommandTrait {
     async fn add_new_taking_record(user_id: i32, amount: i32) -> i32;
 
+    async fn add_new_taking_record_by_date(user_id: i32, amount: i32, date: NaiveDateTime) -> i32;
+
     async fn get_taking_record_by_user_id(user_id: i32) -> Vec<taking_record_table::Model>;
+
+    async fn upsert_taking_record_by_date(user_id: i32, amount: i32, date: NaiveDateTime) -> i32;
 
     async fn upsert_taking_record(record: taking_record_table::Model) -> i32;
 
     async fn get_taking_record_by_month(date: NaiveDateTime) -> Vec<taking_record_table::Model>;
+
+    async fn get_taking_record_by_day(date: NaiveDateTime) -> Vec<taking_record_table::Model>;
+
+    async fn delete_taking_record(record_id: i32) -> u64;
 
     async fn get_taking_record_by_user_id_and_month(
         user_id: i32,
@@ -28,6 +36,71 @@ pub struct TakingRecordCommand;
 
 #[async_trait::async_trait]
 impl TakingRecordCommandTrait for TakingRecordCommand {
+    async fn upsert_taking_record_by_date(user_id: i32, amount: i32, date: NaiveDateTime) -> i32 {
+        let conn = TakingRecordTable::get_connection().await;
+
+        let user = UserTable::get_by_id(user_id).await.unwrap();
+
+        if user.is_none() {
+            return 0;
+        }
+
+        let record_at_that_date = TakingRecordTable::find()
+            .filter(taking_record_table::Column::UserId.eq(user_id))
+            .filter(taking_record_table::Column::TakenDate.eq(date))
+            .one(conn)
+            .await
+            .unwrap();
+
+        if let Some(data) = record_at_that_date {
+            let active_model = taking_record_table::ActiveModel {
+                id: Set(data.id),
+                user_id: NotSet,
+                price_id: NotSet,
+                amount: Set(amount as i64),
+                production_date: NotSet,
+                taken_date: NotSet,
+                description: NotSet,
+                is_paid: NotSet,
+            };
+
+            let res = TakingRecordTable::update_by_model(active_model)
+                .await
+                .unwrap();
+            return res.id;
+        } else {
+            let res = TakingRecordCommand::add_new_taking_record(user_id, amount).await;
+            return res;
+        }
+    }
+
+    async fn add_new_taking_record_by_date(user_id: i32, amount: i32, date: NaiveDateTime) -> i32 {
+        let latest_price = PriceHistoryTable::get_latest_price().await;
+
+        let user = UserTable::get_by_id(user_id).await.unwrap();
+
+        if user.is_none() {
+            return 0;
+        }
+
+        let user = user.unwrap();
+
+        let active_model = taking_record_table::ActiveModel {
+            id: NotSet,
+            user_id: Set(user_id as i64),
+            price_id: Set(latest_price.id as i64),
+            amount: Set(amount as i64),
+            production_date: Set(date),
+            taken_date: Set(date),
+            description: Set(format!("{0} is taking {1} dregs", user.username, amount)),
+            is_paid: Set(false),
+        };
+
+        let result = TakingRecordTable::create(active_model).await.unwrap();
+
+        result.id
+    }
+
     async fn add_new_taking_record(user_id: i32, amount: i32) -> i32 {
         let latest_price = PriceHistoryTable::get_latest_price().await;
 
@@ -74,8 +147,8 @@ impl TakingRecordCommandTrait for TakingRecordCommand {
 
         if data_on_db.is_some() {
             let active_model = taking_record_table::ActiveModel {
-                id: NotSet,
-                user_id: NotSet,
+                id: Set(record.id),
+                user_id: Set(record.user_id),
                 price_id: Set(record.price_id),
                 amount: Set(record.amount),
                 production_date: NotSet,
@@ -138,6 +211,31 @@ impl TakingRecordCommandTrait for TakingRecordCommand {
             .collect::<Vec<taking_record_table::Model>>();
 
         summed_records
+    }
+
+    async fn delete_taking_record(record_id: i32) -> u64 {
+        let res = TakingRecordTable::delete_by_model_id(record_id)
+            .await
+            .unwrap();
+
+        res
+    }
+
+    async fn get_taking_record_by_day(date: NaiveDateTime) -> Vec<taking_record_table::Model> {
+        let conn = TakingRecordTable::get_connection().await;
+
+        let start_date = date.date().and_hms_opt(0, 0, 0).unwrap();
+
+        let end_date = start_date.clone().checked_add_days(Days::new(1)).unwrap();
+
+        let records = TakingRecordTable::find()
+            .filter(taking_record_table::Column::TakenDate.gte(start_date))
+            .filter(taking_record_table::Column::TakenDate.lt(end_date))
+            .all(conn)
+            .await
+            .unwrap();
+
+        records
     }
 
     async fn get_taking_record_by_month(date: NaiveDateTime) -> Vec<taking_record_table::Model> {

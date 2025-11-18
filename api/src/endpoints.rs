@@ -17,10 +17,14 @@ use utoipa::OpenApi;
 
         // taking_record_endpoint
         crate::endpoints::taking_record_endpoint::add_new_taking_record,
+        crate::endpoints::taking_record_endpoint::add_new_taking_record_by_date,
         crate::endpoints::taking_record_endpoint::get_taking_record_by_user_id,
         crate::endpoints::taking_record_endpoint::upsert_taking_record,
         crate::endpoints::taking_record_endpoint::get_taking_record_by_month,
         crate::endpoints::taking_record_endpoint::get_taking_record_by_user_id_and_month,
+        crate::endpoints::taking_record_endpoint::upsert_taking_record_by_date,
+        crate::endpoints::taking_record_endpoint::delete_taking_record_by_id,
+        crate::endpoints::taking_record_endpoint::get_taking_record_by_day,
 
         // dreg_price_endpoint
         crate::endpoints::dreg_price_endpoint::get_latest_dreg_price,

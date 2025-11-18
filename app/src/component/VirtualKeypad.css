@@ -1,6 +1,8 @@
 .virtual-keypad-container {
   input {
     width: 100%;
+    padding: 15px 25px;
+    border-radius: 15px;
     font-size: 2em;
     border: 1px solid gray;
   }

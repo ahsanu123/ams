@@ -11,6 +11,7 @@ impl<TEntity> GetSqlConnectionTrait for TEntity
 where
     TEntity: EntityTrait,
 {
+    // FIXME: this is bad (but working) implementation, fix in future
     async fn get_connection() -> &'static DatabaseConnection {
         get_database_connection().await
     }

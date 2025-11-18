@@ -2,8 +2,12 @@ import { DataList, Text } from "@chakra-ui/react";
 import type { JSX } from "react";
 import type React from "react";
 
-export const dataListItemValue = (item: string | JSX.Element, value: string | JSX.Element) =>
+export const dataListItemValue = (item: string | JSX.Element, value: string | JSX.Element, additionalText?: JSX.Element) =>
   <DataList.Item>
+
+    <Text>
+      {additionalText}
+    </Text>
 
     <DataList.ItemLabel>
       <Text textStyle={'lg'} fontWeight={'bold'}>

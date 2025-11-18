@@ -3,7 +3,7 @@ import { makePaymentCommand, userManagementCommand } from "@/commands"
 import Scroller from "@/component/Scroller"
 import { EMPTY_HEADER_INFORMATION } from "@/constants"
 import { useMainLayoutStore } from "@/state"
-import { formatAsRupiah, fromFormData, toFormData } from "@/utility"
+import { formatAsRupiah, formatDateId, fromFormData, toFormData } from "@/utility"
 import { Badge, Box, Button, Card, DataList, Flex, Heading, Stack, Table, Tabs, Text } from "@chakra-ui/react"
 import { format } from "date-fns"
 import { id } from "date-fns/locale"
@@ -146,8 +146,8 @@ export default function MakePaymentPage({
       <Card.Body>
         <Flex justifyContent={'space-between'}>
           <Box>
-            <Text>{format(record.takingRecord.takenDate, "PPPP", { locale: id })}</Text>
-            <Text>{format(record.takingRecord.takenDate, "p", { locale: id })}</Text>
+            <Text>{formatDateId(record.takingRecord.takenDate)}</Text>
+            <Text>{formatDateId(record.takingRecord.takenDate, "p")}</Text>
             <Text>{formatAsRupiah(record.price.price)}</Text>
           </Box>
 

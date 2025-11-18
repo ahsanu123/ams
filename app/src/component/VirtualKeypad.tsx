@@ -1,7 +1,7 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import "./VirtualKeypad.css"
 import React from "react"
-import { Button, Heading } from "@chakra-ui/react"
+import { Button, Heading, Text } from "@chakra-ui/react"
 
 type OkOrHapus = "Hapus" | "Ok"
 const MAX_AMOUNT = 10
@@ -65,6 +65,10 @@ export default function VirtualKeypad(props: VirtualKeypadProps) {
 
   }
 
+  useEffect(() => {
+    setValue(defaultValue)
+  }, [defaultValue])
+
   return (
     <div
       className="virtual-keypad-container"
@@ -79,7 +83,7 @@ export default function VirtualKeypad(props: VirtualKeypadProps) {
           : (
             <>
               <Heading>{title}</Heading>
-              <sub>{description}</sub>
+              <Text>{description}</Text>
             </>
           )
       }
