@@ -13,6 +13,8 @@ use chrono::NaiveDateTime;
 use serde::Deserialize;
 use utoipa::ToSchema;
 
+static TAG_NAME: &str = "Make Payment Endpoint";
+
 mod request_model {
     use super::*;
 
@@ -71,6 +73,7 @@ where
 
 #[utoipa::path(
     post,
+    tag = TAG_NAME,
     path = "/payment/get-payment-record",
     responses(
         (status = 200, description = "success"),
@@ -91,6 +94,7 @@ pub async fn get_payment_record_by_user_id(
 
 #[utoipa::path(
     post,
+    tag = TAG_NAME,
     path = "/payment/get-month-summary",
     responses(
         (status = 200, description = "success"),
@@ -111,6 +115,7 @@ pub async fn get_month_summary(
 
 #[utoipa::path(
     post,
+    tag = TAG_NAME,
     path = "/payment/get-payment-record-by-user-id-and-month",
     responses(
         (status = 200, description = "success"),
@@ -135,6 +140,7 @@ pub async fn get_payment_record_by_user_id_and_month(
 
 // #[utoipa::path(
 //     post,
+//     tag = TAG_NAME,
 //     path = "/payment/get-month-summary-by-user-id-and-date",
 //     responses(
 //         (status = 200, description = "success"),
@@ -157,6 +163,7 @@ pub async fn get_payment_record_by_user_id_and_month(
 
 #[utoipa::path(
     post,
+    tag = TAG_NAME,
     path = "/payment/update-payment-record",
     responses(
         (status = 200, description = "success"),
@@ -177,6 +184,7 @@ pub async fn update_payment_record(
 
 #[utoipa::path(
     post,
+    tag = TAG_NAME,
     path = "/payment/update-bulk-payment-record",
     responses(
         (status = 200, description = "success"),

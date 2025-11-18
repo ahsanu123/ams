@@ -12,6 +12,8 @@ use chrono::NaiveDateTime;
 use serde::Deserialize;
 use utoipa::ToSchema;
 
+static TAG_NAME: &str = "Make Payment Endpoint";
+
 mod request_model {
     use super::*;
 
@@ -67,6 +69,7 @@ where
 }
 #[utoipa::path(
     post,
+    tag = TAG_NAME,
     path = "/taking-record/add-new-taking-record",
     responses(
         (status = 200, description = "success"),
@@ -87,6 +90,7 @@ pub async fn add_new_taking_record(
 
 #[utoipa::path(
     post,
+    tag = TAG_NAME,
     path = "/taking-record/get-taking-record-by-user-id",
     responses(
         (status = 200, description = "success"),
@@ -107,6 +111,7 @@ pub async fn get_taking_record_by_user_id(
 
 #[utoipa::path(
     post,
+    tag = TAG_NAME,
     path = "/taking-record/upsert-taking-record",
     responses(
         (status = 200, description = "success"),
@@ -127,6 +132,7 @@ pub async fn upsert_taking_record(
 
 #[utoipa::path(
     post,
+    tag = TAG_NAME,
     path = "/taking-record/get-taking-record-by-date",
     responses(
         (status = 200, description = "success"),
@@ -147,6 +153,7 @@ pub async fn get_taking_record_by_month(
 
 #[utoipa::path(
     post,
+    tag = TAG_NAME,
     path = "/taking-record/get-taking-record-by-user-id-and-date",
     responses(
         (status = 200, description = "success"),

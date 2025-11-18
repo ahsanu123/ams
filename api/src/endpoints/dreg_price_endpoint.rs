@@ -9,6 +9,8 @@ use ams_shared::commands::dreg_price_command::{DregPriceCommand, DregPriceComman
 use serde::Deserialize;
 use utoipa::ToSchema;
 
+static TAG_NAME: &str = "Dreg Price Endpoint";
+
 mod request_model {
     use super::*;
     #[derive(Deserialize, ToSchema)]
@@ -35,6 +37,7 @@ where
 
 #[utoipa::path(
     get,
+    tag = TAG_NAME,
     path = "/dreg-price/get-latest-dreg-price",
     responses(
         (status = 200, description = "success"),
@@ -49,6 +52,7 @@ pub async fn get_latest_dreg_price() -> impl Responder {
 
 #[utoipa::path(
     post,
+    tag = TAG_NAME,
     path = "/dreg-price/update-dreg-price",
     responses(
         (status = 200, description = "success"),
@@ -67,6 +71,7 @@ pub async fn update_dreg_price(request: Json<request_model::UpdateDregPrice>) ->
 
 #[utoipa::path(
     get,
+    tag = TAG_NAME,
     path = "/dreg-price/get-all-price",
     responses(
         (status = 200, description = "success"),

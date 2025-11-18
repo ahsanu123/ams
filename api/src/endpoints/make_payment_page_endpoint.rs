@@ -2,13 +2,15 @@
 use actix_web::{
     App, HttpResponse, Responder,
     dev::{ServiceFactory, ServiceRequest},
-    get, post,
+    post,
     web::Json,
 };
 use ams_shared::commands::make_payment_command::{MakePaymentCommand, MakePaymentCommandTrait};
 use chrono::NaiveDateTime;
 use serde::Deserialize;
 use utoipa::ToSchema;
+
+static TAG_NAME: &str = "Make Payment Endpoint";
 
 mod request_model {
 
@@ -37,6 +39,7 @@ where
 
 #[utoipa::path(
     post,
+    tag = TAG_NAME,
     path = "/make-payment-page/get-page-model",
     responses(
         (status = 200, description = "success"),
@@ -60,6 +63,7 @@ pub async fn payment_page_get_page_model(
 
 #[utoipa::path(
     post,
+    tag = TAG_NAME,
     path = "/make-payment-page/make-payment",
     responses(
         (status = 200, description = "success"),

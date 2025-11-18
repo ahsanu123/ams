@@ -12,8 +12,16 @@ use ams_shared::commands::user_management_command::{
 use serde::Deserialize;
 use utoipa::ToSchema;
 
+static TAG_NAME: &str = "User Management Endpoint";
+
 mod request_model {
     use super::*;
+
+    #[derive(Deserialize, ToSchema)]
+    #[serde(rename_all = "camelCase")]
+    pub struct CreateNewUser {
+        pub username: String,
+    }
 
     #[derive(Deserialize, ToSchema)]
     #[serde(rename_all = "camelCase")]
@@ -45,7 +53,8 @@ where
     T: ServiceFactory<ServiceRequest, Config = (), Error = actix_web::Error, InitError = ()>,
 {
     fn register_user_management_endpoints(self) -> Self {
-        self.service(insert_new_user)
+        self.service(create_new_user)
+            .service(insert_new_user)
             .service(get_all_user)
             .service(get_all_active_user)
             .service(upsert_user)
@@ -55,6 +64,26 @@ where
 
 #[utoipa::path(
     post,
+    tag = TAG_NAME,
+    path = "/user-management/create-new-user",
+    responses(
+        (status = 200, description = "success"),
+        (status = NOT_FOUND, description = "not found")
+    ),
+    request_body(
+        content =  request_model::CreateNewUser,
+        content_type =  "application/json",
+    )
+)]
+#[post("/user-management/create-new-user")]
+pub async fn create_new_user(request: Json<request_model::CreateNewUser>) -> impl Responder {
+    let result = UserManagementCommand::create_new_user(request.0.username).await;
+    HttpResponse::Ok().json(result)
+}
+
+#[utoipa::path(
+    post,
+    tag = TAG_NAME,
     path = "/user-management/insert-new-user",
     responses(
         (status = 200, description = "success"),
@@ -73,6 +102,7 @@ pub async fn insert_new_user(request: Json<request_model::InsertNewUser>) -> imp
 
 #[utoipa::path(
     get,
+    tag = TAG_NAME,
     path = "/user-management/get-all-user",
     responses(
         (status = 200, description = "success"),
@@ -87,6 +117,7 @@ pub async fn get_all_user() -> impl Responder {
 
 #[utoipa::path(
     get,
+    tag = TAG_NAME,
     path = "/user-management/get-all-active-user",
     responses(
         (status = 200, description = "success"),
@@ -101,6 +132,7 @@ pub async fn get_all_active_user() -> impl Responder {
 
 #[utoipa::path(
     post,
+    tag = TAG_NAME,
     path = "/user-management/upsert-user",
     responses(
         (status = 200, description = "success"),
@@ -119,6 +151,7 @@ pub async fn upsert_user(request: Json<request_model::UpsertUser>) -> impl Respo
 
 #[utoipa::path(
     post,
+    tag = TAG_NAME,
     path = "/user-management/get-by-user-id",
     responses(
         (status = 200, description = "success"),

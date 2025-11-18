@@ -11,6 +11,7 @@ use sea_orm::{
 
 #[async_trait::async_trait]
 pub trait UserManagementCommandTrait {
+    async fn create_new_user(username: String) -> i32;
     async fn insert_new_user(new_user: user_table::Model) -> i32;
     async fn get_all_user() -> Vec<user_table::Model>;
     async fn get_all_active_user() -> Vec<user_table::Model>;
@@ -22,6 +23,34 @@ pub struct UserManagementCommand;
 
 #[async_trait::async_trait]
 impl UserManagementCommandTrait for UserManagementCommand {
+    async fn create_new_user(username: String) -> i32 {
+        let conn = UserTable::get_connection().await;
+
+        let user_exist = UserTable::find()
+            .filter(user_table::Column::Username.eq(username.clone()))
+            .one(conn)
+            .await
+            .unwrap();
+
+        if user_exist.is_some() {
+            return 0;
+        }
+
+        let active_model = user_table::ActiveModel {
+            id: NotSet,
+            username: Set(username),
+            is_active: Set(true),
+            is_admin: Set(false),
+            money: Set(0),
+            created_date: Set(Local::now().naive_local()),
+            updated_date: Set(Local::now().naive_local()),
+        };
+
+        let result = UserTable::create(active_model).await.unwrap();
+
+        result.id
+    }
+
     async fn insert_new_user(new_user: user_table::Model) -> i32 {
         let conn = UserTable::get_connection().await;
 

@@ -11,6 +11,8 @@ use ams_shared::commands::customer_money_command::{
 use serde::Deserialize;
 use utoipa::ToSchema;
 
+static TAG_NAME: &str = "Customer Endpoint";
+
 mod request_model {
     use super::*;
     #[derive(Deserialize, ToSchema)]
@@ -42,6 +44,7 @@ where
 
 #[utoipa::path(
     post,
+    tag = TAG_NAME,
     path = "/customer/add-money",
     responses(
         (status = 200, description = "success"),
@@ -62,6 +65,7 @@ pub async fn add_money(request: Json<request_model::AddMoney>) -> impl Responder
 
 #[utoipa::path(
     post,
+    tag = TAG_NAME,
     path = "/customer/get-all-user-money",
     responses(
         (status = 200, description = "success"),

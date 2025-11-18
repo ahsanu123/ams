@@ -36,7 +36,8 @@ use utoipa::OpenApi;
         crate::endpoints::payment_history_endpoint::update_payment_record,
         crate::endpoints::payment_history_endpoint::update_bulk_payment_record,
 
-        // user_management_enpoint
+        // user_management_enpoint 
+        crate::endpoints::user_management_enpoint::create_new_user,
         crate::endpoints::user_management_enpoint::insert_new_user,
         crate::endpoints::user_management_enpoint::get_all_user,
         crate::endpoints::user_management_enpoint::get_all_active_user,
