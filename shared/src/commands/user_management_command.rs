@@ -91,7 +91,7 @@ impl UserManagementCommandTrait for UserManagementCommand {
 
     async fn upsert_user(user: user_table::Model) -> i32 {
         let active_model = user_table::ActiveModel {
-            id: NotSet,
+            id: Set(user.id),
             username: Set(user.username),
             is_active: Set(user.is_active),
             is_admin: Set(user.is_admin),

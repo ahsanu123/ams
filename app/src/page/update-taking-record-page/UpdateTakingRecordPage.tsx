@@ -1,30 +1,26 @@
+import React from "react"
 import Calendar from "@/component/Calendar"
 import Scroller from "@/component/Scroller"
 import VirtualKeypad from "@/component/VirtualKeypad"
-import { Text, Box, Button, CloseButton, Drawer, Flex, Portal, Stack, Avatar, DataList, Table, Badge } from "@chakra-ui/react"
+import { Text, Box, Button, CloseButton, Drawer, Flex, Portal, Stack, Avatar, DataList, Table, Badge, Steps } from "@chakra-ui/react"
 import { useEffect, useState } from "react"
-import { AiFillCloseCircle, AiFillEdit, AiOutlinePlusSquare, AiTwotoneCalendar } from "react-icons/ai"
+import { AiFillEdit, AiOutlinePlusSquare, AiTwotoneCalendar } from "react-icons/ai"
 import { useUpdateTakingPageState } from "./update-taking-record-page-state"
 import { takingRecordCommand, userManagementCommand } from "@/commands"
 import type { Route } from "./+types/UpdateTakingRecordPage"
 import { dataListItemValue, formatDateId, toaster } from "@/utility"
-import { format } from "date-fns"
-import React from "react"
 import type { TakingRecordModel, UserModel } from "@/api-models"
-import { useRevalidator } from "react-router"
+import { GoTrash } from "react-icons/go"
 
-enum ListActionEnum {
-  GetPageModel = 'GetPageModel',
-  MakePayment = 'MakePayment'
+interface IStep {
+  title: string,
+  description: string
 }
 
-interface IFetcherActionResult {
-}
-
-interface IGetPageModelClientRequest {
-  userId: number,
-  date: Date,
-  _action: ListActionEnum,
+enum EditStep {
+  PickUser = 0,
+  InsertAmount = 1,
+  SaveChanges = 2
 }
 
 export async function clientLoader() {
@@ -34,16 +30,13 @@ export async function clientLoader() {
   }
 }
 
-export async function clientAction() {
-
-}
+export async function clientAction() { }
 
 
 export default function UpdateTakingRecordPage({
   loaderData
 }: Route.ComponentProps) {
 
-  const { revalidate } = useRevalidator()
 
   const customers = useUpdateTakingPageState(state => state.customers)
   const setCustomers = useUpdateTakingPageState(state => state.setCustomers)
@@ -64,6 +57,18 @@ export default function UpdateTakingRecordPage({
   const setSelectedCustomer = useUpdateTakingPageState(state => state.setSelectedCustomer)
 
   const [open, setOpen] = useState(false)
+  const [editStep, setEditStep] = useState(0)
+
+  const editOrAddStep: IStep[] = [
+    {
+      title: "Pilih Pelanggan",
+      description: "Klik Edit atau Add pada Table di sebelah kanan.",
+    },
+    {
+      title: "Masukan Jumlah",
+      description: "Masukan Jumlah Ampas",
+    },
+  ]
 
   const handleOnCalendarCellClicked = (date: Date | undefined) => {
     setOpen(true)
@@ -87,8 +92,21 @@ export default function UpdateTakingRecordPage({
       return;
     }
 
+    setEditStep(EditStep.InsertAmount)
     setSelectedCustomer(customer)
     setSelectedTakingRecord(record)
+  }
+
+  const handleOnDeleteTakingRecord = (record: TakingRecordModel) => {
+    takingRecordCommand.deleteTakingRecordById(record.id)
+      .then(_ => {
+        toaster.create({
+          title: `Data Deleted`,
+          type: 'success'
+        })
+        loadTakingRecords(selectedDate)
+      }
+      )
   }
 
   const handleOnUpdateTakingRecord = (amount: number) => {
@@ -96,11 +114,12 @@ export default function UpdateTakingRecordPage({
       takingRecordCommand.upsertTakingRecord({
         ...selectedTakingRecord,
         amount
-      }).then(value => {
+      }).then(_ => {
         toaster.create({
-          title: `Success Updating, ${value}`,
+          title: `Success Updating, ${amount}`,
           type: 'success'
         })
+        setEditStep(EditStep.PickUser)
         setSelectedTakingRecord(undefined)
 
         // FIXME: Find Better way to to this
@@ -116,11 +135,12 @@ export default function UpdateTakingRecordPage({
   const handleOnAddRecord = (amount: number) => {
     if (!selectedCustomer || !selectedDate) return
     takingRecordCommand.addNewTakingRecordByDate(selectedCustomer.id!, amount, selectedDate)
-      .then(value => {
+      .then(() => {
         toaster.create({
           title: `${selectedCustomer.username} Pick ${amount} Ampas`,
           type: 'success'
         })
+        setEditStep(EditStep.PickUser)
         setIsAddingAddNewRecord(false)
 
         // FIXME: Find Better way to to this
@@ -131,7 +151,6 @@ export default function UpdateTakingRecordPage({
           type: 'error'
         })
       })
-
   }
 
   const valueMustBeNonZero = (value: number) => {
@@ -145,6 +164,12 @@ export default function UpdateTakingRecordPage({
     setSelectedDate(undefined)
     setSelectedTakingRecord(undefined)
     setIsAddingAddNewRecord(false)
+  }
+
+  const onAddRecordButtonClicked = (customer: UserModel) => {
+    setEditStep(EditStep.InsertAmount)
+    setSelectedCustomer(customer)
+    setIsAddingAddNewRecord(true)
   }
 
   const renderVirtualKeyboard = () =>
@@ -186,15 +211,45 @@ export default function UpdateTakingRecordPage({
       {selectedDate && (
         <Flex>
 
-          <Box minWidth={"400px"}>
+          <Stack minWidth={"400px"}>
             {renderVirtualKeyboard()}
-          </Box>
+
+            <Steps.Root
+              step={editStep}
+              onStepChange={(e) => setEditStep(e.step)}
+              size='sm'
+              defaultStep={1}
+              count={editOrAddStep.length}>
+              <Steps.List>
+                {editOrAddStep.map((step, index) => (
+                  <Steps.Item
+                    key={index}
+                    index={index}
+                    title={step.title}>
+                    <Steps.Indicator />
+                    <Steps.Title>{step.title}</Steps.Title>
+                    <Steps.Separator />
+                  </Steps.Item>
+                ))}
+              </Steps.List>
+
+              {editOrAddStep.map((step, index) => (
+                <Steps.Content key={index} index={index}>
+                  {step.description}
+                </Steps.Content>
+              ))}
+
+              <Steps.CompletedContent>All steps are complete!</Steps.CompletedContent>
+
+            </Steps.Root>
+          </Stack>
 
           <Box width={"100%"}>
             <Scroller minHeight="85vh">
               <Stack>
                 <Table.Root
                   striped
+                  stickyHeader
                   strokeLinecap={'round'}
                   size="lg"
                   variant={'line'}>
@@ -238,19 +293,32 @@ export default function UpdateTakingRecordPage({
                                 .filter(pr => pr.userId === customer.id!)
                                 .map(record =>
                                   <React.Fragment key={record.id}>
+
                                     {dataListItemValue(
                                       formatDateId(record.takenDate, "HH:mm"),
                                       `${record.amount} Ampas`,
                                       record.isPaid ? <Badge colorPalette="green">Terbayar</Badge> : undefined
                                     )}
-                                    <Button
-                                      disabled={record.isPaid}
-                                      onClick={() => handleOnEditTakingRecordButtonClick(record)}
-                                      maxWidth={"200px"}
-                                    >
-                                      <AiFillEdit />
-                                      Edit
-                                    </Button>
+
+                                    <Flex gap={5}>
+                                      <Button
+                                        disabled={record.isPaid}
+                                        onClick={() => handleOnEditTakingRecordButtonClick(record)}
+                                        maxWidth={"200px"}
+                                      >
+                                        <AiFillEdit />
+                                        Edit
+                                      </Button>
+
+                                      <Button
+                                        disabled={record.isPaid}
+                                        onClick={() => handleOnDeleteTakingRecord(record)}
+                                        colorPalette={'red'}>
+                                        <GoTrash />
+                                        Delete
+                                      </Button>
+
+                                    </Flex>
                                   </React.Fragment>
                                 )
                             }
@@ -259,10 +327,7 @@ export default function UpdateTakingRecordPage({
                               && (
                                 <Button
                                   maxWidth={"200px"}
-                                  onClick={() => {
-                                    setSelectedCustomer(customer)
-                                    setIsAddingAddNewRecord(true)
-                                  }}
+                                  onClick={() => onAddRecordButtonClicked(customer)}
                                 >
                                   <AiOutlinePlusSquare />
                                   Add Record
@@ -335,6 +400,7 @@ export default function UpdateTakingRecordPage({
       <Calendar
         isAdmin
         showNavigator
+        hideCustomerAvatar
         onCellClicked={handleOnCalendarCellClicked}
       />
       {editDrawer()}

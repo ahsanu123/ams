@@ -53,16 +53,24 @@ export default function CreateNewCustomerTab() {
     </Card.Root>
 
   const handleOnCreateNewCustomer = () => {
-    // TODO: check if user name already exists 
-    // TODO: call real api for creating new user
-    if (newUserName !== '') {
-      toaster.create({
-        title: `Success to create new customer named ${newUserName}`,
-        type: 'success'
+    if (newUserName === '') return;
+
+    userManagementCommand.createNewUser(newUserName)
+      .then(id => {
+        if (id === 0)
+          toaster.create({
+            title: `Fail to create new customer named ${newUserName}, username Already Taken`,
+            type: 'error'
+          })
+        else
+          toaster.create({
+            title: `Success to create new customer named ${newUserName}`,
+            type: 'success'
+          })
+        setNewUserName('')
+        keyboardRef.current?.setInput('')
       })
-      setNewUserName('')
-      keyboardRef.current?.setInput('')
-    }
+
   }
 
   useEffect(() => {

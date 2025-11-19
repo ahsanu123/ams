@@ -15,6 +15,7 @@ interface CalendarProps {
   isAdmin?: boolean,
   customerMode?: boolean,
   month?: Date,
+  hideCustomerAvatar?: boolean,
 
   showNavigator?: boolean
   title?: string,
@@ -34,6 +35,7 @@ export default function Calendar(props: CalendarProps) {
     isAdmin = false,
     customerMode = false,
     showNavigator = false,
+    hideCustomerAvatar = false,
     month,
     title,
     onCustomerIdChange,
@@ -201,7 +203,7 @@ export default function Calendar(props: CalendarProps) {
         }
 
         {
-          selectedCustomer &&
+          selectedCustomer && !hideCustomerAvatar &&
           <>
             <Avatar.Root>
               <Avatar.Fallback name={selectedCustomer.username} />

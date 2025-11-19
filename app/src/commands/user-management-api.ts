@@ -7,17 +7,28 @@ const GET_ALL_USER = "/user-management/get-all-user"
 const INSERT_NEW_USER = "/user-management/insert-new-user"
 const UPSERT_USER = "/user-management/upsert-user"
 const GET_BY_USER_ID = "/user-management/get-by-user-id"
+const CREATE_NEW_USER = "/user-management/create-new-user"
 
 interface IUserManagementApi {
+  createNewUser: (username: string) => Promise<number>
+  insertNewUser: (user: UserModel) => Promise<number>
   getAllUser: () => Promise<Array<UserModel>>
   getAllActiveUser: () => Promise<Array<UserModel>>
-  insertNewUser: (user: UserModel) => Promise<number>
   upsertUser: (user: UserModel) => Promise<number>
   getById: (userId: number) => Promise<UserModel>
 }
 
-
 const userManagementApi: IUserManagementApi = {
+  createNewUser: async function (username: string): Promise<number> {
+    const response = await post(`${API_ENDPOINT}${CREATE_NEW_USER}`, { username })
+    return asConstant<number>(response)
+  },
+
+  insertNewUser: async function (user: UserModel): Promise<number> {
+    const response = await post(`${API_ENDPOINT}${INSERT_NEW_USER}`, { user })
+    return asConstant<number>(response)
+  },
+
   getAllUser: async function (): Promise<Array<UserModel>> {
     const response = await get(`${API_ENDPOINT}${GET_ALL_USER}`)
     return asJson<Array<UserModel>>(response)
@@ -26,11 +37,6 @@ const userManagementApi: IUserManagementApi = {
   getAllActiveUser: async function (): Promise<Array<UserModel>> {
     const response = await get(`${API_ENDPOINT}${GET_ALL_ACTIVE_USER}`)
     return asJson<Array<UserModel>>(response)
-  },
-
-  insertNewUser: async function (user: UserModel): Promise<number> {
-    const response = await post(`${API_ENDPOINT}${INSERT_NEW_USER}`, { user })
-    return asConstant<number>(response)
   },
 
   upsertUser: async function (user: UserModel): Promise<number> {
@@ -42,7 +48,7 @@ const userManagementApi: IUserManagementApi = {
     const response = await post(`${API_ENDPOINT}${GET_BY_USER_ID}`, { userId })
 
     return asConstant<UserModel>(response)
-  }
+  },
 }
 
 const userManagementTauriCommand: IUserManagementApi = {
@@ -59,6 +65,9 @@ const userManagementTauriCommand: IUserManagementApi = {
     throw new Error("Function not implemented.")
   },
   getById: function (userId: number): Promise<UserModel> {
+    throw new Error("Function not implemented.")
+  },
+  createNewUser: function (username: string): Promise<number> {
     throw new Error("Function not implemented.")
   }
 }

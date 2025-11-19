@@ -20,7 +20,7 @@ interface ITakingRecordApi {
   upsertTakingRecordByDate: (amount: number, date: Date, userId: number) => Promise<number>
   getTakingRecordByMonth: (date: Date) => Promise<Array<TakingRecordModel>>
   getTakingRecordByUserIdAndMonth: (userId: number, date: Date) => Promise<Array<TakingRecordModel>>
-  deleteTakingRecordById: (id: number) => Promise<number>
+  deleteTakingRecordById: (takingRecordId: number) => Promise<number>
   getTakingRecordByDay: (date: Date) => Promise<Array<TakingRecordModel>>
 }
 
@@ -63,8 +63,8 @@ const takingRecordApi: ITakingRecordApi = {
     const response = await post(`${API_ENDPOINT}${GET_TAKING_RECORD_BY_USER_ID_AND_MONTH}`, { userId, date })
     return asJson<Array<TakingRecordModel>>(response)
   },
-  deleteTakingRecordById: async function (id: number): Promise<number> {
-    const response = await del(`${API_ENDPOINT}${DELETE_TAKING_RECORD_BY_ID}`, { id })
+  deleteTakingRecordById: async function (takingRecordId: number): Promise<number> {
+    const response = await del(`${API_ENDPOINT}${DELETE_TAKING_RECORD_BY_ID}`, { takingRecordId })
     return asJson<number>(response)
   },
   getTakingRecordByDay: async function (date: Date): Promise<Array<TakingRecordModel>> {
@@ -97,7 +97,7 @@ const takingRecordTauriCommand: ITakingRecordApi = {
   getTakingRecordByUserIdAndMonth: function (userId: number, date: Date): Promise<Array<TakingRecordModel>> {
     throw new Error("Function not implemented.")
   },
-  deleteTakingRecordById: function (id: number): Promise<number> {
+  deleteTakingRecordById: function (takingRecordId: number): Promise<number> {
     throw new Error("Function not implemented.")
   },
   getTakingRecordByDay: function (date: Date): Promise<Array<TakingRecordModel>> {

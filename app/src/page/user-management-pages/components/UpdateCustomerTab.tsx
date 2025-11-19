@@ -2,7 +2,7 @@ import { Box, Button, Flex, Heading, Input, Text, Stack, Card, Avatar, DataList,
 import { GoAlertFill, GoTrash } from "react-icons/go";
 import Keyboard, { type SimpleKeyboard } from 'react-simple-keyboard';
 import Scroller from '@/component/Scroller';
-import { dataListItemValue, textKeyboardLayout, textOrNumberKeyboardDisplay } from '@/utility';
+import { dataListItemValue, textKeyboardLayout, textOrNumberKeyboardDisplay, toaster } from '@/utility';
 import { useEffect, useRef, useState } from 'react';
 import type { UserModel } from '@/api-models';
 import { userManagementCommand } from '@/commands';
@@ -20,6 +20,26 @@ export default function UpdateCustomerTab() {
 
   const handleOnDeleteCustomer = (customer: UserModel) => {
     setSelectedCustomer(customer)
+  }
+
+  const handleOnUpdateCustomer = () => {
+    if (selectedCustomer === undefined) return
+
+    userManagementCommand.upsertUser(selectedCustomer)
+      .then(id => {
+        if (id === 0)
+          toaster.create({
+            title: `Fail To Update ${selectedCustomer.username}`,
+            type: 'error'
+          })
+        else
+          toaster.create({
+            title: `Success to update ${selectedCustomer.username}`,
+            type: 'success'
+          })
+      })
+
+    setSelectedCustomer(undefined)
   }
 
   const customerCard = (customer: UserModel, withDialog: boolean = false) =>
@@ -115,7 +135,7 @@ export default function UpdateCustomerTab() {
   useEffect(() => {
     userManagementCommand.getAllUser()
       .then(customers => setCustomers(customers))
-  }, [])
+  }, [selectedCustomer])
 
   useEffect(() => {
     if (selectedCustomer && keyboardRef.current)
@@ -193,7 +213,9 @@ export default function UpdateCustomerTab() {
               })}
             />
 
-            <Button>
+            <Button
+              onClick={() => handleOnUpdateCustomer()}
+            >
               Update Customer
             </Button>
 
