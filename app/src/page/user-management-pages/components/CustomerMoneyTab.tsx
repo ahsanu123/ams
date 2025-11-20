@@ -1,4 +1,4 @@
-import { Box, Button, Flex, Heading, Input, Text, Stack, Card, Avatar, DataList, Table, Spacer, NumberInput } from '@chakra-ui/react';
+import { Box, Button, Flex, Heading, Input, Text, Stack, Card, Avatar, DataList, Table, Spacer, NumberInput, Badge } from '@chakra-ui/react';
 import Keyboard, { type SimpleKeyboard } from 'react-simple-keyboard';
 import 'react-simple-keyboard/build/css/index.css';
 import Scroller from '@/component/Scroller';
@@ -117,19 +117,19 @@ export default function CustomerMoneyTab() {
           <Box>
             <Scroller
               maxHeight='300px'
-              title='List Money History'
+              title='Catatan transaksi'
             >
               <Table.Root stickyHeader>
                 <Table.Header>
                   <Table.Row>
                     <Table.ColumnHeader>
-                      Date
+                      Tanggal
                     </Table.ColumnHeader>
                     <Table.ColumnHeader>
-                      Amount
+                      Jumlah uang
                     </Table.ColumnHeader>
                     <Table.ColumnHeader>
-                      Description
+                      Keterangan
                     </Table.ColumnHeader>
                   </Table.Row>
                 </Table.Header>
@@ -146,6 +146,13 @@ export default function CustomerMoneyTab() {
                         </Table.Cell>
 
                         <Table.Cell>
+                          {
+                            (money.description.toLocaleLowerCase().includes('paying') ||
+                              money.description.toLocaleLowerCase().includes('Dept'))
+                              ? <Badge colorPalette={'green'}>Pay</Badge>
+                              : <Badge colorPalette={'blue'}>Add</Badge>
+                          }
+                          {' '}
                           {money.description}
                         </Table.Cell>
                       </Table.Row>
@@ -200,7 +207,7 @@ export default function CustomerMoneyTab() {
 
 
   return (
-    <Flex gap={"200px"}>
+    <Flex gap={"150px"}>
       {listCustomer()}
       {moneyEditor()}
     </Flex>

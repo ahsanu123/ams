@@ -14,6 +14,7 @@ use utoipa::OpenApi;
         // customer_endpoints
         crate::endpoints::customer_endpoints::add_money,
         crate::endpoints::customer_endpoints::get_all_user_money_history,
+        crate::endpoints::customer_endpoints::delete_customer,
 
         // taking_record_endpoint
         crate::endpoints::taking_record_endpoint::add_new_taking_record,

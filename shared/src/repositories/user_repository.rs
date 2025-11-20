@@ -13,11 +13,7 @@ impl AdditionalUserTableMethodTrait for UserTable {
     async fn get_all_active_user() -> Vec<user_table::Model> {
         let conn = Self::get_connection().await;
 
-        let active_user = UserTable::find()
-            .filter(user_table::Column::IsActive.eq(true))
-            .all(conn)
-            .await
-            .unwrap();
+        let active_user = UserTable::find().all(conn).await.unwrap();
 
         active_user
     }

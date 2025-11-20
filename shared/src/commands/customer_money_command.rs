@@ -21,6 +21,7 @@ use std::fmt::Error;
 pub trait CustomerMoneyCommandTrait {
     async fn add_money(user_id: i64, amount: i64) -> Result<user_table::Model, Error>;
     async fn get_all_user_money_history(user_id: i64) -> Vec<money_history_table::Model>;
+    async fn delete_user(user_id: i32) -> Result<u64, Error>;
     async fn make_payment(
         user_id: i64,
         from: NaiveDateTime,
@@ -72,7 +73,7 @@ impl CustomerMoneyCommandTrait for CustomerMoneyCommand {
                     date: Set(Local::now().naive_local()),
                     money_amount: Set(updated_user.money),
                     description: Set(format!(
-                        "Paying Dept {0}, final money {1}",
+                        "Paying Dept Rp.{0}, final money Rp.{1}",
                         format_as_idr(user.money.abs()),
                         format_as_idr(updated_user.money)
                     )),
@@ -107,6 +108,14 @@ impl CustomerMoneyCommandTrait for CustomerMoneyCommand {
             .unwrap();
 
         datas
+    }
+
+    async fn delete_user(user_id: i32) -> Result<u64, Error> {
+        let conn = UserTable::get_connection().await;
+
+        let res = UserTable::delete_by_id(user_id).exec(conn).await.unwrap();
+
+        Ok(res.rows_affected)
     }
 
     async fn make_payment(
@@ -169,7 +178,7 @@ impl CustomerMoneyCommandTrait for CustomerMoneyCommand {
             date: Set(Local::now().naive_local()),
             money_amount: Set(total_bill),
             description: Set(format!(
-                "{0} is make payment from date {1} to date {2}, with total bill {3}. {4} => {5}",
+                "{0} is make payment from date {1} to date {2}, with total bill Rp.{3}. Rp.{4} => Rp.{5}",
                 user.username,
                 from.to_string(),
                 to.to_string(),

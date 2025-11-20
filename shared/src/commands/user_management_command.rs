@@ -86,7 +86,15 @@ impl UserManagementCommandTrait for UserManagementCommand {
     }
 
     async fn get_all_active_user() -> Vec<user_table::Model> {
-        UserTable::get_all_active_user().await
+        let conn = UserTable::get_connection().await;
+
+        let active_user = UserTable::find()
+            .filter(user_table::Column::IsActive.eq(true))
+            .all(conn)
+            .await
+            .unwrap();
+
+        active_user
     }
 
     async fn upsert_user(user: user_table::Model) -> i32 {

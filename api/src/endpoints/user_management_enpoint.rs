@@ -126,7 +126,7 @@ pub async fn get_all_user() -> impl Responder {
 )]
 #[get("/user-management/get-all-active-user")]
 pub async fn get_all_active_user() -> impl Responder {
-    let result = UserManagementCommand::get_all_user().await;
+    let result = UserManagementCommand::get_all_active_user().await;
     HttpResponse::Ok().json(result)
 }
 

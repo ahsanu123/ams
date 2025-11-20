@@ -23,7 +23,6 @@ export async function clientLoader() {
 
 export async function clientAction({ request }: Route.ClientActionArgs) {
   const data = await fromFormData<IAddTakingRecordClientRequest>(request)
-  console.log(data)
   await takingRecordCommand.addNewTakingRecord(data.userId, data.amount)
 
   const takingRecords = await takingRecordCommand.getTakingRecordByUserIdAndMonth(data.userId, new Date())

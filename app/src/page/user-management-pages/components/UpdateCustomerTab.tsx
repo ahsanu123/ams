@@ -5,24 +5,45 @@ import Scroller from '@/component/Scroller';
 import { dataListItemValue, textKeyboardLayout, textOrNumberKeyboardDisplay, toaster } from '@/utility';
 import { useEffect, useRef, useState } from 'react';
 import type { UserModel } from '@/api-models';
-import { userManagementCommand } from '@/commands';
+import { customerMoneyCommand, userManagementCommand } from '@/commands';
 import { format } from 'date-fns';
 import { id } from 'date-fns/locale';
 
 export default function UpdateCustomerTab() {
 
   const [selectedCustomer, setSelectedCustomer] = useState<UserModel | undefined>(undefined)
-  // TODO: make api to delete user, and delete all related data
-  const [confirmDeleteDialogOpen, setConfirmDeleteDialogOpen] = useState<boolean>(false)
   const [deleteCandidate, setDeleteCandidate] = useState<UserModel | undefined>(undefined)
   const [customers, setCustomers] = useState<UserModel[]>([])
+  const [dialogOpen, setDialogOpen] = useState<boolean>(false)
 
   const keyboardRef = useRef<SimpleKeyboard>(null)
 
-  const handleOnDeleteCustomer = (customer: UserModel) => {
+  const handleOnEditCustomer = (customer: UserModel) => {
     setSelectedCustomer(customer)
   }
-  Date
+  const handleOnCofirmDeleteCustomer = () => {
+    if (deleteCandidate)
+      customerMoneyCommand.deleteUser(deleteCandidate.id)
+        .then((res) => {
+          toaster.create({
+            title: `Succes To Delete ${deleteCandidate.username}, ${res}`,
+            type: 'success'
+          })
+          setSelectedCustomer(undefined)
+          setDeleteCandidate(undefined)
+          setDialogOpen(false)
+        })
+        .catch(e => {
+          toaster.create({
+            title: `Error To Delete ${deleteCandidate.username} ${e}`,
+            type: 'error'
+          })
+          setSelectedCustomer(undefined)
+          setDeleteCandidate(undefined)
+          setDialogOpen(false)
+        })
+  }
+
   const handleOnUpdateCustomer = () => {
     if (selectedCustomer === undefined) return
     if (selectedCustomer.username === '') {
@@ -66,7 +87,7 @@ export default function UpdateCustomerTab() {
           {withDialog && (
             <Flex gap={2}>
               <Button
-                onClick={() => handleOnDeleteCustomer(customer)}
+                onClick={() => handleOnEditCustomer(customer)}
               >
                 Edit
               </Button>
@@ -89,10 +110,14 @@ export default function UpdateCustomerTab() {
     </Card.Root>
 
   const deleteDialogConfirmation = (customer: UserModel) =>
-    <Dialog.Root>
+    <Dialog.Root
+      open={dialogOpen}
+      onOpenChange={(e) => setDialogOpen(e.open)}>
 
       <Dialog.Trigger asChild>
-        <IconButton colorPalette={'red'}>
+        <IconButton
+          onClick={() => setDeleteCandidate(customer)}
+          colorPalette={'red'}>
           <GoTrash />
         </IconButton>
       </Dialog.Trigger>
@@ -122,10 +147,18 @@ export default function UpdateCustomerTab() {
             <Dialog.Footer>
 
               <Dialog.ActionTrigger asChild>
-                <Button variant="outline">Batal</Button>
+                <Button
+                  variant="outline">
+                  Batal
+                </Button>
               </Dialog.ActionTrigger>
 
-              <Button colorPalette={'red'}>Hapus</Button>
+              <Button
+                colorPalette={'red'}
+                onClick={() => handleOnCofirmDeleteCustomer()}
+              >
+                Hapus
+              </Button>
 
             </Dialog.Footer>
 

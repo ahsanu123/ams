@@ -184,7 +184,7 @@ impl MakePaymentCommandTrait for MakePaymentCommand {
         let final_money = customer.money - total_bill;
 
         let description = format!(
-            "{0} is paying {1}, initial money {2}, final money {3}",
+            "{0} is paying Rp.{1}, initial money Rp.{2}, final money Rp.{3}",
             customer.username,
             format_as_idr(total_bill),
             format_as_idr(customer.money),

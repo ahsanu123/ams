@@ -346,8 +346,16 @@ export default function MakePaymentPage({
             />
           </label>
 
-          {showDetailTaking && pageModel && (
+          {showDetailTaking && pageModel && selectedDate && (
             <Card.Root>
+              <Card.Header>
+                <Heading>
+                  <Flex alignItems={'center'}>
+                    <AiFillCalendar />
+                    Informasi Bulan {formatDateId(selectedDate, "MMMM yyyy")}
+                  </Flex>
+                </Heading>
+              </Card.Header>
               <Flex>
                 <Box>
                   <Card.Header>

@@ -1,7 +1,7 @@
 import type { ICalendarCell } from "@/utility";
 import { format, isSameDay } from "date-fns";
 import { id } from "date-fns/locale";
-import { Text } from "@chakra-ui/react";
+import { Badge, Stack, Text } from "@chakra-ui/react";
 import './CalendarCell.css';
 
 interface CalendarCellProps {
@@ -40,9 +40,15 @@ export default function CalendarCellComponent(props: CalendarCellProps) {
             </div>
 
             <div className='taking-amount'>
-              <Text textStyle={'6xl'} fontWeight={'bold'}>
-                {data.product?.amount}
-              </Text>
+              <Stack>
+                <Text
+                  textDecor={data.product.isPaid ? 'line-through' : ''}
+                  textStyle={'6xl'}
+                  fontWeight={'bold'}>
+                  {data.product?.amount}
+                </Text>
+                {data.product.isPaid && <Badge position={'absolute'} colorPalette={'green'}>terbayar</Badge>}
+              </Stack>
             </div>
           </div>
 

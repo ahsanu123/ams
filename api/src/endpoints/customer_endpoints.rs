@@ -1,6 +1,6 @@
 #![allow(dead_code)]
 use actix_web::{
-    App, HttpResponse, Responder,
+    App, HttpResponse, Responder, delete,
     dev::{ServiceFactory, ServiceRequest},
     post,
     web::Json,
@@ -27,6 +27,12 @@ mod request_model {
     pub struct GetAllUserMoney {
         pub user_id: i64,
     }
+
+    #[derive(Deserialize, ToSchema)]
+    #[serde(rename_all = "camelCase")]
+    pub struct DeleteCustomer {
+        pub user_id: i64,
+    }
 }
 
 pub trait CustomerServiceExtensionTrait {
@@ -38,7 +44,9 @@ where
     T: ServiceFactory<ServiceRequest, Config = (), Error = actix_web::Error, InitError = ()>,
 {
     fn register_customer_endpoints(self) -> Self {
-        self.service(add_money).service(get_all_user_money_history)
+        self.service(add_money)
+            .service(get_all_user_money_history)
+            .service(delete_customer)
     }
 }
 
@@ -81,5 +89,28 @@ pub async fn get_all_user_money_history(
     request: Json<request_model::GetAllUserMoney>,
 ) -> impl Responder {
     let result = CustomerMoneyCommand::get_all_user_money_history(request.user_id).await;
+
+    HttpResponse::Ok().json(result)
+}
+
+#[utoipa::path(
+    delete,
+    tag = TAG_NAME,
+    path = "/customer/delete",
+    responses(
+        (status = 200, description = "success"),
+        (status = NOT_FOUND, description = "not found")
+    ),
+    request_body(
+        content =  request_model::DeleteCustomer ,
+        content_type =  "application/json",
+    )
+)]
+#[delete("/customer/delete")]
+pub async fn delete_customer(request: Json<request_model::DeleteCustomer>) -> impl Responder {
+    let result = CustomerMoneyCommand::delete_user(request.user_id as i32)
+        .await
+        .unwrap();
+
     HttpResponse::Ok().json(result)
 }
