@@ -1,5 +1,5 @@
 export interface UserModel {
-  id?: number;
+  id: number;
   username: string;
   isActive: boolean;
   isAdmin: boolean;

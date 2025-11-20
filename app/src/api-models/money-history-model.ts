@@ -2,6 +2,6 @@ export interface MoneyHistoryModel {
   id: number;
   userId: number;
   date: Date;
-  moneyAmount: bigint;
+  moneyAmount: number;
   description: string;
 }

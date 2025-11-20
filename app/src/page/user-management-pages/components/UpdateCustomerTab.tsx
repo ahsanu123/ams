@@ -12,6 +12,7 @@ import { id } from 'date-fns/locale';
 export default function UpdateCustomerTab() {
 
   const [selectedCustomer, setSelectedCustomer] = useState<UserModel | undefined>(undefined)
+  // TODO: make api to delete user, and delete all related data
   const [confirmDeleteDialogOpen, setConfirmDeleteDialogOpen] = useState<boolean>(false)
   const [deleteCandidate, setDeleteCandidate] = useState<UserModel | undefined>(undefined)
   const [customers, setCustomers] = useState<UserModel[]>([])
@@ -21,9 +22,16 @@ export default function UpdateCustomerTab() {
   const handleOnDeleteCustomer = (customer: UserModel) => {
     setSelectedCustomer(customer)
   }
-
+  Date
   const handleOnUpdateCustomer = () => {
     if (selectedCustomer === undefined) return
+    if (selectedCustomer.username === '') {
+      toaster.create({
+        title: 'Username Cannot Be Empty',
+        type: 'info'
+      })
+      return;
+    }
 
     userManagementCommand.upsertUser(selectedCustomer)
       .then(id => {

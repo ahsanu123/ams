@@ -4,6 +4,7 @@ use crate::models::make_payment_page_model::{
 use crate::repositories::abstract_repository_trait::AbstractRepository;
 use crate::repositories::get_sql_connection_trait::GetSqlConnectionTrait;
 use crate::repositories::user_repository::AdditionalUserTableMethodTrait;
+use crate::utilities::format_as_idr::format_as_idr;
 use ams_entity::{
     money_history_table, payment_history_table, prelude::*, taking_record_table, user_table,
 };
@@ -184,7 +185,10 @@ impl MakePaymentCommandTrait for MakePaymentCommand {
 
         let description = format!(
             "{0} is paying {1}, initial money {2}, final money {3}",
-            customer.username, total_bill, customer.money, final_money
+            customer.username,
+            format_as_idr(total_bill),
+            format_as_idr(customer.money),
+            format_as_idr(final_money)
         );
 
         let _insert_payment_history =
@@ -196,7 +200,9 @@ impl MakePaymentCommandTrait for MakePaymentCommand {
                 initial_money: Set(customer.money),
                 end_money: Set(final_money),
                 added_money: Set(0),
-            });
+            })
+            .await
+            .unwrap();
 
         let _insert_customer_money_history =
             MoneyHistoryTable::create(money_history_table::ActiveModel {
@@ -205,7 +211,9 @@ impl MakePaymentCommandTrait for MakePaymentCommand {
                 date: Set(Local::now().naive_local()),
                 money_amount: Set(final_money),
                 description: Set(description.into()),
-            });
+            })
+            .await
+            .unwrap();
 
         let mut customer_active_model: user_table::ActiveModel = customer.into();
         customer_active_model.money = Set(final_money);

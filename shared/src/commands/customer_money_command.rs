@@ -1,7 +1,13 @@
-use crate::repositories::{
-    abstract_repository_trait::AbstractRepository, get_sql_connection_trait::GetSqlConnectionTrait,
+use crate::{
+    repositories::{
+        abstract_repository_trait::AbstractRepository,
+        get_sql_connection_trait::GetSqlConnectionTrait,
+    },
+    utilities::format_as_idr::format_as_idr,
 };
-use ams_entity::{money_history_table, prelude::*, taking_record_table, user_table};
+use ams_entity::{
+    money_history_table, payment_history_table, prelude::*, taking_record_table, user_table,
+};
 use chrono::{Days, Local, NaiveDateTime};
 use sea_orm::{
     ActiveValue::{NotSet, Set},
@@ -48,13 +54,45 @@ impl CustomerMoneyCommandTrait for CustomerMoneyCommand {
             date: Set(Local::now().naive_local()),
             money_amount: Set(amount),
             description: Set(format!(
-                "Add Money {0}, final money amount {1}",
-                amount, updated_user.money
+                "Add Money Rp.{0}, final money amount Rp.{1}",
+                format_as_idr(amount),
+                format_as_idr(updated_user.money)
             )
             .into()),
         };
 
         let _ = MoneyHistoryTable::create(money_history).await.unwrap();
+
+        // user is have dept
+        if user.money < 0 {
+            let _insert_customer_money_history =
+                MoneyHistoryTable::create(money_history_table::ActiveModel {
+                    id: NotSet,
+                    user_id: Set(user_id as i64),
+                    date: Set(Local::now().naive_local()),
+                    money_amount: Set(updated_user.money),
+                    description: Set(format!(
+                        "Paying Dept {0}, final money {1}",
+                        format_as_idr(user.money.abs()),
+                        format_as_idr(updated_user.money)
+                    )),
+                })
+                .await
+                .unwrap();
+
+            let _insert_payment_history =
+                PaymentHistoryTable::create(payment_history_table::ActiveModel {
+                    id: NotSet,
+                    user_id: Set(user_id as i64),
+                    date: Set(Local::now().naive_local()),
+                    bill_amount: Set(user.money.abs()),
+                    initial_money: Set(user.money),
+                    end_money: Set(updated_user.money),
+                    added_money: Set(amount),
+                })
+                .await
+                .unwrap();
+        }
 
         Ok(updated_user)
     }
@@ -135,9 +173,9 @@ impl CustomerMoneyCommandTrait for CustomerMoneyCommand {
                 user.username,
                 from.to_string(),
                 to.to_string(),
-                total_bill,
-                user.money,
-                final_user_money
+                format_as_idr(total_bill),
+                format_as_idr(user.money),
+                format_as_idr(final_user_money)
             )),
         })
         .await

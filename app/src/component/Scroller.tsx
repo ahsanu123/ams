@@ -8,6 +8,7 @@ export interface ScrollerProps {
   leftNavigation?: boolean,
   description?: string,
   minHeight?: string,
+  maxHeight?: string,
   children?: React.ReactNode
 }
 export default function Scroller(props: ScrollerProps) {
@@ -16,6 +17,7 @@ export default function Scroller(props: ScrollerProps) {
     title,
     description,
     minHeight,
+    maxHeight,
     leftNavigation = false,
   } = props
 
@@ -61,6 +63,7 @@ export default function Scroller(props: ScrollerProps) {
         <Stack
           gap={5}
           minHeight={minHeight}
+          maxHeight={maxHeight}
           className='content'
           ref={contentRef}
         >
