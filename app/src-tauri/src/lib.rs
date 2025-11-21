@@ -1,14 +1,37 @@
 // Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
 
 pub mod commands;
+use ams_shared::helper::{environment_variable::EnvironmentVariable, ENV_VAR};
 use commands::{
     customer_command, dreg_price_command, make_payment_page_command, payment_history_command,
     taking_record_command, user_management_command,
 };
+use dotenvy::{dotenv, from_path};
+use tauri::{path::BaseDirectory, Manager};
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
+        .setup(|app| {
+            if dotenv().is_err() {
+                let env_path = app.path().resolve(".env", BaseDirectory::Resource).unwrap();
+                let _ = from_path(env_path);
+
+                let sqlite_path = app
+                    .path()
+                    .resolve("ams.sqlite", BaseDirectory::Resource)
+                    .unwrap();
+
+                let sqlite_conn = format!("sqlite://{}?mode=rwc", sqlite_path.to_string_lossy());
+
+                let _ = ENV_VAR
+                    .set(EnvironmentVariable {
+                        sqlite_connection_string: sqlite_conn,
+                    })
+                    .unwrap();
+            }
+            Ok(())
+        })
         .plugin(tauri_plugin_opener::init())
         .invoke_handler(tauri::generate_handler![
             // customer_command

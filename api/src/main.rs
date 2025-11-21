@@ -10,12 +10,18 @@ use ams_api::endpoints::{
     user_management_enpoint::UserManagementServiceExtensionTrait,
 };
 
+use ams_shared::helper::ENV_VAR;
+use ams_shared::helper::environment_variable::EnvironmentVariable;
 use utoipa::OpenApi;
 use utoipa_actix_web::AppExt;
 use utoipa_swagger_ui::{Config, SwaggerUi};
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
+    dotenvy::dotenv().ok();
+
+    let _ = ENV_VAR.set(EnvironmentVariable::new());
+
     env_logger::init_from_env(env_logger::Env::new().default_filter_or("debug"));
 
     HttpServer::new(move || {

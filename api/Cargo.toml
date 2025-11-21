@@ -9,6 +9,7 @@ ams_entity = {path = "../entity"}
 
 chrono = "0.4.39"
 actix-web = "4"
+dotenvy = "0.15.7"
 serde = "1.0.226"
 async-trait = "0.1.89"
 utoipa = {version = "5.4.0", features = [
