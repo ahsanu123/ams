@@ -16,6 +16,7 @@ proc-macro = true
 
 [dependencies]
 ams_shared = {path = "../../shared"}
+ams_entity = {path = "../../entity"}
 
 tauri = { version = "2", features = [] }
 tauri-plugin-opener = "2"
