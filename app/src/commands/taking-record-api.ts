@@ -7,6 +7,7 @@ const ADD_NEW_TAKING_RECORD_BY_DATE = "/taking-record/add-new-taking-record-by-d
 const GET_TAKING_RECORD_BY_DATE = "/taking-record/get-taking-record-by-date"
 const GET_TAKING_RECORD_BY_USER_ID = "/taking-record/get-taking-record-by-user-id"
 const GET_TAKING_RECORD_BY_USER_ID_AND_MONTH = "/taking-record/get-taking-record-by-user-id-and-date"
+const GET_TAKING_RECORD_BY_USER_ID_AND_YEAR = "/taking-record/get-taking-record-by-user-id-and-year"
 const UPSERT_TAKING_RECORD = "/taking-record/upsert-taking-record"
 const DELETE_TAKING_RECORD_BY_ID = "/taking-record/delete-taking-record-by-id"
 const GET_TAKING_RECORD_BY_DAY = "/taking-record/get-taking-record-by-day"
@@ -20,6 +21,7 @@ interface ITakingRecordApi {
   upsertTakingRecordByDate: (amount: number, date: Date, userId: number) => Promise<number>
   getTakingRecordByMonth: (date: Date) => Promise<Array<TakingRecordModel>>
   getTakingRecordByUserIdAndMonth: (userId: number, date: Date) => Promise<Array<TakingRecordModel>>
+  getTakingRecordByUserIdAndYear: (userId: number, date: Date) => Promise<Array<TakingRecordModel>>
   deleteTakingRecordById: (takingRecordId: number) => Promise<number>
   getTakingRecordByDay: (date: Date) => Promise<Array<TakingRecordModel>>
 }
@@ -61,6 +63,10 @@ const takingRecordApi: ITakingRecordApi = {
   },
   getTakingRecordByUserIdAndMonth: async function (userId: number, date: Date): Promise<Array<TakingRecordModel>> {
     const response = await post(`${API_ENDPOINT}${GET_TAKING_RECORD_BY_USER_ID_AND_MONTH}`, { userId, date })
+    return asJson<Array<TakingRecordModel>>(response)
+  },
+  getTakingRecordByUserIdAndYear: async function (userId: number, date: Date): Promise<Array<TakingRecordModel>> {
+    const response = await post(`${API_ENDPOINT}${GET_TAKING_RECORD_BY_USER_ID_AND_YEAR}`, { userId, date })
     return asJson<Array<TakingRecordModel>>(response)
   },
   deleteTakingRecordById: async function (takingRecordId: number): Promise<number> {
@@ -107,6 +113,9 @@ const takingRecordTauriCommand: ITakingRecordApi = {
     throw new Error("Function not implemented.")
   },
   addNewTakingRecordByDate: function (userId: number, amount: number, date: Date): Promise<number> {
+    throw new Error("Function not implemented.")
+  },
+  getTakingRecordByUserIdAndYear: function (userId: number, date: Date): Promise<Array<TakingRecordModel>> {
     throw new Error("Function not implemented.")
   }
 }

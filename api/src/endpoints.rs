@@ -23,6 +23,7 @@ use utoipa::OpenApi;
         crate::endpoints::taking_record_endpoint::upsert_taking_record,
         crate::endpoints::taking_record_endpoint::get_taking_record_by_month,
         crate::endpoints::taking_record_endpoint::get_taking_record_by_user_id_and_month,
+        crate::endpoints::taking_record_endpoint::get_taking_record_by_user_id_and_year,
         crate::endpoints::taking_record_endpoint::upsert_taking_record_by_date,
         crate::endpoints::taking_record_endpoint::delete_taking_record_by_id,
         crate::endpoints::taking_record_endpoint::get_taking_record_by_day,

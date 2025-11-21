@@ -4,11 +4,13 @@ import UpdateCustomerTab from './components/UpdateCustomerTab';
 import CustomerMoneyTab from './components/CustomerMoneyTab';
 import 'react-simple-keyboard/build/css/index.css';
 import './UserManagementPage.css';
+import UpdateDregPriceTab from './components/UpdateDregPriceTab';
 
 enum UserManagementTabs {
   CreateNewCustomer = "Create New Customer",
   UpdateCustomer = "Update Customer",
-  CustomerMoneyManagement = "Customer Money"
+  CustomerMoneyManagement = "Customer Money",
+  UpdateDregPrice = "Update Dreg Price"
 }
 
 export default function UserManagementPage() {
@@ -29,6 +31,10 @@ export default function UserManagementPage() {
             {UserManagementTabs.CustomerMoneyManagement}
           </Tabs.Trigger>
 
+          <Tabs.Trigger value={UserManagementTabs.UpdateDregPrice}>
+            {UserManagementTabs.UpdateDregPrice}
+          </Tabs.Trigger>
+
         </Tabs.List>
 
         <Tabs.Content
@@ -44,6 +50,11 @@ export default function UserManagementPage() {
         <Tabs.Content
           value={UserManagementTabs.CustomerMoneyManagement}>
           <CustomerMoneyTab />
+        </Tabs.Content>
+
+        <Tabs.Content
+          value={UserManagementTabs.UpdateDregPrice}>
+          <UpdateDregPriceTab />
         </Tabs.Content>
 
       </Tabs.Root>

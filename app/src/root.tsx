@@ -10,6 +10,7 @@ import type { Route } from "./+types/root";
 import asmLogo from './svg/ams-icon.svg'
 import { ChakraProvider, createSystem, defaultConfig } from "@chakra-ui/react";
 import { Toaster } from "./utility";
+import "react-datepicker/dist/react-datepicker.css"
 
 const system = createSystem(defaultConfig);
 

@@ -1,4 +1,4 @@
-import type { MakePaymentPageModel, UserModel } from '@/api-models'
+import type { MakePaymentPageModel, TakingRecordModel, UserModel } from '@/api-models'
 import { create } from 'zustand'
 import { immer } from 'zustand/middleware/immer'
 
@@ -8,6 +8,9 @@ interface IMakePaymentState {
 
   showDetailTaking: boolean,
   setShowDetailTaking: (shown: boolean) => void,
+
+  oneYearRecords: TakingRecordModel[],
+  setOneYearRecrods: (records: TakingRecordModel[]) => void,
 
   selectedDate?: Date
   setSelectedDate: (date?: Date) => void,
@@ -35,6 +38,13 @@ export const useMakePaymentPageState = create<IMakePaymentState>()(
     setShowDetailTaking: (shown: boolean) => {
       set((state) => {
         state.showDetailTaking = shown
+      })
+    },
+
+    oneYearRecords: [],
+    setOneYearRecrods: (records: TakingRecordModel[]) => {
+      set((state) => {
+        state.oneYearRecords = records
       })
     },
 

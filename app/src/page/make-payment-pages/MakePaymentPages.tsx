@@ -1,21 +1,20 @@
 import type { MakePaymentPageModel, TakingRecordModel, TakingRecordWithPrice, UserModel } from "@/api-models"
-import { makePaymentCommand, userManagementCommand } from "@/commands"
+import { makePaymentCommand, takingRecordCommand, userManagementCommand } from "@/commands"
 import Scroller from "@/component/Scroller"
 import { EMPTY_HEADER_INFORMATION } from "@/constants"
 import { useMainLayoutStore } from "@/state"
 import { formatAsRupiah, formatDateId, fromFormData, toFormData } from "@/utility"
 import { Badge, Box, Button, Card, DataList, Flex, Heading, Stack, Table, Tabs, Text } from "@chakra-ui/react"
-import { format } from "date-fns"
+import { compareAsc, format } from "date-fns"
 import { id } from "date-fns/locale"
 import React, { useEffect, useState } from "react"
 import DatePicker from "react-datepicker"
-import "react-datepicker/dist/react-datepicker.css"
 import { useFetcher } from "react-router"
 import type { Route } from "./+types/MakePaymentPages"
 import { useMakePaymentPageState } from "./make-payment-page-state"
-import './MakePaymentPages.css'
 import Calendar from "@/component/Calendar"
 import { AiFillCalendar, AiFillDollarCircle, AiFillGolden, AiFillNotification, AiFillSliders } from "react-icons/ai"
+import './MakePaymentPages.css'
 
 enum ListActionEnum {
   GetPageModel = 'GetPageModel',
@@ -53,7 +52,6 @@ export async function clientAction({ request }: Route.ClientActionArgs): Promise
     }
   }
 
-  // ListActionEnum.GetPageModel
   else {
     const pageModel = await makePaymentCommand.getPageModel(parsedRequest.userId, parsedRequest.date)
     const customerData = await userManagementCommand.getById(parsedRequest.userId)
@@ -97,6 +95,9 @@ export default function MakePaymentPage({
   const pageModel = useMakePaymentPageState(state => state.pageModel)
   const setPageModel = useMakePaymentPageState(state => state.setPageModel)
 
+  const oneYearRecords = useMakePaymentPageState(state => state.oneYearRecords)
+  const setOneYearRecords = useMakePaymentPageState(state => state.setOneYearRecrods)
+
   const [dateOpen, setDateOpen] = useState(false)
 
   const handleOnDatePickerChange = (date: Date | null) => {
@@ -105,9 +106,6 @@ export default function MakePaymentPage({
       setSelectedDate(new Date(utcTime))
       setDateOpen(false)
     }
-  }
-
-  const handleOnPayIndividualItem = (takingRecord: TakingRecordModel) => {
   }
 
   const handleOnPayButtonClicked = () => {
@@ -156,16 +154,6 @@ export default function MakePaymentPage({
             <Text textStyle={'xl'}>Ampas</Text>
           </Box>
         </Flex>
-        {
-          !record.takingRecord.isPaid && (
-            <Button
-              onClick={() => handleOnPayIndividualItem(record.takingRecord)}
-            >
-              <AiFillDollarCircle />
-              Bayar Hari Ini
-            </Button>
-          )
-        }
       </Card.Body>
 
     </Card.Root>
@@ -173,13 +161,6 @@ export default function MakePaymentPage({
 
   const userDetailComponent = () => {
     const customerData = pageModel?.customers.find(pr => pr.id === selectedCustomer?.id)
-    const items = [
-      { id: 1, name: "Laptop", category: "Electronics", price: 999.99 },
-      { id: 2, name: "Coffee Maker", category: "Home Appliances", price: 49.99 },
-      { id: 3, name: "Desk Chair", category: "Furniture", price: 150.0 },
-      { id: 4, name: "Smartphone", category: "Electronics", price: 799.99 },
-      { id: 5, name: "Headphones", category: "Accessories", price: 199.99 },
-    ]
     return (
       <>
         {customerData !== undefined && (
@@ -192,24 +173,32 @@ export default function MakePaymentPage({
               )}
             </DataList.Root>
 
-            <Table.Root size="sm">
-              <Table.Header>
-                <Table.Row>
-                  <Table.ColumnHeader>Product</Table.ColumnHeader>
-                  <Table.ColumnHeader>Category</Table.ColumnHeader>
-                  <Table.ColumnHeader textAlign="end">Price</Table.ColumnHeader>
-                </Table.Row>
-              </Table.Header>
-              <Table.Body>
-                {items.map((item) => (
-                  <Table.Row key={item.id}>
-                    <Table.Cell>{item.name}</Table.Cell>
-                    <Table.Cell>{item.category}</Table.Cell>
-                    <Table.Cell textAlign="end">{item.price}</Table.Cell>
+            <Heading>
+              Catatan Ambil Tahun {selectedDate?.getFullYear()}
+              {' '}
+              (Total {oneYearRecords.map(item => item.amount).reduce((p, n) => (p + n), 0)})
+            </Heading>
+
+            <Scroller>
+              <Table.Root size="sm">
+                <Table.Header>
+                  <Table.Row>
+                    <Table.ColumnHeader>Date</Table.ColumnHeader>
+                    <Table.ColumnHeader>Amount</Table.ColumnHeader>
                   </Table.Row>
-                ))}
-              </Table.Body>
-            </Table.Root>
+                </Table.Header>
+                <Table.Body>
+                  {
+                    oneYearRecords
+                      .map((record) => (
+                        <Table.Row key={record.id}>
+                          <Table.Cell>{formatDateId(record.takenDate)}</Table.Cell>
+                          <Table.Cell>{record.amount}</Table.Cell>
+                        </Table.Row>
+                      ))}
+                </Table.Body>
+              </Table.Root>
+            </Scroller>
 
           </Stack>
         )}
@@ -263,6 +252,9 @@ export default function MakePaymentPage({
       setShowDetailTaking(false)
 
     if (selectedCustomer !== undefined && selectedDate !== undefined) {
+      takingRecordCommand.getTakingRecordByUserIdAndYear(selectedCustomer.id, selectedDate)
+        .then((records) => setOneYearRecords(records))
+
       const serializedData = toFormData({
         userId: selectedCustomer.id,
         date: selectedDate,
@@ -335,7 +327,7 @@ export default function MakePaymentPage({
           <label>
             <DatePicker
               placeholderText="Bulan Dan Tahun"
-              dateFormat="dd MMMM yyyy "
+              dateFormat="MMMM yyyy "
               selected={selectedDate}
               onChange={(date) => handleOnDatePickerChange(date)}
               showMonthYearPicker

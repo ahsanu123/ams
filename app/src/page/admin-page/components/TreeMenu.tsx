@@ -57,14 +57,14 @@ const paymentMenu: Array<ITreeMenu> = [
     path: `${TreeMenuList.Payment}/${TreeMenuList.ListPayment}`,
     id: `${AdminRoutes.AdminRoot}${AdminRoutes.ListPaymentPage}`
   },
-  {
-    title:
-      <>
-        <AiFillEdit />
-        <Text>Edit Payment</Text>
-      </>,
-    path: `${TreeMenuList.Payment}/${TreeMenuList.EditPayment}`,
-  },
+  // {
+  //   title:
+  //     <>
+  //       <AiFillEdit />
+  //       <Text>Edit Payment</Text>
+  //     </>,
+  //   path: `${TreeMenuList.Payment}/${TreeMenuList.EditPayment}`,
+  // },
 ]
 
 const takingRecordMenu: Array<ITreeMenu> = [
@@ -86,14 +86,14 @@ const takingRecordMenu: Array<ITreeMenu> = [
     path: `${TreeMenuList.TakingRecord}/${TreeMenuList.UpdateTakingRecord}`,
     id: `${AdminRoutes.AdminRoot}${AdminRoutes.UpdateTakingRecord}`
   },
-  {
-    title:
-      <>
-        <AiFillInfoCircle />
-        <Text>Taking Record Info</Text>
-      </>,
-    path: `${TreeMenuList.TakingRecord}/${TreeMenuList.TakingRecordInformation}`,
-  },
+  // {
+  //   title:
+  //     <>
+  //       <AiFillInfoCircle />
+  //       <Text>Taking Record Info</Text>
+  //     </>,
+  //   path: `${TreeMenuList.TakingRecord}/${TreeMenuList.TakingRecordInformation}`,
+  // },
 ]
 
 const customerManagement: Array<ITreeMenu> = [
@@ -114,22 +114,22 @@ const customerManagement: Array<ITreeMenu> = [
       </>,
     path: TreeMenuList.CustomerManagement,
   },
-  {
-    title:
-      <>
-        <AiOutlineUserAdd />
-        <Text>Create Customer</Text>
-      </>,
-    path: `${TreeMenuList.CustomerManagement}/${TreeMenuList.CreateCustomer}`,
-  },
-  {
-    title:
-      <>
-        <AiOutlineUserSwitch />
-        <Text>Edit Customer</Text>
-      </>,
-    path: `${TreeMenuList.CustomerManagement}/${TreeMenuList.EditCustomer}`,
-  },
+  // {
+  //   title:
+  //     <>
+  //       <AiOutlineUserAdd />
+  //       <Text>Create Customer</Text>
+  //     </>,
+  //   path: `${TreeMenuList.CustomerManagement}/${TreeMenuList.CreateCustomer}`,
+  // },
+  // {
+  //   title:
+  //     <>
+  //       <AiOutlineUserSwitch />
+  //       <Text>Edit Customer</Text>
+  //     </>,
+  //   path: `${TreeMenuList.CustomerManagement}/${TreeMenuList.EditCustomer}`,
+  // },
 ]
 
 export const defaultTreeMenu: Array<ITreeMenu> = [

@@ -11,7 +11,7 @@ use ams_entity::{
 use chrono::{Days, Local, NaiveDateTime};
 use sea_orm::{
     ActiveValue::{NotSet, Set},
-    EntityTrait, QueryFilter,
+    EntityTrait, Order, QueryFilter, QueryOrder,
     entity::*,
     prelude::{Expr, async_trait},
 };
@@ -103,6 +103,7 @@ impl CustomerMoneyCommandTrait for CustomerMoneyCommand {
 
         let datas = MoneyHistoryTable::find()
             .filter(money_history_table::Column::UserId.eq(user_id))
+            .order_by(money_history_table::Column::Date, Order::Desc)
             .all(conn)
             .await
             .unwrap();

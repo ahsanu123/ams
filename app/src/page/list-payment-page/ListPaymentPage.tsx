@@ -1,31 +1,14 @@
+import { customerMoneyCommand, paymentHistoryCommand, userManagementCommand } from "@/commands";
 import Scroller from "@/component/Scroller";
+import { EMPTY_HEADER_INFORMATION } from "@/constants";
 import { useMainLayoutStore } from "@/state";
-import { useEffect, useState } from "react";
+import { dataListItemValue, formatAsRupiah, formatDateId } from "@/utility";
+import { Badge, Image, Box, Card, DataList, Flex, Heading, Stack, Table } from "@chakra-ui/react";
+import { useEffect } from "react";
 import DatePicker from "react-datepicker";
+import type { Route } from "./+types/ListPaymentPage";
 import { useListPaymentPageState } from "./list-payment-page-state";
 import './ListPaymentPage.css';
-import type { PaymentHistoryModel, TakingRecordModel } from "@/api-models";
-import type { Route } from "./+types/ListPaymentPage";
-import { useFetcher } from "react-router";
-import { paymentHistoryCommand, takingRecordCommand, userManagementCommand } from "@/commands";
-import { EMPTY_HEADER_INFORMATION } from "@/constants";
-import { formatAsRupiah, fromFormData, toFormData } from "@/utility";
-import { format } from "date-fns";
-import { id } from "date-fns/locale";
-import React from "react";
-import { Avatar, Image, Box, Text, Flex, Heading, Stack, Tabs, Button } from "@chakra-ui/react";
-
-enum IClientActionType {
-  GetRecordByUserId,
-  GetRecordByMonth,
-  GetRecordByUserIdAndMonth
-}
-
-interface IClientActionRequestModel {
-  userId: number,
-  date: Date,
-  _action: IClientActionType,
-}
 
 export async function clientLoader() {
   const activeCustomer = await userManagementCommand.getAllActiveUser()
@@ -34,29 +17,11 @@ export async function clientLoader() {
   }
 }
 
-export async function clientAction({ request }: Route.ClientActionArgs): Promise<PaymentHistoryModel[]> {
-  const parsedRequest = await fromFormData<IClientActionRequestModel>(request)
-  let records: PaymentHistoryModel[] = [];
-
-  // if (parsedRequest._action === IClientActionType.GetRecordByUserId) {
-  // }
-  // else if (parsedRequest._action === IClientActionType.GetRecordByMonth) {
-  // }
-  //
-  // else if (parsedRequest._action === IClientActionType.GetRecordByUserIdAndMonth) {
-  records = await paymentHistoryCommand.getPaymentRecordByUserIdAndMonth(parsedRequest.userId, parsedRequest.date)
-  // }
-
-  return records
-}
-
-
 export default function ListPaymentPage({
   loaderData
 }: Route.ComponentProps) {
 
   const { activeCustomer } = loaderData
-  const fetcher = useFetcher<PaymentHistoryModel[]>()
 
   const setHeaderInformation = useMainLayoutStore(state => state.setHeaderInformation)
 
@@ -72,99 +37,135 @@ export default function ListPaymentPage({
   const paymentRecords = useListPaymentPageState(state => state.paymentRecords)
   const setPaymentRecords = useListPaymentPageState(state => state.setPaymentRecords)
 
-  const [dateOpen, setDateOpen] = useState(false)
-
-  const handleOnDatePickerChange = (date: Date | null) => {
-    if (date) {
-      const utcTime = Date.UTC(date.getFullYear(), date.getMonth(), 1)
-      setSelectedDate(new Date(utcTime))
-      setDateOpen(false)
-    }
-  }
-
-  const detailedCard = () => (
-    <Stack className='detailed-card' >
-      <Flex gap={5} alignItems={'center'} justifyContent={'space-between'}>
-        <Avatar.Root>
-          <Avatar.Fallback name="O A" />
-        </Avatar.Root>
-
-        <Box>
-          <Heading>User Name</Heading>
-          <Text>{format(new Date(), "PPPP", { locale: id })}</Text>
-        </Box>
-
-        <Button>
-          Edit
-        </Button>
-      </Flex>
-
-      <Stack>
-        <Flex alignItems={'center'} gap={'20px'}>
-          <Heading>129391</Heading>
-          <br />
-          <Text>Ampas</Text>
-        </Flex>
-
-        <Flex alignItems={'center'} gap={'20px'}>
-          <Heading>Sejumlah</Heading>
-          <br />
-          <Text>Rp.123901</Text>
-        </Flex>
-      </Stack>
-
-    </Stack >
-  )
+  const moneyHistories = useListPaymentPageState(state => state.moneyHistories)
+  const setMoneyHistories = useListPaymentPageState(state => state.setMoneyHistories)
 
   const catatanPembayaran = () =>
-    <Box >
-      <Scroller
-        title="Catatan Pembayaran"
-      >
-        {paymentRecords.length <= 0 && (<b>Data Kosong</b>)}
+    <Stack maxWidth={'1000px'} >
+      {moneyHistory()}
+      {paymentHistory()}
+    </Stack>
 
-        {/* {paymentRecords.length > 0 && */}
-        {/*   paymentRecords.map((record, index) => ( */}
-        {detailedCard()}
-        {/*   )) */}
-        {/* } */}
-      </Scroller>
-    </Box>
+  const moneyHistory = () =>
+    <Scroller
+      title={`Catatan Uang ${selectedCustomer?.username}`}
+      maxHeight="350px"
+    >
+      <Table.Root stickyHeader>
+        <Table.Header>
+          <Table.Row>
+            <Table.ColumnHeader>
+              Tanggal
+            </Table.ColumnHeader>
+            <Table.ColumnHeader>
+              Jumlah uang
+            </Table.ColumnHeader>
+            <Table.ColumnHeader>
+              Keterangan
+            </Table.ColumnHeader>
+          </Table.Row>
+        </Table.Header>
+        <Table.Body>
+          {
+            moneyHistories.map(money =>
+              <Table.Row>
+                <Table.Cell>
+                  {formatDateId(money.date)}
+                </Table.Cell>
+
+                <Table.Cell>
+                  {formatAsRupiah(money.moneyAmount)}
+                </Table.Cell>
+
+                <Table.Cell>
+                  {
+                    (money.description.toLocaleLowerCase().includes('paying') ||
+                      money.description.toLocaleLowerCase().includes('Dept'))
+                      ? <Badge colorPalette={'green'}>Pay</Badge>
+                      : <Badge colorPalette={'blue'}>Add</Badge>
+                  }
+                  {' '}
+                  {money.description}
+                </Table.Cell>
+              </Table.Row>
+            )
+          }
+        </Table.Body>
+
+      </Table.Root>
+    </Scroller>
+
+  const paymentHistory = () =>
+
+    <Scroller
+      title={`Catatan Pembayaran ${selectedCustomer?.username}`}
+      maxHeight="350px"
+    >
+      <Table.Root stickyHeader>
+        <Table.Header>
+          <Table.Row>
+            <Table.ColumnHeader>
+              Tanggal
+            </Table.ColumnHeader>
+
+            <Table.ColumnHeader>
+              Tagihan
+            </Table.ColumnHeader>
+
+            <Table.ColumnHeader>
+              Penambahan uang
+            </Table.ColumnHeader>
+
+            <Table.ColumnHeader>
+              Uang Awal
+            </Table.ColumnHeader>
+
+            <Table.ColumnHeader>
+              Uang Akhir
+            </Table.ColumnHeader>
+
+          </Table.Row>
+        </Table.Header>
+        <Table.Body>
+          {
+            paymentRecords.map((payment) =>
+              <Table.Row colorPalette={'green'}>
+                <Table.Cell>
+                  {formatDateId(payment.date)}
+                </Table.Cell>
+
+                <Table.Cell>
+                  {formatAsRupiah(payment.billAmount)}
+                </Table.Cell>
+
+                <Table.Cell>
+                  {formatAsRupiah(payment.addedMoney)}
+                </Table.Cell>
+
+                <Table.Cell>
+                  {formatAsRupiah(payment.initialMoney)}
+                </Table.Cell>
+
+                <Table.Cell>
+                  {formatAsRupiah(payment.endMoney)}
+                </Table.Cell>
+              </Table.Row>
+            )
+          }
+        </Table.Body>
+
+      </Table.Root>
+    </Scroller>
 
   useEffect(() => {
-    // if (selectedCustomer !== undefined) {
-    //   const serializedData = toFormData({
-    //     userId: selectedCustomer.id,
-    //     _action: IClientActionType.GetRecordByUserId
-    //   })
-    //
-    //   fetcher.submit(serializedData, {
-    //     method: 'post',
-    //   })
-    // }
 
-    if (selectedCustomer !== undefined && selectedDate !== undefined) {
-      const serializedData = toFormData({
-        userId: selectedCustomer.id,
-        date: selectedDate,
-        _action: IClientActionType.GetRecordByUserIdAndMonth
-      })
+    if (selectedCustomer && selectedDate) {
+      paymentHistoryCommand.getPaymentRecordByUserIdAndMonth(selectedCustomer.id, selectedDate)
+        .then((records) => setPaymentRecords(records))
 
-      fetcher.submit(serializedData, {
-        method: 'post',
-      })
+      customerMoneyCommand.getAllUserMoneyHistory(selectedCustomer.id)
+        .then((moneyHistories) => setMoneyHistories(moneyHistories))
     }
-
-    // else if (selectedDate !== undefined) {
-    //   const serializedData = toFormData({
-    //     date: selectedDate,
-    //     _action: IClientActionType.GetRecordByMonth
-    //   })
-    //
-    //   fetcher.submit(serializedData, {
-    //     method: 'post',
-    //   })
-    // }
 
   }, [selectedCustomer, selectedDate])
 
@@ -177,11 +178,6 @@ export default function ListPaymentPage({
 
     return () => setHeaderInformation(EMPTY_HEADER_INFORMATION)
   }, [])
-
-  useEffect(() => {
-    if (fetcher.data !== undefined)
-      setPaymentRecords(fetcher.data)
-  }, [fetcher.data])
 
   return (
     <Box className="list-payment-page">
@@ -207,22 +203,49 @@ export default function ListPaymentPage({
             }
           </select>
 
+          {selectedCustomer && (
+            <Card.Root>
+              <Card.Header>
+                <Heading>
+                  Data {selectedCustomer.username}
+                </Heading>
+              </Card.Header>
+
+              <Card.Body>
+                <DataList.Root>
+                  {dataListItemValue("Status", selectedCustomer.isActive ? "Aktif" : "Tidak Aktif")}
+                  {dataListItemValue("Uang Saat Ini", formatAsRupiah(selectedCustomer.money))}
+                  {dataListItemValue("Pelanggan Sejak", formatDateId(selectedCustomer.createdDate))}
+                </DataList.Root>
+              </Card.Body>
+            </Card.Root>
+          )}
+
           <Heading>
             Pilih Bulan dan Tahun
           </Heading>
-          <label>
-            <DatePicker
-              placeholderText="Bulan Dan Tahun"
-              dateFormat="dd MMMM yyyy "
-              selected={selectedDate}
-              onChange={(date) => handleOnDatePickerChange(date)}
-              showMonthYearPicker
-              inline
-            />
-          </label>
+          <DatePicker
+            inline
+            placeholderText="Bulan Dan Tahun"
+            dateFormat="MMMM yyyy "
+            selected={selectedDate}
+            onChange={(date) => date && setSelectedDate(date)}
+            showMonthYearPicker
+          />
         </Stack>
 
-        {catatanPembayaran()}
+        {paymentRecords.length > 0 && catatanPembayaran()}
+        {
+          selectedDate &&
+          selectedCustomer &&
+          paymentRecords.length <= 0 &&
+          <Stack alignItems={'center'}>
+            <Heading>Tidak Ada Data</Heading>
+            <Image
+              src="/ams-hero-2.png"
+            />
+          </Stack>
+        }
 
       </Flex>
 

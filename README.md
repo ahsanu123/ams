@@ -14,7 +14,7 @@
 </p>
 
  <img alt="logo" src="./docs/ams-logo.svg">
-  <img alt="gif" src="./docs/ams.gif">
+
 
 # 🥔 Introduction
 
@@ -39,6 +39,8 @@ The goal of AMS is to deliver a simple, fast, and reliable system tailored for p
 
 ### 🎻 Current UI  
 
+  <img alt="gif" src="./docs/ams.gif">
+  
 ## 🎏 Useful Notes 
 
 - running cargo test -> `cargo test test_insert_product -- --nocapture`

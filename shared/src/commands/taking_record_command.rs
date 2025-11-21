@@ -26,6 +26,11 @@ pub trait TakingRecordCommandTrait {
 
     async fn delete_taking_record(record_id: i32) -> u64;
 
+    async fn get_taking_record_by_user_id_and_year(
+        user_id: i32,
+        date: NaiveDateTime,
+    ) -> Vec<taking_record_table::Model>;
+
     async fn get_taking_record_by_user_id_and_month(
         user_id: i32,
         date: NaiveDateTime,
@@ -236,6 +241,54 @@ impl TakingRecordCommandTrait for TakingRecordCommand {
             .unwrap();
 
         records
+    }
+
+    async fn get_taking_record_by_user_id_and_year(
+        user_id: i32,
+        date: NaiveDateTime,
+    ) -> Vec<taking_record_table::Model> {
+        let conn = TakingRecordTable::get_connection().await;
+
+        let start_year = date
+            .date()
+            .with_month(1)
+            .unwrap()
+            .with_day(1)
+            .unwrap()
+            .and_hms_opt(0, 0, 0)
+            .unwrap();
+
+        let end_year = start_year
+            .clone()
+            .with_year(date.year() + 1)
+            .unwrap()
+            .checked_add_months(Months::new(1))
+            .unwrap();
+
+        let records = TakingRecordTable::find()
+            .filter(taking_record_table::Column::TakenDate.gte(start_year))
+            .filter(taking_record_table::Column::TakenDate.lt(end_year))
+            .filter(taking_record_table::Column::UserId.eq(user_id))
+            .order_by(taking_record_table::Column::TakenDate, Order::Asc)
+            .all(conn)
+            .await
+            .unwrap();
+
+        let summed_records_in_year = records
+            .iter()
+            .into_group_map_by(|item| item.taken_date.date())
+            .into_iter()
+            .map(|(_, records)| {
+                let total_taking = records.iter().map(|item| item.amount).sum::<i64>();
+
+                let mut first_data = (*records.first().unwrap()).clone();
+                first_data.amount = total_taking;
+
+                first_data
+            })
+            .collect::<Vec<taking_record_table::Model>>();
+
+        summed_records_in_year
     }
 
     async fn get_taking_record_by_month(date: NaiveDateTime) -> Vec<taking_record_table::Model> {

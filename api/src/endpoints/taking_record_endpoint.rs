@@ -88,6 +88,7 @@ where
             .service(upsert_taking_record)
             .service(get_taking_record_by_month)
             .service(get_taking_record_by_user_id_and_month)
+            .service(get_taking_record_by_user_id_and_year)
             .service(get_taking_record_by_day)
             .service(upsert_taking_record_by_date)
             .service(delete_taking_record_by_id)
@@ -291,6 +292,29 @@ pub async fn get_taking_record_by_user_id_and_month(
 ) -> impl Responder {
     let result =
         TakingRecordCommand::get_taking_record_by_user_id_and_month(request.user_id, request.date)
+            .await;
+    HttpResponse::Ok().json(result)
+}
+
+#[utoipa::path(
+    post,
+    tag = TAG_NAME,
+    path = "/taking-record/get-taking-record-by-user-id-and-year",
+    responses(
+        (status = 200, description = "success"),
+        (status = NOT_FOUND, description = "not found")
+    ),
+    request_body(
+        content =  request_model::GetTakingRecordByUserIdAndMonth,
+        content_type =  "application/json",
+    )
+)]
+#[post("/taking-record/get-taking-record-by-user-id-and-year")]
+pub async fn get_taking_record_by_user_id_and_year(
+    request: Json<request_model::GetTakingRecordByUserIdAndMonth>,
+) -> impl Responder {
+    let result =
+        TakingRecordCommand::get_taking_record_by_user_id_and_year(request.user_id, request.date)
             .await;
     HttpResponse::Ok().json(result)
 }

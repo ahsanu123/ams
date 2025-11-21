@@ -1,10 +1,13 @@
-import type { MakePaymentPageModel, PaymentHistoryModel, TakingRecordModel, UserModel } from '@/api-models'
+import type { MakePaymentPageModel, MoneyHistoryModel, PaymentHistoryModel, TakingRecordModel, UserModel } from '@/api-models'
 import { create } from 'zustand'
 import { immer } from 'zustand/middleware/immer'
 
 interface IListPaymentPage {
   paymentRecords: PaymentHistoryModel[],
   setPaymentRecords: (records: PaymentHistoryModel[]) => void,
+
+  moneyHistories: MoneyHistoryModel[],
+  setMoneyHistories: (records: MoneyHistoryModel[]) => void,
 
   pageModel?: MakePaymentPageModel,
   setPageModel: (pageModel: MakePaymentPageModel) => void,
@@ -31,6 +34,13 @@ export const useListPaymentPageState = create<IListPaymentPage>()(
     setPaymentRecords: (records: PaymentHistoryModel[]) => {
       set((state) => {
         state.paymentRecords = records
+      })
+    },
+
+    moneyHistories: [],
+    setMoneyHistories: (records: MoneyHistoryModel[]) => {
+      set((state) => {
+        state.moneyHistories = records
       })
     },
 

@@ -82,6 +82,7 @@ export default function UpdateCustomerTab() {
             </Avatar.Root>
             <Text>
               {customer.username}
+              {customer.isActive ? '' : " (Tidak Aktif)"}
             </Text>
           </Flex>
           {withDialog && (
@@ -101,9 +102,10 @@ export default function UpdateCustomerTab() {
 
       <Card.Body>
         <DataList.Root>
-          {dataListItemValue("Pelanggan Sejak:", `${format(customer.createdDate, "PPPP", { locale: id })}`)}
-          tambahkan total ambil<br />
-          dan total uang terbayarkan etc
+          {dataListItemValue(
+            "Pelanggan Sejak:",
+            `${format(customer.createdDate, "PPPP", { locale: id })}`
+          )}
         </DataList.Root>
       </Card.Body>
 

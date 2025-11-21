@@ -45,8 +45,6 @@ export default function CreateNewCustomerTab() {
       <Card.Body>
         <DataList.Root>
           {dataListItemValue("Pelanggan Sejak:", `${format(customer.createdDate, "PPPP", { locale: id })}`)}
-          tambahkan total ambil<br />
-          dan total uang terbayarkan etc
         </DataList.Root>
       </Card.Body>
 
