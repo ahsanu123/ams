@@ -4,7 +4,7 @@ use ams_shared::{
 };
 use chrono::NaiveDateTime;
 
-#[tauri::command]
+#[tauri::command(rename_all = "snake_case")]
 pub async fn payment_page_get_page_model(
     user_id: i32,
     date: NaiveDateTime,
@@ -16,7 +16,7 @@ pub async fn payment_page_get_page_model(
     result
 }
 
-#[tauri::command]
+#[tauri::command(rename_all = "snake_case")]
 pub async fn payment_page_make_payment(user_id: i32, date: NaiveDateTime) -> MakePaymentPageModel {
     let result = MakePaymentCommand::make_payment(user_id, date)
         .await

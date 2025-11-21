@@ -15,7 +15,7 @@ export async function fetchWithDateTimeCompitable(url: string, requestInit: Requ
     return fetch(url, { ...requestInit, body: transformedBody });
 }
 
-function transformObjectDates(obj: any) {
+export function transformObjectDates(obj: any) {
   const transformed = { ...obj };
 
   for (const key in transformed) {

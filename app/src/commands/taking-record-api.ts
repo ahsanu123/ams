@@ -1,6 +1,6 @@
 import type { TakingRecordModel } from "@/api-models"
 import { API_ENDPOINT, IS_INSIDE_TAURI } from "@/constants"
-import { asConstant, asJson, del, post } from "./fetch-wrapper"
+import { asConstant, asJson, del, post, transformObjectDates } from "./fetch-wrapper"
 import { invoke } from "@tauri-apps/api/core"
 
 const ADD_NEW_TAKING_RECORD = "/taking-record/add-new-taking-record"
@@ -96,28 +96,28 @@ const takingRecordTauriCommand: ITakingRecordApi = {
     return await invoke('get_taking_record_by_user_id', { user_id })
   },
   upsertTakingRecord: async function (record: TakingRecordModel): Promise<number> {
-    return await invoke('upsert_taking_record', { record })
+    return await invoke('upsert_taking_record', transformObjectDates({ record }))
   },
   getTakingRecordByMonth: async function (date: Date): Promise<Array<TakingRecordModel>> {
-    return await invoke('get_taking_record_by_month', { date })
+    return await invoke('get_taking_record_by_month', transformObjectDates({ date }))
   },
   getTakingRecordByUserIdAndMonth: async function (user_id: number, date: Date): Promise<Array<TakingRecordModel>> {
-    return await invoke('get_taking_record_by_user_id_and_month', { user_id, date })
+    return await invoke('get_taking_record_by_user_id_and_month', transformObjectDates({ user_id, date }))
   },
   deleteTakingRecordById: async function (record_id: number): Promise<number> {
     return await invoke('delete_taking_record_by_id', { record_id })
   },
   getTakingRecordByDay: async function (date: Date): Promise<Array<TakingRecordModel>> {
-    return await invoke('get_taking_record_by_day', { date })
+    return await invoke('get_taking_record_by_day', transformObjectDates({ date }))
   },
   upsertTakingRecordByDate: async function (amount: number, date: Date, user_id: number): Promise<number> {
-    return await invoke('upsert_taking_record_by_date', { amount, date, user_id })
+    return await invoke('upsert_taking_record_by_date', transformObjectDates({ amount, date, user_id }))
   },
   addNewTakingRecordByDate: async function (user_id: number, amount: number, date: Date): Promise<number> {
-    return await invoke('add_new_taking_record_by_date', { user_id, amount, date })
+    return await invoke('add_new_taking_record_by_date', transformObjectDates({ user_id, amount, date }))
   },
   getTakingRecordByUserIdAndYear: async function (user_id: number, date: Date): Promise<Array<TakingRecordModel>> {
-    return await invoke('get_taking_record_by_user_id_and_year', { user_id, date })
+    return await invoke('get_taking_record_by_user_id_and_year', transformObjectDates({ user_id, date }))
   }
 }
 
