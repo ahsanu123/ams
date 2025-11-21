@@ -1,6 +1,7 @@
 import type { DregPriceModel } from "@/api-models"
 import { API_ENDPOINT, IS_INSIDE_TAURI } from "@/constants"
 import { asJson, get, post } from "./fetch-wrapper"
+import { invoke } from "@tauri-apps/api/core"
 
 const GET_LATEST_DREG_PRICE = "/dreg-price/get-latest-dreg-price"
 const GET_ALL_DREG_PRICE = "/dreg-price/get-all-price"
@@ -28,14 +29,14 @@ const dregPriceApi: IDregPriceApi = {
 }
 
 const dregPriceTauriCommand: IDregPriceApi = {
-  getLatestDregPrice: function (): Promise<DregPriceModel> {
-    throw new Error("Function not implemented.")
+  getLatestDregPrice: async function (): Promise<DregPriceModel> {
+    return await invoke('get_latest_dreg_price')
   },
-  updateDregPrice: function (newPrice: number): Promise<DregPriceModel> {
-    throw new Error("Function not implemented.")
+  updateDregPrice: async function (new_price: number): Promise<DregPriceModel> {
+    return await invoke('update_dreg_price', { newPrice: new_price })
   },
-  getAllDregPrice: function (): Promise<Array<DregPriceModel>> {
-    throw new Error("Function not implemented.")
+  getAllDregPrice: async function (): Promise<Array<DregPriceModel>> {
+    return await invoke('get_all_dreg_price')
   }
 }
 

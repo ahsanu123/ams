@@ -1,6 +1,7 @@
 import type { PaymentHistoryModel } from "@/api-models"
 import { API_ENDPOINT, IS_INSIDE_TAURI } from "@/constants"
 import { asConstant, asJson, post } from "./fetch-wrapper"
+import { invoke } from "@tauri-apps/api/core"
 
 const GET_MONTH_SUMMARY = "/payment/get-month-summary"
 const GET_PAYMENT_RECORD = "/payment/get-payment-record"
@@ -50,20 +51,20 @@ const paymentHistoryApi: IPaymentHistoryApi = {
 }
 
 const paymentHistoryTauriCommand: IPaymentHistoryApi = {
-  getMonthSummary: function (date: Date): Promise<Array<PaymentHistoryModel>> {
-    throw new Error("Function not implemented.")
+  getMonthSummary: async function (date: Date): Promise<Array<PaymentHistoryModel>> {
+    return await invoke('get_month_summary', { date })
   },
-  getPaymentRecord: function (userId: number): Promise<Array<PaymentHistoryModel>> {
-    throw new Error("Function not implemented.")
+  getPaymentRecord: async function (user_id: number): Promise<Array<PaymentHistoryModel>> {
+    return await invoke('get_payment_record_by_user_id', { user_id })
   },
-  getPaymentRecordByUserIdAndMonth: function (userId: number, date: Date): Promise<Array<PaymentHistoryModel>> {
-    throw new Error("Function not implemented.")
+  getPaymentRecordByUserIdAndMonth: async function (user_id: number, date: Date): Promise<Array<PaymentHistoryModel>> {
+    return await invoke('get_payment_record_by_user_id_and_month', { user_id, date })
   },
-  updateBulkPaymentRecord: function (records: PaymentHistoryModel, paid: boolean): Promise<number> {
-    throw new Error("Function not implemented.")
+  updateBulkPaymentRecord: async function (records: PaymentHistoryModel, paid: boolean): Promise<number> {
+    return await invoke('update_bulk_payment_record', { records, paid })
   },
-  updatePaymentRecord: function (record: PaymentHistoryModel): Promise<PaymentHistoryModel> {
-    throw new Error("Function not implemented.")
+  updatePaymentRecord: async function (record: PaymentHistoryModel): Promise<PaymentHistoryModel> {
+    return await invoke('update_payment_record', { record })
   }
 }
 

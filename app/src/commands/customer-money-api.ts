@@ -1,6 +1,7 @@
 import type { MoneyHistoryModel, UserModel } from "@/api-models"
 import { API_ENDPOINT, IS_INSIDE_TAURI } from "@/constants"
 import { asJson, del, post } from "./fetch-wrapper"
+import { invoke } from '@tauri-apps/api/core'
 
 const CUSTOMER_ADD_MONEY = "/customer/add-money"
 const CUSTOMER_GET_ALL_USER_MONEY = "/customer/get-all-user-money"
@@ -36,14 +37,14 @@ const customerMoneyApi: ICustomerMoneyApi = {
 }
 
 const customerMoneyTauriCommand: ICustomerMoneyApi = {
-  addMoney: function (userId: number, amount: number): Promise<UserModel> {
-    throw new Error("Function not implemented.")
+  addMoney: async function (user_id: number, amount: number): Promise<UserModel> {
+    return await invoke('add_money', { user_id, amount })
   },
-  getAllUserMoneyHistory: function (userId: number): Promise<Array<MoneyHistoryModel>> {
-    throw new Error("Function not implemented.")
+  getAllUserMoneyHistory: async function (user_id: number): Promise<Array<MoneyHistoryModel>> {
+    return await invoke('get_all_user_money_history', { user_id })
   },
-  deleteUser: function (userId: number): Promise<number> {
-    throw new Error("Function not implemented.")
+  deleteUser: async function (user_id: number): Promise<number> {
+    return await invoke('delete_customer', { user_id })
   }
 }
 

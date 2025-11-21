@@ -1,6 +1,7 @@
 import type { TakingRecordModel } from "@/api-models"
 import { API_ENDPOINT, IS_INSIDE_TAURI } from "@/constants"
 import { asConstant, asJson, del, post } from "./fetch-wrapper"
+import { invoke } from "@tauri-apps/api/core"
 
 const ADD_NEW_TAKING_RECORD = "/taking-record/add-new-taking-record"
 const ADD_NEW_TAKING_RECORD_BY_DATE = "/taking-record/add-new-taking-record-by-date"
@@ -88,35 +89,35 @@ const takingRecordApi: ITakingRecordApi = {
 }
 
 const takingRecordTauriCommand: ITakingRecordApi = {
-  addNewTakingRecord: function (userId: number, amount: number): Promise<number> {
-    throw new Error("Function not implemented.")
+  addNewTakingRecord: async function (user_id: number, amount: number): Promise<number> {
+    return await invoke('add_new_taking_record', { user_id, amount })
   },
-  getTakingRecordByUserId: function (userId: number): Promise<Array<TakingRecordModel>> {
-    throw new Error("Function not implemented.")
+  getTakingRecordByUserId: async function (user_id: number): Promise<Array<TakingRecordModel>> {
+    return await invoke('get_taking_record_by_user_id', { user_id })
   },
-  upsertTakingRecord: function (record: TakingRecordModel): Promise<number> {
-    throw new Error("Function not implemented.")
+  upsertTakingRecord: async function (record: TakingRecordModel): Promise<number> {
+    return await invoke('upsert_taking_record', { record })
   },
-  getTakingRecordByMonth: function (date: Date): Promise<Array<TakingRecordModel>> {
-    throw new Error("Function not implemented.")
+  getTakingRecordByMonth: async function (date: Date): Promise<Array<TakingRecordModel>> {
+    return await invoke('get_taking_record_by_month', { date })
   },
-  getTakingRecordByUserIdAndMonth: function (userId: number, date: Date): Promise<Array<TakingRecordModel>> {
-    throw new Error("Function not implemented.")
+  getTakingRecordByUserIdAndMonth: async function (user_id: number, date: Date): Promise<Array<TakingRecordModel>> {
+    return await invoke('get_taking_record_by_user_id_and_month', { user_id, date })
   },
-  deleteTakingRecordById: function (takingRecordId: number): Promise<number> {
-    throw new Error("Function not implemented.")
+  deleteTakingRecordById: async function (record_id: number): Promise<number> {
+    return await invoke('delete_taking_record_by_id', { record_id })
   },
-  getTakingRecordByDay: function (date: Date): Promise<Array<TakingRecordModel>> {
-    throw new Error("Function not implemented.")
+  getTakingRecordByDay: async function (date: Date): Promise<Array<TakingRecordModel>> {
+    return await invoke('get_taking_record_by_day', { date })
   },
-  upsertTakingRecordByDate: function (amount: number, date: Date, userId: number): Promise<number> {
-    throw new Error("Function not implemented.")
+  upsertTakingRecordByDate: async function (amount: number, date: Date, user_id: number): Promise<number> {
+    return await invoke('upsert_taking_record_by_date', { amount, date, user_id })
   },
-  addNewTakingRecordByDate: function (userId: number, amount: number, date: Date): Promise<number> {
-    throw new Error("Function not implemented.")
+  addNewTakingRecordByDate: async function (user_id: number, amount: number, date: Date): Promise<number> {
+    return await invoke('add_new_taking_record_by_date', { user_id, amount, date })
   },
-  getTakingRecordByUserIdAndYear: function (userId: number, date: Date): Promise<Array<TakingRecordModel>> {
-    throw new Error("Function not implemented.")
+  getTakingRecordByUserIdAndYear: async function (user_id: number, date: Date): Promise<Array<TakingRecordModel>> {
+    return await invoke('get_taking_record_by_user_id_and_year', { user_id, date })
   }
 }
 

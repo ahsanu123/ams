@@ -1,6 +1,7 @@
 import type { UserModel } from "@/api-models"
 import { API_ENDPOINT, IS_INSIDE_TAURI } from "@/constants"
 import { asConstant, asJson, get, post } from "./fetch-wrapper"
+import { invoke } from "@tauri-apps/api/core"
 
 const GET_ALL_ACTIVE_USER = "/user-management/get-all-active-user"
 const GET_ALL_USER = "/user-management/get-all-user"
@@ -52,23 +53,24 @@ const userManagementApi: IUserManagementApi = {
 }
 
 const userManagementTauriCommand: IUserManagementApi = {
-  getAllUser: function (): Promise<Array<UserModel>> {
-    throw new Error("Function not implemented.")
+  getAllUser: async function (): Promise<Array<UserModel>> {
+    return await invoke('get_all_user')
   },
-  getAllActiveUser: function (): Promise<Array<UserModel>> {
-    throw new Error("Function not implemented.")
+  getAllActiveUser: async function (): Promise<Array<UserModel>> {
+    return await invoke('get_all_active_user')
   },
-  insertNewUser: function (user: UserModel): Promise<number> {
-    throw new Error("Function not implemented.")
+  insertNewUser: async function (new_user: UserModel): Promise<number> {
+    return await invoke('insert_new_user', { new_user })
   },
-  upsertUser: function (user: UserModel): Promise<number> {
-    throw new Error("Function not implemented.")
+  upsertUser: async function (user: UserModel): Promise<number> {
+    return await invoke('upsert_user', { user })
   },
-  getById: function (userId: number): Promise<UserModel> {
-    throw new Error("Function not implemented.")
+  getById: async function (id: number): Promise<UserModel> {
+    return await invoke('get_by_user_id', { id })
   },
-  createNewUser: function (username: string): Promise<number> {
-    throw new Error("Function not implemented.")
+  createNewUser: async function (username: string): Promise<number> {
+    return await invoke('create_new_user', { username })
+
   }
 }
 

@@ -1,6 +1,7 @@
 import type { MakePaymentPageModel, MoneyHistoryModel, UserModel } from "@/api-models"
 import { API_ENDPOINT, IS_INSIDE_TAURI } from "@/constants"
 import { asJson, post } from "./fetch-wrapper"
+import { invoke } from "@tauri-apps/api/core"
 
 const GET_PAGE_MODEL = "/make-payment-page/get-page-model"
 const MAKE_PAYMENT = "/make-payment-page/make-payment"
@@ -31,11 +32,11 @@ const makePaymentApi: IMakePaymentCommand = {
 }
 
 const makePaymentTauriCommand: IMakePaymentCommand = {
-  getPageModel: function (userId: number, date: Date): Promise<MakePaymentPageModel> {
-    throw new Error("Function not implemented.")
+  getPageModel: async function (user_id: number, date: Date): Promise<MakePaymentPageModel> {
+    return await invoke('payment_page_get_page_model', { user_id, date })
   },
-  makePayment: function (userId: number, date: Date): Promise<MakePaymentPageModel> {
-    throw new Error("Function not implemented.")
+  makePayment: async function (user_id: number, date: Date): Promise<MakePaymentPageModel> {
+    return await invoke('payment_page_make_payment', { user_id, date })
   }
 }
 
