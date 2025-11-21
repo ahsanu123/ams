@@ -11,6 +11,7 @@ import asmLogo from './svg/ams-icon.svg'
 import { ChakraProvider, createSystem, defaultConfig } from "@chakra-ui/react";
 import { Toaster } from "./utility";
 import "react-datepicker/dist/react-datepicker.css"
+import { IS_INSIDE_TAURI } from "./constants";
 
 const system = createSystem(defaultConfig);
 
@@ -59,7 +60,9 @@ export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
       error.status === 404
         ? "The requested page could not be found."
         : error.statusText || details;
-  } else if (import.meta.env.DEV && error && error instanceof Error) {
+  } else if (
+    // import.meta.env.error && 
+    error instanceof Error) {
     details = error.message;
     stack = error.stack;
   }
@@ -67,6 +70,7 @@ export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
   return (
     <main id="error-page">
       <h1>❌{message}</h1>
+      <p>{IS_INSIDE_TAURI ? "INSIDE_TAURI" : "INSIDE_VITE"}</p>
       <p>{details}</p>
       {stack && (
         <pre>

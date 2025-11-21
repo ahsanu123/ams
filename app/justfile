@@ -3,3 +3,7 @@ tl:
 
 tr testName:
   yarn vitest -t "{{testName}}"  --reporter=verbose --silent=false
+
+# run desktop
+rdesktop: 
+  RUST_BACKTRACE=1 yarn tauri dev

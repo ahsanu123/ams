@@ -13,23 +13,24 @@ use tauri::{path::BaseDirectory, Manager};
 pub fn run() {
     tauri::Builder::default()
         .setup(|app| {
-            if dotenv().is_err() {
-                let env_path = app.path().resolve(".env", BaseDirectory::Resource).unwrap();
-                let _ = from_path(env_path);
 
-                let sqlite_path = app
-                    .path()
-                    .resolve("ams.sqlite", BaseDirectory::Resource)
-                    .unwrap();
+            dotenvy::dotenv().ok();
 
-                let sqlite_conn = format!("sqlite://{}?mode=rwc", sqlite_path.to_string_lossy());
+            let env_path = app.path().resolve(".env", BaseDirectory::Resource).unwrap();
+            let _ = from_path(env_path);
 
-                let _ = ENV_VAR
-                    .set(EnvironmentVariable {
-                        sqlite_connection_string: sqlite_conn,
-                    })
-                    .unwrap();
-            }
+            let sqlite_path = app
+                .path()
+                .resolve("ams.sqlite", BaseDirectory::Resource)
+                .unwrap();
+
+            let sqlite_conn = format!("sqlite://{}?mode=rwc", sqlite_path.to_string_lossy());
+
+            let _ = ENV_VAR
+                .set(EnvironmentVariable {
+                    sqlite_connection_string: sqlite_conn,
+                })
+                .unwrap();
             Ok(())
         })
         .plugin(tauri_plugin_opener::init())

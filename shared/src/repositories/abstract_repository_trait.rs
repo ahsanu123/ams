@@ -71,9 +71,10 @@ mod test {
 
     #[tokio::test]
     async fn create_sea_orm_connection() {
-        let _: DatabaseConnection = Database::connect(ENV_VAR.sqlite_connection_string.clone())
-            .await
-            .unwrap();
+        let _: DatabaseConnection =
+            Database::connect(ENV_VAR.get().unwrap().sqlite_connection_string.clone())
+                .await
+                .unwrap();
     }
 
     #[tokio::test]
