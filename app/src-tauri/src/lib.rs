@@ -13,10 +13,10 @@ use tauri::{path::BaseDirectory, Manager};
 pub fn run() {
     tauri::Builder::default()
         .setup(|app| {
-
             dotenvy::dotenv().ok();
 
             let env_path = app.path().resolve(".env", BaseDirectory::Resource).unwrap();
+            log::info!("{}", env_path.clone().to_string_lossy());
             let _ = from_path(env_path);
 
             let sqlite_path = app
@@ -25,6 +25,8 @@ pub fn run() {
                 .unwrap();
 
             let sqlite_conn = format!("sqlite://{}?mode=rwc", sqlite_path.to_string_lossy());
+            
+            log::info!("{}", sqlite_conn.clone());
 
             let _ = ENV_VAR
                 .set(EnvironmentVariable {
@@ -33,6 +35,7 @@ pub fn run() {
                 .unwrap();
             Ok(())
         })
+        .plugin(tauri_plugin_log::Builder::new().build())
         .plugin(tauri_plugin_opener::init())
         .invoke_handler(tauri::generate_handler![
             // customer_command
