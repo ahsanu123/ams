@@ -6,33 +6,60 @@ use commands::{
     customer_command, dreg_price_command, make_payment_page_command, payment_history_command,
     taking_record_command, user_management_command,
 };
-use dotenvy::{dotenv, from_path};
-use tauri::{path::BaseDirectory, Manager};
+use dotenvy::from_path;
+use std::{env, path};
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
-        .setup(|app| {
+        .setup(|_| {
             dotenvy::dotenv().ok();
 
-            let env_path = app.path().resolve(".env", BaseDirectory::Resource).unwrap();
-            log::info!("{}", env_path.clone().to_string_lossy());
-            let _ = from_path(env_path);
+            // NOTE:
+            // currently to read database file, db file must be
+            // in same directory of exe, i have try to use
+            // embedded resource but it not extracting any file
+            // (on linux it refer to /usr/lib/progname)
+            // and /usr/lib/ is need admin right,
+            // i dont want run program with admin right,
+            // so will use this method until i found better way
+            // to handle this.
 
-            let sqlite_path = app
-                .path()
-                .resolve("ams.sqlite", BaseDirectory::Resource)
+            // let env_path = app.path().resolve(".env", BaseDirectory::Resource).unwrap();
+            // log::info!("{}", env_path.clone().to_string_lossy());
+            //
+            // let sqlite_path = app
+            //     .path()
+            //     .resolve("ams.sqlite", BaseDirectory::Resource)
+            //     .unwrap();
+            //
+            // let sqlite_conn = format!("sqlite://{}?mode=rwc", sqlite_path.to_string_lossy());
+
+            let current_dir = env::current_dir().unwrap();
+            let env_path = path::PathBuf::from(format!("{}/.env", current_dir.display()));
+            log::info!("{}", path::absolute(&env_path).unwrap().to_string_lossy());
+            let abs_env_path = path::absolute(&env_path).unwrap();
+            let _ = from_path(abs_env_path);
+
+            let sqlite_path = path::PathBuf::from(format!("{}/ams.sqlite", current_dir.display()));
+
+            log::info!(
+                "sqlite://{}?mode=rwc",
+                path::absolute(&sqlite_path).unwrap().to_string_lossy()
+            );
+            let abs_sqlite_path = std::path::absolute(&sqlite_path)
+                .unwrap()
+                .into_os_string()
+                .into_string()
                 .unwrap();
+            let abs_sqlite_path = format!("sqlite://{}?mode=rwc", abs_sqlite_path);
 
-            let sqlite_conn = format!("sqlite://{}?mode=rwc", sqlite_path.to_string_lossy());
-            
-            log::info!("{}", sqlite_conn.clone());
-
-            let _ = ENV_VAR
+            ENV_VAR
                 .set(EnvironmentVariable {
-                    sqlite_connection_string: sqlite_conn,
+                    sqlite_connection_string: abs_sqlite_path,
                 })
                 .unwrap();
+
             Ok(())
         })
         .plugin(tauri_plugin_log::Builder::new().build())

@@ -10,8 +10,8 @@ import type { Route } from "./+types/root";
 import asmLogo from './svg/ams-icon.svg'
 import { ChakraProvider, createSystem, defaultConfig } from "@chakra-ui/react";
 import { Toaster } from "./utility";
-import "react-datepicker/dist/react-datepicker.css"
 import { IS_INSIDE_TAURI } from "./constants";
+import "react-datepicker/dist/react-datepicker.css"
 
 const system = createSystem(defaultConfig);
 
@@ -32,7 +32,6 @@ export function Layout({ children }: { children: React.ReactNode }) {
     <html lang="en">
       <head>
         <meta charSet="utf-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href={asmLogo} type="image/svg+xml" />
         <title>AMS - Ampas Management System</title>
         <Meta />
@@ -51,7 +50,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
 // For more information, see https://reactrouter.com/start/framework/route-module#errorboundary
 export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
   let message = "Oops!";
-  let details = "An unexpected error occurred.";
+  let details = "An unexpected error occurred. Please Report to the Developer";
   let stack: string | undefined;
 
   if (isRouteErrorResponse(error)) {
