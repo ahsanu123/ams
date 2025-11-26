@@ -32,8 +32,8 @@
       "icons/icon.ico"
     ],
     "resources" : [
-      "./ams.sqlite",
-      "./.env"
+      "ams.sqlite",
+      ".env"
     ]
   }
 }

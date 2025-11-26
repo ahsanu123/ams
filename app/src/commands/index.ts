@@ -1,6 +1,7 @@
 export * from './dreg-price-api'
 export * from './customer-money-api'
 export * from './payment-history-api'
+export * from './path-info-command'
 export * from './taking-record-api'
 export * from './user-management-api'
 export * from './make-payment-command'
