@@ -35,6 +35,12 @@ pub trait TakingRecordCommandTrait {
         user_id: i32,
         date: NaiveDateTime,
     ) -> Vec<taking_record_table::Model>;
+
+    async fn get_taking_record_by_user_id_and_month_range(
+        user_id: i32,
+        from: NaiveDateTime,
+        to: NaiveDateTime,
+    ) -> Vec<taking_record_table::Model>;
 }
 
 pub struct TakingRecordCommand;
@@ -168,6 +174,7 @@ impl TakingRecordCommandTrait for TakingRecordCommand {
 
             return update_result.id;
         } else {
+            #[allow(clippy::panicking_unwrap)]
             let active_model: taking_record_table::ActiveModel = data_on_db.unwrap().into();
             let create_result = TakingRecordTable::create(active_model).await.unwrap();
 
@@ -313,7 +320,7 @@ impl TakingRecordCommandTrait for TakingRecordCommand {
             .await
             .unwrap();
 
-        let summed_records = records
+        records
             .iter()
             .into_group_map_by(|item| item.taken_date.date())
             .into_iter()
@@ -325,9 +332,51 @@ impl TakingRecordCommandTrait for TakingRecordCommand {
 
                 first_data
             })
-            .collect::<Vec<taking_record_table::Model>>();
+            .collect::<Vec<taking_record_table::Model>>()
+    }
 
-        summed_records
+    async fn get_taking_record_by_user_id_and_month_range(
+        user_id: i32,
+        from: NaiveDateTime,
+        to: NaiveDateTime,
+    ) -> Vec<taking_record_table::Model> {
+        let conn = TakingRecordTable::get_connection().await;
+
+        let start_date = from
+            .date()
+            .with_day(1)
+            .unwrap()
+            .and_hms_opt(0, 0, 0)
+            .unwrap();
+
+        let end_date = to
+            .date()
+            .with_day(1)
+            .unwrap()
+            .checked_add_months(Months::new(1))
+            .unwrap();
+
+        let records = TakingRecordTable::find()
+            .filter(taking_record_table::Column::TakenDate.gte(start_date))
+            .filter(taking_record_table::Column::TakenDate.lt(end_date))
+            .filter(taking_record_table::Column::UserId.eq(user_id))
+            .all(conn)
+            .await
+            .unwrap();
+
+        records
+            .iter()
+            .into_group_map_by(|item| item.taken_date.date())
+            .into_iter()
+            .map(|(_, records)| {
+                let total_taking = records.iter().map(|item| item.amount).sum::<i64>();
+
+                let mut first_data = (*records.first().unwrap()).clone();
+                first_data.amount = total_taking;
+
+                first_data
+            })
+            .collect::<Vec<taking_record_table::Model>>()
     }
 }
 

@@ -68,3 +68,14 @@ pub async fn get_taking_record_by_user_id_and_year(
     let result = TakingRecordCommand::get_taking_record_by_user_id_and_year(user_id, date).await;
     result
 }
+
+#[tauri::command(rename_all = "snake_case")]
+pub async fn get_taking_record_by_user_id_and_month_range(
+    user_id: i32,
+    from: NaiveDateTime,
+    to: NaiveDateTime,
+) -> Vec<taking_record_table::Model> {
+    let result =
+        TakingRecordCommand::get_taking_record_by_user_id_and_month_range(user_id, from, to).await;
+    result
+}

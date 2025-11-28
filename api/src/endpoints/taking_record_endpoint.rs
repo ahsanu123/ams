@@ -60,6 +60,14 @@ mod request_model {
 
     #[derive(Deserialize, ToSchema)]
     #[serde(rename_all = "camelCase")]
+    pub struct GetTakingRecordByUserIdAndMonthRange {
+        pub user_id: i32,
+        pub from: NaiveDateTime,
+        pub to: NaiveDateTime,
+    }
+
+    #[derive(Deserialize, ToSchema)]
+    #[serde(rename_all = "camelCase")]
     pub struct UpsertByDate {
         pub user_id: i32,
         pub amount: i32,
@@ -92,6 +100,7 @@ where
             .service(get_taking_record_by_day)
             .service(upsert_taking_record_by_date)
             .service(delete_taking_record_by_id)
+            .service(get_taking_record_by_user_id_and_month_range)
     }
 }
 
@@ -316,5 +325,31 @@ pub async fn get_taking_record_by_user_id_and_year(
     let result =
         TakingRecordCommand::get_taking_record_by_user_id_and_year(request.user_id, request.date)
             .await;
+    HttpResponse::Ok().json(result)
+}
+
+#[utoipa::path(
+    post,
+    tag = TAG_NAME,
+    path = "/taking-record/get-taking-record-by-user-id-and-month-range",
+    responses(
+        (status = 200, description = "success"),
+        (status = NOT_FOUND, description = "not found")
+    ),
+    request_body(
+        content =  request_model::GetTakingRecordByUserIdAndMonthRange,
+        content_type =  "application/json",
+    )
+)]
+#[post("/taking-record/get-taking-record-by-user-id-and-month-range")]
+pub async fn get_taking_record_by_user_id_and_month_range(
+    request: Json<request_model::GetTakingRecordByUserIdAndMonthRange>,
+) -> impl Responder {
+    let result = TakingRecordCommand::get_taking_record_by_user_id_and_month_range(
+        request.user_id,
+        request.from,
+        request.to,
+    )
+    .await;
     HttpResponse::Ok().json(result)
 }

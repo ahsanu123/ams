@@ -1,19 +1,19 @@
 import type { MakePaymentPageModel, TakingRecordModel, TakingRecordWithPrice, UserModel } from "@/api-models"
 import { makePaymentCommand, takingRecordCommand, userManagementCommand } from "@/commands"
+import Calendar from "@/component/Calendar"
 import Scroller from "@/component/Scroller"
 import { EMPTY_HEADER_INFORMATION } from "@/constants"
 import { useMainLayoutStore } from "@/state"
 import { formatAsRupiah, formatDateId, fromFormData, toFormData } from "@/utility"
 import { Badge, Box, Button, Card, DataList, Flex, Heading, Stack, Table, Tabs, Text } from "@chakra-ui/react"
-import { compareAsc, format } from "date-fns"
+import { format, setMonth } from "date-fns"
 import { id } from "date-fns/locale"
 import React, { useEffect, useState } from "react"
-import DatePicker from "react-datepicker"
+import DatePicker, { registerLocale } from "react-datepicker"
+import { AiFillCalendar, AiFillGolden, AiFillNotification, AiFillSliders } from "react-icons/ai"
 import { useFetcher } from "react-router"
 import type { Route } from "./+types/MakePaymentPages"
 import { useMakePaymentPageState } from "./make-payment-page-state"
-import Calendar from "@/component/Calendar"
-import { AiFillCalendar, AiFillDollarCircle, AiFillGolden, AiFillNotification, AiFillSliders } from "react-icons/ai"
 import './MakePaymentPages.css'
 
 enum ListActionEnum {
@@ -67,7 +67,9 @@ export async function clientAction({ request }: Route.ClientActionArgs): Promise
 enum ListTabEnum {
   CustomerTakingRecordDetail = 'Daftar Ambil',
   CustomerDetailInformation = 'Informasi Pelanggan',
-  CustomerTakingCalendar = 'Kalender'
+  CustomerTakingCalendar = 'Kalender',
+  AllYearCalendar = 'Kalendar Satu Tahun',
+  RangeMonthInformation = 'Informasi Beberapa Bulan',
 }
 
 export default function MakePaymentPage({
@@ -75,6 +77,8 @@ export default function MakePaymentPage({
 }: Route.ComponentProps) {
 
   const { activeCustomer } = loaderData
+
+  registerLocale('id', id)
 
   const fetcher = useFetcher<IFetcherActionResult>()
 
@@ -98,13 +102,40 @@ export default function MakePaymentPage({
   const oneYearRecords = useMakePaymentPageState(state => state.oneYearRecords)
   const setOneYearRecords = useMakePaymentPageState(state => state.setOneYearRecrods)
 
+  // TODO: move this to state 
+  const [fromDate, setFromDate] = useState<Date | undefined>(undefined)
+  const [toDate, setToDate] = useState<Date | undefined>(undefined)
   const [dateOpen, setDateOpen] = useState(false)
+  const [fromDateOpen, setFromDateOpen] = useState(false)
+  const [toDateOpen, setToDateOpen] = useState(false)
+  const [activeTab, setActiveTab] = useState<string>(ListTabEnum.CustomerTakingRecordDetail)
+  const [rangeRecords, setRangeRecords] = useState<TakingRecordModel[]>([])
+
+  const listMonth = Array.from({ length: 12 }, (_, index) => index)
+    .map((monthIndex) => setMonth(new Date(), monthIndex))
+
 
   const handleOnDatePickerChange = (date: Date | null) => {
     if (date) {
       const utcTime = Date.UTC(date.getFullYear(), date.getMonth(), 1)
       setSelectedDate(new Date(utcTime))
       setDateOpen(false)
+    }
+  }
+
+  const handleOnFromDateChange = (date: Date | null) => {
+    if (date) {
+      const utcTime = Date.UTC(date.getFullYear(), date.getMonth(), 1)
+      setFromDate(new Date(utcTime))
+      setFromDateOpen(false)
+    }
+  }
+
+  const handleOnToDateChange = (date: Date | null) => {
+    if (date) {
+      const utcTime = Date.UTC(date.getFullYear(), date.getMonth(), 1)
+      setToDate(new Date(utcTime))
+      setToDateOpen(false)
     }
   }
 
@@ -228,13 +259,178 @@ export default function MakePaymentPage({
     </>
   )
 
-  const customerCalendar = () =>
+  const allYearCalender = () =>
+    <Scroller
+      minHeight="70vh">
+      {
+        listMonth.map((date) =>
+          <Calendar
+            user={selectedCustomer}
+            month={date}
+          />
+        )
+      }
+    </Scroller>
+
+  const currentMonthCalender = () =>
     <Stack>
       <Calendar
         user={selectedCustomer}
         month={selectedDate}
       />
     </Stack>
+
+  const rangeMonthInformation = () =>
+    <Stack maxWidth={'500px'}>
+      <Heading>Dari Bulan</Heading>
+      <label>
+        <DatePicker
+          placeholderText="Bulan Dan Tahun"
+          dateFormat="MMMM yyyy "
+          selected={fromDate}
+          onChange={(date) => handleOnFromDateChange(date)}
+          showMonthYearPicker
+          locale={'id'}
+          withPortal
+          open={fromDateOpen}
+          onClickOutside={() => setFromDateOpen(false)}
+          onInputClick={() => setFromDateOpen(true)}
+        />
+      </label>
+
+      <Heading>Sampai Bulan</Heading>
+      <label>
+        <DatePicker
+          placeholderText="Bulan Dan Tahun"
+          dateFormat="MMMM yyyy "
+          selected={toDate}
+          onChange={(date) => handleOnToDateChange(date)}
+          showMonthYearPicker
+          locale={'id'}
+          withPortal
+          open={toDateOpen}
+          onClickOutside={() => setToDateOpen(false)}
+          onInputClick={() => setToDateOpen(true)}
+        />
+      </label>
+
+      {
+        rangeRecords.length <= 0
+        && fromDate
+        && toDate
+        && <Heading>
+          Tidak ada data dari {formatDateId(fromDate, "MMMM yyyy")} hingga {formatDateId(toDate, "MMMM yyyy")}
+        </Heading>
+      }
+      {
+        fromDate && toDate && rangeRecords.length > 0 && (
+          <Card.Root>
+            <Card.Header>
+              <Heading>
+                Informasi {formatDateId(fromDate, "MMMM yyyy")}
+                {' '}
+                Hingga
+                {' '}
+                {formatDateId(toDate, "MMMM yyyy")}
+              </Heading>
+            </Card.Header>
+
+            <Card.Body>
+              <DataList.Root>
+                {/* FIXME: Fix this implementation to use api instead */}
+                {dataListItemValue('Total',
+                  `${rangeRecords.map((item) => item.amount)
+                    .reduceRight((a, c) => a + c, 0)
+                  } Ampas`)}
+
+                {dataListItemValue('Terbayar',
+                  `${rangeRecords.filter(pr => pr.isPaid)
+                    .map((item) => item.amount)
+                    .reduce((a, c) => a + c, 0)} Ampas`)}
+
+                {dataListItemValue('Belum Terbayar',
+                  `${rangeRecords.filter(pr => !pr.isPaid)
+                    .map((item) => item.amount)
+                    .reduce((a, c) => a + c, 0)} Ampas`)}
+
+              </DataList.Root>
+
+            </Card.Body>
+
+          </Card.Root>
+        )
+      }
+
+    </Stack>
+
+  const detailOneMonth = () => {
+    return showDetailTaking && pageModel && selectedDate && (
+      <Card.Root>
+        <Card.Header>
+          <Heading>
+            <Flex alignItems={'center'}>
+              <AiFillCalendar />
+              Informasi Bulan {formatDateId(selectedDate, "MMMM yyyy")}
+            </Flex>
+          </Heading>
+        </Card.Header>
+        <Flex>
+          <Box>
+            <Card.Header>
+              <Heading>
+                Total Ambil
+              </Heading>
+            </Card.Header>
+
+            <Card.Body>
+              <DataList.Root>
+
+                {dataListItemValue('Total', `${pageModel.detailInformation.totalAmount} Ampas`)}
+                {dataListItemValue('Terbayar', `${pageModel.detailInformation.paidAmount} Ampas`)}
+                {dataListItemValue('Belum Terbayar', `${pageModel.detailInformation.unpaidAmount} Ampas`)}
+
+              </DataList.Root>
+            </Card.Body>
+          </Box>
+
+          <Box>
+            <Card.Header>
+              <Heading>
+                Tagihan
+              </Heading>
+            </Card.Header>
+
+            <Card.Body>
+              <DataList.Root>
+
+                {dataListItemValue('Total', `${formatAsRupiah(pageModel.detailInformation.totalBill)}`)}
+                {dataListItemValue('Terbayar', `${formatAsRupiah(pageModel.detailInformation.paidBill)}`)}
+                {dataListItemValue('Belum Terbayar', `${formatAsRupiah(pageModel.detailInformation.unpaidBill)}`)}
+
+              </DataList.Root>
+            </Card.Body>
+          </Box>
+        </Flex>
+
+        <Card.Footer>
+          <Button
+            onClick={() => handleOnPayButtonClicked()}
+            disabled={isPayButtonDisabled()}
+          >
+            <AiFillGolden />
+            Bayar Bulan {selectedDate && format(selectedDate, 'MMMM yyyy', { locale: id })}
+          </Button>
+        </Card.Footer>
+      </Card.Root>
+    )
+  }
+
+  useEffect(() => {
+    if (selectedCustomer && fromDate && toDate)
+      takingRecordCommand.getTakingRecordByUserIdAndRangeMonth(selectedCustomer.id, fromDate, toDate)
+        .then((records) => setRangeRecords(records))
+
+  }, [fromDate, toDate, selectedCustomer])
 
   useEffect(() => {
     setListCustomer(activeCustomer)
@@ -331,6 +527,7 @@ export default function MakePaymentPage({
               selected={selectedDate}
               onChange={(date) => handleOnDatePickerChange(date)}
               showMonthYearPicker
+              locale={'id'}
               withPortal
               open={dateOpen}
               onClickOutside={() => setDateOpen(false)}
@@ -338,71 +535,16 @@ export default function MakePaymentPage({
             />
           </label>
 
-          {showDetailTaking && pageModel && selectedDate && (
-            <Card.Root>
-              <Card.Header>
-                <Heading>
-                  <Flex alignItems={'center'}>
-                    <AiFillCalendar />
-                    Informasi Bulan {formatDateId(selectedDate, "MMMM yyyy")}
-                  </Flex>
-                </Heading>
-              </Card.Header>
-              <Flex>
-                <Box>
-                  <Card.Header>
-                    <Heading>
-                      Total Ambil
-                    </Heading>
-                  </Card.Header>
-
-                  <Card.Body>
-                    <DataList.Root>
-
-                      {dataListItemValue('Total', `${pageModel.detailInformation.totalAmount} Ampas`)}
-                      {dataListItemValue('Terbayar', `${pageModel.detailInformation.paidAmount} Ampas`)}
-                      {dataListItemValue('Belum Terbayar', `${pageModel.detailInformation.unpaidAmount} Ampas`)}
-
-                    </DataList.Root>
-                  </Card.Body>
-                </Box>
-
-                <Box>
-                  <Card.Header>
-                    <Heading>
-                      Tagihan
-                    </Heading>
-                  </Card.Header>
-
-                  <Card.Body>
-                    <DataList.Root>
-
-                      {dataListItemValue('Total', `${formatAsRupiah(pageModel.detailInformation.totalBill)}`)}
-                      {dataListItemValue('Terbayar', `${formatAsRupiah(pageModel.detailInformation.paidBill)}`)}
-                      {dataListItemValue('Belum Terbayar', `${formatAsRupiah(pageModel.detailInformation.unpaidBill)}`)}
-
-                    </DataList.Root>
-                  </Card.Body>
-                </Box>
-              </Flex>
-
-              <Card.Footer>
-                <Button
-                  onClick={() => handleOnPayButtonClicked()}
-                  disabled={isPayButtonDisabled()}
-                >
-                  <AiFillGolden />
-                  Bayar Bulan {selectedDate && format(selectedDate, 'MMMM yyyy', { locale: id })}
-                </Button>
-              </Card.Footer>
-            </Card.Root>
-          )}
+          {detailOneMonth()}
 
         </Stack>
 
         {showDetailTaking && pageModel !== undefined && (
           <Box className="tabs-container">
-            <Tabs.Root defaultValue={ListTabEnum.CustomerTakingRecordDetail}>
+            <Tabs.Root
+              value={activeTab}
+              onValueChange={(e) => setActiveTab(e.value)}
+              defaultValue={ListTabEnum.CustomerTakingRecordDetail}>
 
               <Tabs.List>
                 <Tabs.Trigger value={ListTabEnum.CustomerTakingRecordDetail}>
@@ -419,6 +561,16 @@ export default function MakePaymentPage({
                   <AiFillCalendar />
                   {ListTabEnum.CustomerTakingCalendar}
                 </Tabs.Trigger>
+
+                <Tabs.Trigger value={ListTabEnum.AllYearCalendar}>
+                  <AiFillCalendar />
+                  {ListTabEnum.AllYearCalendar}
+                </Tabs.Trigger>
+
+                <Tabs.Trigger value={ListTabEnum.RangeMonthInformation}>
+                  <AiFillCalendar />
+                  {ListTabEnum.RangeMonthInformation}
+                </Tabs.Trigger>
               </Tabs.List>
 
               <Tabs.Content value={ListTabEnum.CustomerTakingRecordDetail}>
@@ -430,7 +582,15 @@ export default function MakePaymentPage({
               </Tabs.Content>
 
               <Tabs.Content value={ListTabEnum.CustomerTakingCalendar}>
-                {customerCalendar()}
+                {currentMonthCalender()}
+              </Tabs.Content>
+
+              <Tabs.Content value={ListTabEnum.AllYearCalendar}>
+                {allYearCalender()}
+              </Tabs.Content>
+
+              <Tabs.Content value={ListTabEnum.RangeMonthInformation}>
+                {rangeMonthInformation()}
               </Tabs.Content>
 
             </Tabs.Root>

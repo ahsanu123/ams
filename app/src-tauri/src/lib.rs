@@ -91,6 +91,7 @@ pub fn run() {
             taking_record_command::get_taking_record_by_user_id,
             taking_record_command::upsert_taking_record,
             taking_record_command::get_taking_record_by_month,
+            taking_record_command::get_taking_record_by_user_id_and_month_range,
             taking_record_command::get_taking_record_by_user_id_and_month,
             taking_record_command::get_taking_record_by_user_id_and_year,
             // user_management_command

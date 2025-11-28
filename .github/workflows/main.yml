@@ -58,7 +58,6 @@ jobs:
         with:
           name: tauri-armv7
           path: | 
-            app/src-tauri/target/release/
             app/src-tauri/target/release/ams
             app/src-tauri/target/release/ams.d
             app/src-tauri/target/release/ams.sqlite

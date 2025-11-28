@@ -1,12 +1,13 @@
 import type { TakingRecordModel } from "@/api-models"
 import { API_ENDPOINT, IS_INSIDE_TAURI } from "@/constants"
-import { asConstant, asJson, del, post, transformObjectDates } from "./fetch-wrapper"
 import { invoke } from "@tauri-apps/api/core"
+import { asConstant, asJson, del, post, transformObjectDates } from "./fetch-wrapper"
 
 const ADD_NEW_TAKING_RECORD = "/taking-record/add-new-taking-record"
 const ADD_NEW_TAKING_RECORD_BY_DATE = "/taking-record/add-new-taking-record-by-date"
 const GET_TAKING_RECORD_BY_DATE = "/taking-record/get-taking-record-by-date"
 const GET_TAKING_RECORD_BY_USER_ID = "/taking-record/get-taking-record-by-user-id"
+const GET_TAKING_RECORD_BY_USER_ID_AND_RANGE_MONTH = "/taking-record/get-taking-record-by-user-id-and-month-range"
 const GET_TAKING_RECORD_BY_USER_ID_AND_MONTH = "/taking-record/get-taking-record-by-user-id-and-date"
 const GET_TAKING_RECORD_BY_USER_ID_AND_YEAR = "/taking-record/get-taking-record-by-user-id-and-year"
 const UPSERT_TAKING_RECORD = "/taking-record/upsert-taking-record"
@@ -23,6 +24,7 @@ interface ITakingRecordApi {
   getTakingRecordByMonth: (date: Date) => Promise<Array<TakingRecordModel>>
   getTakingRecordByUserIdAndMonth: (userId: number, date: Date) => Promise<Array<TakingRecordModel>>
   getTakingRecordByUserIdAndYear: (userId: number, date: Date) => Promise<Array<TakingRecordModel>>
+  getTakingRecordByUserIdAndRangeMonth: (userId: number, from: Date, to: Date) => Promise<Array<TakingRecordModel>>
   deleteTakingRecordById: (takingRecordId: number) => Promise<number>
   getTakingRecordByDay: (date: Date) => Promise<Array<TakingRecordModel>>
 }
@@ -66,6 +68,11 @@ const takingRecordApi: ITakingRecordApi = {
     const response = await post(`${API_ENDPOINT}${GET_TAKING_RECORD_BY_USER_ID_AND_MONTH}`, { userId, date })
     return asJson<Array<TakingRecordModel>>(response)
   },
+  getTakingRecordByUserIdAndRangeMonth: async function (userId: number, from: Date, to: Date): Promise<Array<TakingRecordModel>> {
+    const response = await post(`${API_ENDPOINT}${GET_TAKING_RECORD_BY_USER_ID_AND_RANGE_MONTH}`, { userId, from, to })
+    return asJson<Array<TakingRecordModel>>(response)
+  },
+
   getTakingRecordByUserIdAndYear: async function (userId: number, date: Date): Promise<Array<TakingRecordModel>> {
     const response = await post(`${API_ENDPOINT}${GET_TAKING_RECORD_BY_USER_ID_AND_YEAR}`, { userId, date })
     return asJson<Array<TakingRecordModel>>(response)
@@ -118,6 +125,9 @@ const takingRecordTauriCommand: ITakingRecordApi = {
   },
   getTakingRecordByUserIdAndYear: async function (user_id: number, date: Date): Promise<Array<TakingRecordModel>> {
     return await invoke('get_taking_record_by_user_id_and_year', transformObjectDates({ user_id, date }))
+  },
+  getTakingRecordByUserIdAndRangeMonth: async function (user_id: number, from: Date, to: Date): Promise<Array<TakingRecordModel>> {
+    return await invoke('get_taking_record_by_user_id_and_month_range', transformObjectDates({ user_id, from, to }))
   }
 }
 

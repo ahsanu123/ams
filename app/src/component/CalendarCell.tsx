@@ -47,7 +47,6 @@ export default function CalendarCellComponent(props: CalendarCellProps) {
                   fontWeight={'bold'}>
                   {data.product?.amount}
                 </Text>
-                {data.product.isPaid && <Badge position={'absolute'} colorPalette={'green'}>terbayar</Badge>}
               </Stack>
             </div>
           </div>
