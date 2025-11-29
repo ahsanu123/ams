@@ -1,4 +1,5 @@
 import type { UserModel } from "@/api-models"
+import { useMutation, useQuery, useQueryClient, type UseQueryResult } from '@tanstack/react-query'
 import { API_ENDPOINT, IS_INSIDE_TAURI } from "@/constants"
 import { asConstant, asJson, get, post } from "./fetch-wrapper"
 import { invoke } from "@tauri-apps/api/core"
@@ -71,6 +72,73 @@ const userManagementTauriCommand: IUserManagementApi = {
   createNewUser: async function (username: string): Promise<number> {
     return await invoke('create_new_user', { username })
 
+  }
+}
+
+export function useUserManagement() {
+
+  const queryClient = useQueryClient()
+
+  const getAllUser = useQuery({
+    queryKey: ['getUsers'],
+    queryFn: IS_INSIDE_TAURI
+      ? userManagementApi.getAllUser
+      : userManagementCommand.getAllUser
+  })
+
+  const getById = (id: number) => useQuery({
+    queryKey: ['getById', id],
+    queryFn: () => IS_INSIDE_TAURI
+      ? userManagementApi.getById(id)
+      : userManagementCommand.getById(id),
+    enabled: !!id
+  })
+
+  const getAllActiveUser = useQuery({
+    queryKey: ['getAllActiveUser'],
+    queryFn: IS_INSIDE_TAURI
+      ? userManagementApi.getAllActiveUser
+      : userManagementCommand.getAllActiveUser
+  })
+
+  const createNewUser = useMutation({
+    onSuccess: () => queryClient.invalidateQueries({
+      queryKey: ['getUsers']
+    }),
+
+    mutationFn: IS_INSIDE_TAURI
+      ? userManagementCommand.createNewUser
+      : userManagementApi.createNewUser,
+  })
+
+  const insertNewUser = useMutation({
+    onSuccess: () => queryClient.invalidateQueries({
+      queryKey: ['getUsers']
+    }),
+
+    mutationFn: IS_INSIDE_TAURI
+      ? userManagementCommand.insertNewUser
+      : userManagementApi.insertNewUser,
+  })
+
+  const upsertUser = useMutation({
+    onSuccess: () => queryClient.invalidateQueries({
+      queryKey: ['getUsers']
+    }),
+
+    mutationFn: IS_INSIDE_TAURI
+      ? userManagementCommand.upsertUser
+      : userManagementApi.upsertUser,
+  })
+
+
+  return {
+    getById,
+    getAllUser,
+    createNewUser,
+    insertNewUser,
+    getAllActiveUser,
+    upsertUser
   }
 }
 

@@ -5,6 +5,7 @@ import CustomerMoneyTab from './components/CustomerMoneyTab';
 import 'react-simple-keyboard/build/css/index.css';
 import './UserManagementPage.css';
 import UpdateDregPriceTab from './components/UpdateDregPriceTab';
+import { useUserManagement } from '@/commands';
 
 enum UserManagementTabs {
   CreateNewCustomer = "Create New Customer",
@@ -14,6 +15,13 @@ enum UserManagementTabs {
 }
 
 export default function UserManagementPage() {
+
+  // TODO: create general usage of this hook.
+  // const { getById, createNewUser } = useUserManagement()
+  //
+  // const { isPending } = getById(1)
+  // createNewUser.mutate("hohoho")
+
   return (
     <Box>
       <Tabs.Root defaultValue={UserManagementTabs.CreateNewCustomer}>

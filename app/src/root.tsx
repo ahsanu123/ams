@@ -11,16 +11,20 @@ import asmLogo from './svg/ams-icon.svg'
 import { ChakraProvider, createSystem, defaultConfig } from "@chakra-ui/react";
 import { Toaster } from "./utility";
 import { IS_INSIDE_TAURI } from "./constants";
+import { QueryClientProvider } from "@tanstack/react-query";
+import { queryClient } from "./commands";
 import "react-datepicker/dist/react-datepicker.css"
 
 const system = createSystem(defaultConfig);
 
 export default function Root() {
   return (
-    <ChakraProvider value={system}>
-      <Toaster />
-      <Outlet />
-    </ChakraProvider>
+    <QueryClientProvider client={queryClient}>
+      <ChakraProvider value={system}>
+        <Toaster />
+        <Outlet />
+      </ChakraProvider>
+    </QueryClientProvider>
   )
 }
 
