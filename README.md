@@ -39,7 +39,8 @@ The goal of AMS is to deliver a simple, fast, and reliable system tailored for p
 
 ### 🎻 Current UI  
 
-  <img alt="gif" src="./docs/ams.gif">
+<img width="1322" height="610" alt="image" src="https://github.com/user-attachments/assets/ed91b689-87b3-451a-9770-bea744d44272" />
+<img alt="gif" src="./docs/ams.gif">
   
 ## 🎏 Useful Notes 
 

@@ -5,7 +5,7 @@ import { AdminRoutes, AppRoutes } from "@/routes";
 import { useMainLayoutStore } from "@/state";
 import { Box, Breadcrumb, Button, CloseButton, Dialog, Flex, Heading, Image, Portal, Stack, Text } from "@chakra-ui/react";
 import React, { useEffect } from "react";
-import { AiFillCopyrightCircle, AiFillHome } from "react-icons/ai";
+import { AiFillCopyrightCircle, AiFillHeart, AiFillHome } from "react-icons/ai";
 import { Outlet, useNavigate } from "react-router";
 import Clock from "../component/Clock";
 import amsLogo from "../svg/ams-icon.svg";
@@ -118,17 +118,31 @@ export default function AdminLayout() {
                 <Dialog.Content>
 
                   <Dialog.Header>
-                    <Dialog.Title>AMS - About</Dialog.Title>
+                    <Flex alignItems={'center'} gap={'10px'}>
+                      <Image
+                        src={amsLogo}
+                        height={30}
+                        width={35}
+                      />
+                      <Dialog.Title>AMS - About</Dialog.Title>
+                    </Flex>
                   </Dialog.Header>
 
                   <Dialog.Body>
-                    <Heading>
-                      {IS_INSIDE_TAURI ? "IS_INSIDE_TAURI" : "INSIDE_VITE_ENV"}
-                    </Heading>
                     <p>
                       Ampas Management System (AMS) is a personal project designed to modernize and streamline the selling workflow of soybean dregs (ampas). It helps simplify daily operations by providing an organized, reliable system to record sales, track transactions, and manage day-to-day data with ease.
                     </p>
                   </Dialog.Body>
+
+                  <Dialog.Footer>
+                    <Flex alignItems={'center'} gap={'10px'}>
+                      Made With
+                      <AiFillHeart size={'26px'} color='red' />
+                      By Ah.
+                      {' '}
+                      {IS_INSIDE_TAURI ? "IS_INSIDE_TAURI" : "INSIDE_VITE_ENV"}
+                    </Flex>
+                  </Dialog.Footer>
 
                   <Dialog.CloseTrigger asChild>
                     <CloseButton size="sm" />

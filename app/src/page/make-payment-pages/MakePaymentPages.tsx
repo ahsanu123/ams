@@ -5,7 +5,7 @@ import Scroller from "@/component/Scroller"
 import { EMPTY_HEADER_INFORMATION } from "@/constants"
 import { useMainLayoutStore } from "@/state"
 import { formatAsRupiah, formatDateId, fromFormData, toFormData } from "@/utility"
-import { Avatar, Badge, Box, Button, Card, DataList, Flex, Heading, Stack, Table, Tabs, Text } from "@chakra-ui/react"
+import { Avatar, Badge, Box, Button, Card, createListCollection, DataList, Flex, Heading, Portal, Select, Stack, Table, Tabs, Text } from "@chakra-ui/react"
 import { format, setMonth } from "date-fns"
 import { id } from "date-fns/locale"
 import React, { useEffect, useState } from "react"
@@ -101,6 +101,13 @@ export default function MakePaymentPage({
 
   const oneYearRecords = useMakePaymentPageState(state => state.oneYearRecords)
   const setOneYearRecords = useMakePaymentPageState(state => state.setOneYearRecrods)
+
+  const selectListCustomer = createListCollection({
+    items: listCustomer.map((customer) => ({
+      label: customer.username,
+      value: customer.id.toString()
+    }))
+  })
 
   // TODO: move this to state 
   const [dregPrices, setDregPrices] = useState<DregPriceModel[]>([])
@@ -253,6 +260,7 @@ export default function MakePaymentPage({
       {pageModel !== undefined && (
         <Scroller
           title="Catatan"
+          minHeight='700px'
         >
           {pageModel.takingRecords.length <= 0 && (<b>Data Kosong</b>)}
 
@@ -535,21 +543,48 @@ export default function MakePaymentPage({
           <Heading>
             Pilih Nama
           </Heading>
-          <select
-            onChange={(event) => setSelectedCustomer(listCustomer.find(pr => pr.id === Number(event.currentTarget.value)))}
-          >
-            <option value="">Nama</option>
-            {
-              listCustomer.map((customer, index) => (
-                <option
-                  key={index}
-                  value={customer.id}
-                >
-                  {customer.username}
-                </option>
-              ))
-            }
-          </select>
+
+          <Select.Root
+            size={'lg'}
+            value={selectedCustomer ? [selectedCustomer.id.toString()] : []}
+            collection={selectListCustomer}
+            onValueChange={(e) => {
+              if (e.value[0] !== undefined)
+                setSelectedCustomer(
+                  listCustomer.find(pr => pr.id === Number(e.value[0]))
+                )
+            }}>
+
+            <Select.HiddenSelect />
+
+            <Select.Control>
+              <Select.Trigger textStyle={'lg'}>
+                <Select.ValueText placeholder="Pilih Nama" />
+              </Select.Trigger>
+            </Select.Control>
+
+            <Portal>
+
+              <Select.Positioner>
+                <Select.Content>
+                  {
+                    selectListCustomer.items.map((item) => (
+                      <Select.Item
+                        item={item}
+                        key={item.value}>
+
+                        <Text textStyle={'lg'}>{item.label}</Text>
+                        <Select.ItemIndicator />
+
+                      </Select.Item>
+                    ))
+                  }
+                </Select.Content>
+              </Select.Positioner>
+
+            </Portal>
+
+          </Select.Root>
 
           <Heading>
             Pilih Bulan dan Tahun
@@ -577,7 +612,6 @@ export default function MakePaymentPage({
         {showDetailTaking && pageModel !== undefined && (
           <Box className="tabs-container">
             <Tabs.Root
-              variant={'outline'}
               value={activeTab}
               onValueChange={(e) => setActiveTab(e.value)}
               defaultValue={ListTabEnum.CustomerTakingRecordDetail}>

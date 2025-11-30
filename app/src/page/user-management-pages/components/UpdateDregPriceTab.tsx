@@ -2,7 +2,7 @@ import type { DregPriceModel } from "@/api-models";
 import { dregPriceCommand } from "@/commands";
 import Scroller from "@/component/Scroller";
 import { formatAsRupiah, formatDateId, numberLayout, textOrNumberKeyboardDisplay, toaster } from "@/utility";
-import { Box, Button, Flex, Heading, NumberInput, Stack, Table } from "@chakra-ui/react";
+import { Button, Flex, Heading, NumberInput, Stack, Table } from "@chakra-ui/react";
 import { useEffect, useRef, useState } from "react";
 import Keyboard, { type SimpleKeyboard } from "react-simple-keyboard";
 
@@ -52,7 +52,7 @@ export default function UpdateDregPriceTab() {
         </Table.Header>
         <Table.Body>
           {
-            prices.reverse().map(price =>
+            prices.map(price =>
               <Table.Row>
                 <Table.Cell>
                   {formatDateId(price.createdDate)}
