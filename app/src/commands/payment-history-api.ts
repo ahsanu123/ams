@@ -2,6 +2,7 @@ import type { PaymentHistoryModel } from "@/api-models"
 import { API_ENDPOINT, IS_INSIDE_TAURI } from "@/constants"
 import { asConstant, asJson, post, transformObjectDates } from "./fetch-wrapper"
 import { invoke } from "@tauri-apps/api/core"
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 
 const GET_MONTH_SUMMARY = "/payment/get-month-summary"
 const GET_PAYMENT_RECORD = "/payment/get-payment-record"
@@ -68,4 +69,46 @@ const paymentHistoryTauriCommand: IPaymentHistoryApi = {
   }
 }
 
-export const paymentHistoryCommand = IS_INSIDE_TAURI ? paymentHistoryTauriCommand : paymentHistoryApi 
+export const paymentHistoryCommand = IS_INSIDE_TAURI ? paymentHistoryTauriCommand : paymentHistoryApi
+
+export function usePaymentHistoryCommand() {
+  const queryClient = useQueryClient()
+
+  const getMonthSummary = (date: Date) => useQuery({
+    queryKey: ['getMonthSummary '],
+    queryFn: () => paymentHistoryCommand.getMonthSummary(date)
+  })
+
+  const getPaymentRecord = (userId: number) => useQuery({
+    queryKey: ['getPaymentRecord '],
+    queryFn: () => paymentHistoryCommand.getPaymentRecord(userId)
+  })
+
+  const getPaymentRecordByUserIdAndMonth = (userId: number, date: Date) => useQuery({
+    queryKey: ['getPaymentRecordByUserIdAndMonth '],
+    queryFn: () => paymentHistoryCommand.getPaymentRecordByUserIdAndMonth(userId, date)
+  })
+
+  const updateBulkPaymentRecord = (records: PaymentHistoryModel, paid: boolean) => useMutation({
+    onSuccess: () => queryClient.invalidateQueries({
+      queryKey: ['getPaymentRecord']
+    }),
+    mutationFn: () => paymentHistoryCommand.updateBulkPaymentRecord(records, paid)
+  })
+
+  const updatePaymentRecord = (record: PaymentHistoryModel) => useMutation({
+    onSuccess: () => queryClient.invalidateQueries({
+      queryKey: ['getPaymentRecord']
+    }),
+    mutationFn: () => paymentHistoryCommand.updatePaymentRecord(record)
+  })
+
+  return {
+    getMonthSummary,
+    getPaymentRecord,
+    getPaymentRecordByUserIdAndMonth,
+    updateBulkPaymentRecord,
+    updatePaymentRecord,
+  }
+}
+

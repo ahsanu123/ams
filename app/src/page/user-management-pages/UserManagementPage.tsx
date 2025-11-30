@@ -5,7 +5,7 @@ import CustomerMoneyTab from './components/CustomerMoneyTab';
 import 'react-simple-keyboard/build/css/index.css';
 import './UserManagementPage.css';
 import UpdateDregPriceTab from './components/UpdateDregPriceTab';
-import { useUserManagement } from '@/commands';
+import { useUserManagementCommand } from '@/commands';
 
 enum UserManagementTabs {
   CreateNewCustomer = "Create New Customer",

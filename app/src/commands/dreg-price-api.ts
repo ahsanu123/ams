@@ -2,6 +2,7 @@ import type { DregPriceModel } from "@/api-models"
 import { API_ENDPOINT, IS_INSIDE_TAURI } from "@/constants"
 import { asJson, get, post } from "./fetch-wrapper"
 import { invoke } from "@tauri-apps/api/core"
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 
 const GET_LATEST_DREG_PRICE = "/dreg-price/get-latest-dreg-price"
 const GET_ALL_DREG_PRICE = "/dreg-price/get-all-price"
@@ -41,3 +42,31 @@ const dregPriceTauriCommand: IDregPriceApi = {
 }
 
 export const dregPriceCommand = IS_INSIDE_TAURI ? dregPriceTauriCommand : dregPriceApi
+
+export function useDregPriceCommand() {
+
+  const queryClient = useQueryClient()
+
+  const getLatestDregPrice = useQuery({
+    queryKey: ['getLatestDregPrice'],
+    queryFn: dregPriceCommand.getLatestDregPrice
+  })
+
+  const getAllDregPrice = useQuery({
+    queryKey: ['getAllDregPrice'],
+    queryFn: dregPriceCommand.getLatestDregPrice
+  })
+  const updateDregPrice = (newPrice: number) => useMutation({
+    onSuccess: () => queryClient.invalidateQueries({
+      queryKey: ['getAllDregPrice', 'getLatestDregPrice']
+    }),
+    mutationFn: () => dregPriceCommand.updateDregPrice(newPrice)
+  })
+
+  return {
+    getLatestDregPrice,
+    updateDregPrice,
+    getAllDregPrice,
+  }
+}
+

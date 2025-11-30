@@ -1,5 +1,5 @@
 import type { UserModel } from "@/api-models"
-import { useMutation, useQuery, useQueryClient, type UseQueryResult } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { API_ENDPOINT, IS_INSIDE_TAURI } from "@/constants"
 import { asConstant, asJson, get, post } from "./fetch-wrapper"
 import { invoke } from "@tauri-apps/api/core"
@@ -75,62 +75,51 @@ const userManagementTauriCommand: IUserManagementApi = {
   }
 }
 
-export function useUserManagement() {
+export const userManagementCommand = IS_INSIDE_TAURI ? userManagementTauriCommand : userManagementApi
+
+export function useUserManagementCommand() {
 
   const queryClient = useQueryClient()
 
   const getAllUser = useQuery({
     queryKey: ['getUsers'],
-    queryFn: IS_INSIDE_TAURI
-      ? userManagementApi.getAllUser
-      : userManagementCommand.getAllUser
-  })
-
-  const getById = (id: number) => useQuery({
-    queryKey: ['getById', id],
-    queryFn: () => IS_INSIDE_TAURI
-      ? userManagementApi.getById(id)
-      : userManagementCommand.getById(id),
-    enabled: !!id
+    queryFn: userManagementCommand.getAllUser
   })
 
   const getAllActiveUser = useQuery({
     queryKey: ['getAllActiveUser'],
-    queryFn: IS_INSIDE_TAURI
-      ? userManagementApi.getAllActiveUser
-      : userManagementCommand.getAllActiveUser
+    queryFn: userManagementCommand.getAllActiveUser
   })
 
-  const createNewUser = useMutation({
+  const getById = (id: number) => useQuery({
+    queryKey: ['getById', id],
+    queryFn: () => userManagementCommand.getById(id),
+    enabled: !!id
+  })
+
+  const createNewUser = (username: string) => useMutation({
     onSuccess: () => queryClient.invalidateQueries({
       queryKey: ['getUsers']
     }),
 
-    mutationFn: IS_INSIDE_TAURI
-      ? userManagementCommand.createNewUser
-      : userManagementApi.createNewUser,
+    mutationFn: () => userManagementCommand.createNewUser(username)
   })
 
-  const insertNewUser = useMutation({
+  const insertNewUser = (user: UserModel) => useMutation({
     onSuccess: () => queryClient.invalidateQueries({
       queryKey: ['getUsers']
     }),
 
-    mutationFn: IS_INSIDE_TAURI
-      ? userManagementCommand.insertNewUser
-      : userManagementApi.insertNewUser,
+    mutationFn: () => userManagementCommand.insertNewUser(user)
   })
 
-  const upsertUser = useMutation({
+  const upsertUser = (user: UserModel) => useMutation({
     onSuccess: () => queryClient.invalidateQueries({
       queryKey: ['getUsers']
     }),
 
-    mutationFn: IS_INSIDE_TAURI
-      ? userManagementCommand.upsertUser
-      : userManagementApi.upsertUser,
+    mutationFn: () => userManagementCommand.upsertUser(user)
   })
-
 
   return {
     getById,
@@ -142,4 +131,3 @@ export function useUserManagement() {
   }
 }
 
-export const userManagementCommand = IS_INSIDE_TAURI ? userManagementTauriCommand : userManagementApi

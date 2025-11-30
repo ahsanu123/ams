@@ -2,11 +2,11 @@ import type { MoneyHistoryModel, UserModel } from "@/api-models"
 import { API_ENDPOINT, IS_INSIDE_TAURI } from "@/constants"
 import { asJson, del, post } from "./fetch-wrapper"
 import { invoke } from '@tauri-apps/api/core'
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 
 const CUSTOMER_ADD_MONEY = "/customer/add-money"
 const CUSTOMER_GET_ALL_USER_MONEY = "/customer/get-all-user-money"
 const CUSTOMER_DELETE = "/customer/delete"
-
 
 interface ICustomerMoneyApi {
   addMoney: (userId: number, amount: number) => Promise<UserModel>
@@ -49,3 +49,34 @@ const customerMoneyTauriCommand: ICustomerMoneyApi = {
 }
 
 export const customerMoneyCommand = IS_INSIDE_TAURI ? customerMoneyTauriCommand : customerMoneyApi
+
+export function useCustomerMoneyCommand() {
+  const queryClient = useQueryClient()
+
+  const addMoney = (userId: number, amount: number) => useMutation({
+    onSuccess: () => queryClient.invalidateQueries({
+      queryKey: ['getAllUserMoneyHistory ']
+    }),
+    mutationFn: () => customerMoneyCommand.addMoney(userId, amount)
+  })
+
+  const getAllUserMoneyHistory = (userId: number) => useQuery({
+    queryKey: ['getAllUserMoneyHistory'],
+    queryFn: () => customerMoneyTauriCommand.getAllUserMoneyHistory(userId)
+  })
+
+  const deleteUser = (userId: number) => useMutation({
+    onSuccess: () => queryClient.invalidateQueries({
+      queryKey: ['getAllUserMoneyHistory'],
+    }),
+    mutationFn: () => customerMoneyTauriCommand.deleteUser(userId)
+  })
+
+  return {
+    addMoney,
+    getAllUserMoneyHistory,
+    deleteUser,
+  }
+
+}
+

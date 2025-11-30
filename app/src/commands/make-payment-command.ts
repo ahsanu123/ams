@@ -1,7 +1,8 @@
-import type { MakePaymentPageModel, MoneyHistoryModel, UserModel } from "@/api-models"
+import type { MakePaymentPageModel } from "@/api-models"
 import { API_ENDPOINT, IS_INSIDE_TAURI } from "@/constants"
 import { asJson, post, transformObjectDates } from "./fetch-wrapper"
 import { invoke } from "@tauri-apps/api/core"
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 
 const GET_PAGE_MODEL = "/make-payment-page/get-page-model"
 const MAKE_PAYMENT = "/make-payment-page/make-payment"
@@ -41,4 +42,25 @@ const makePaymentTauriCommand: IMakePaymentCommand = {
 }
 
 export const makePaymentCommand = IS_INSIDE_TAURI ? makePaymentTauriCommand : makePaymentApi
+
+export function useMakePaymentCommand() {
+  const queryClient = useQueryClient()
+
+  const getPageModel = (userId: number, date: Date) => useQuery({
+    queryKey: ['getPageModel'],
+    queryFn: () => makePaymentCommand.getPageModel(userId, date)
+  })
+
+  const makePayment = (userId: number, date: Date) => useMutation({
+    onSuccess: () => queryClient.invalidateQueries({
+      queryKey: ['getPageModel']
+    }),
+    mutationFn: () => makePaymentCommand.makePayment(userId, date)
+  })
+
+  return {
+    getPageModel,
+    makePayment,
+  }
+}
 

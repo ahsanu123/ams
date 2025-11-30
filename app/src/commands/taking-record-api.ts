@@ -2,6 +2,7 @@ import type { TakingRecordModel } from "@/api-models"
 import { API_ENDPOINT, IS_INSIDE_TAURI } from "@/constants"
 import { invoke } from "@tauri-apps/api/core"
 import { asConstant, asJson, del, post, transformObjectDates } from "./fetch-wrapper"
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 
 const ADD_NEW_TAKING_RECORD = "/taking-record/add-new-taking-record"
 const ADD_NEW_TAKING_RECORD_BY_DATE = "/taking-record/add-new-taking-record-by-date"
@@ -132,3 +133,89 @@ const takingRecordTauriCommand: ITakingRecordApi = {
 }
 
 export const takingRecordCommand = IS_INSIDE_TAURI ? takingRecordTauriCommand : takingRecordApi
+
+export function useTakingRecordCommand() {
+
+  const queryClient = useQueryClient()
+
+  const addNewtakingRecord = (user_id: number, amount: number) => useMutation({
+    onSuccess: () => queryClient.invalidateQueries({
+      queryKey: ['getTakingRecords']
+    }),
+    mutationFn: () => takingRecordCommand.addNewTakingRecord(user_id, amount)
+  })
+
+  const addNewTakingRecordByDate = (userId: number, amount: number, date: Date) => useMutation({
+    onSuccess: () => queryClient.invalidateQueries({
+      queryKey: ['getTakingRecords']
+    }),
+    mutationFn: () => takingRecordCommand.addNewTakingRecordByDate(userId, amount, date)
+  })
+
+  const getTakingRecordByUserId = (userId: number) => useQuery({
+    queryKey: ['getTakingRecordByUserId'],
+    queryFn: () => takingRecordCommand.getTakingRecordByUserId(userId)
+  })
+
+  const upsertTakingRecord = (record: TakingRecordModel) => useMutation({
+    onSuccess: () => queryClient.invalidateQueries({
+      queryKey: ['getTakingRecords'],
+    }),
+    mutationFn: () => takingRecordCommand.upsertTakingRecord(record)
+  })
+
+  const upsertTakingRecordByDate = (amount: number, date: Date, userId: number) => useMutation({
+
+    onSuccess: () => queryClient.invalidateQueries({
+      queryKey: ['getTakingRecords'],
+    }),
+    mutationFn: () => takingRecordCommand.upsertTakingRecordByDate(amount, date, userId)
+  })
+
+  const getTakingRecordByMonth = (date: Date) => useQuery({
+    queryKey: ['getTakingRecordByMonth '],
+    queryFn: () => takingRecordCommand.getTakingRecordByMonth(date)
+  })
+
+  const getTakingRecordByUserIdAndMonth = (userId: number, date: Date) => useQuery({
+    queryKey: ['getTakingRecordByUserIdAndMonth'],
+    queryFn: () => takingRecordCommand.getTakingRecordByUserIdAndMonth(userId, date)
+  })
+
+  const getTakingRecordByUserIdAndYear = (userId: number, date: Date) => useQuery({
+    queryKey: ['getTakingRecordByUserIdAndYear'],
+    queryFn: () => takingRecordCommand.getTakingRecordByUserIdAndYear(userId, date)
+  })
+
+  const getTakingRecordByUserIdAndRangeMonth = (userId: number, from: Date, to: Date) => useQuery({
+    queryKey: ['getTakingRecordByUserIdAndRangeMonth'],
+    queryFn: () => takingRecordCommand.getTakingRecordByUserIdAndRangeMonth(userId, from, to)
+  })
+
+  const deleteTakingRecordById = (takingRecordId: number) => useMutation({
+    onSuccess: () => queryClient.invalidateQueries({
+      queryKey: ['getTakingRecords']
+    }),
+    mutationFn: () => takingRecordCommand.deleteTakingRecordById(takingRecordId)
+  })
+
+  const getTakingRecordByDay = (date: Date) => useQuery({
+    queryKey: ['getTakingRecordByDay'],
+    queryFn: () => takingRecordCommand.getTakingRecordByDay(date)
+  })
+
+  return {
+    addNewtakingRecord,
+    addNewTakingRecordByDate,
+    getTakingRecordByUserId,
+    upsertTakingRecord,
+    upsertTakingRecordByDate,
+    getTakingRecordByMonth,
+    getTakingRecordByUserIdAndMonth,
+    getTakingRecordByUserIdAndYear,
+    getTakingRecordByUserIdAndRangeMonth,
+    deleteTakingRecordById,
+    getTakingRecordByDay
+  }
+}
+
