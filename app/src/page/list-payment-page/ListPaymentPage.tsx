@@ -3,7 +3,7 @@ import Scroller from "@/component/Scroller";
 import { EMPTY_HEADER_INFORMATION } from "@/constants";
 import { useMainLayoutStore } from "@/state";
 import { dataListItemValue, formatAsRupiah, formatDateId } from "@/utility";
-import { Badge, Image, Box, Card, DataList, Flex, Heading, Stack, Table } from "@chakra-ui/react";
+import { Badge, Box, Card, DataList, Flex, Heading, Image, Stack, Table } from "@chakra-ui/react";
 import { useEffect } from "react";
 import DatePicker from "react-datepicker";
 import type { Route } from "./+types/ListPaymentPage";

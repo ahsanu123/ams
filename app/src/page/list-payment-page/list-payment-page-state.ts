@@ -1,4 +1,4 @@
-import type { MakePaymentPageModel, MoneyHistoryModel, PaymentHistoryModel, TakingRecordModel, UserModel } from '@/api-models'
+import type { MakePaymentPageModel, MoneyHistoryModel, PaymentHistoryModel, UserModel } from '@/api-models'
 import { create } from 'zustand'
 import { immer } from 'zustand/middleware/immer'
 

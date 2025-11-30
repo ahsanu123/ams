@@ -3,7 +3,6 @@ import { immer } from 'zustand/middleware/immer'
 import type { Product, HeaderInformation } from 'model'
 import { AppRoutes } from '@/routes'
 import { getCookie, type AuthenticationCookieData, type ICalendarCell } from '@/utility'
-import { generateMockProduct } from '@/mock'
 import type { TakingRecordModel, UserModel } from '@/api-models'
 
 interface MainLayoutStore {
@@ -64,7 +63,7 @@ export const useMainLayoutStore = create<MainLayoutStore>()(
     },
 
     // mocked
-    products: generateMockProduct(),
+    products: [],
     addProduct: (product) => {
       set((state) => {
         state.products.push(product)

@@ -5,10 +5,10 @@ import VirtualKeypad from "@/component/VirtualKeypad";
 import { EMPTY_HEADER_INFORMATION } from "@/constants";
 import { useMainLayoutStore } from "@/state";
 import { fromFormData, toFormData } from "@/utility";
+import { Box, Button, Flex, Grid, GridItem, Stack } from "@chakra-ui/react";
 import { useEffect } from "react";
 import { useFetcher } from "react-router";
 import type { Route } from "./+types/CustomerTakingPage";
-import { Box, Button, Flex, Grid, GridItem, Stack } from "@chakra-ui/react";
 import './CustomerTakingPage.css';
 
 interface IAddTakingRecordClientRequest {

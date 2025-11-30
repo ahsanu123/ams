@@ -33,7 +33,7 @@ export default function CustomerMoneyTab() {
         .then((customer) => setSelectedCustomer(customer))
 
       toaster.create({
-        title: `Berhasil Menambahakan ${formatAsRupiah(MINIMUM_ADD_MONEY)} ke ${selectedCustomer.username}`,
+        title: `Berhasil Menambahakan ${formatAsRupiah(addMoneyAmount)} ke ${selectedCustomer.username}`,
         type: 'success'
       });
       return;
@@ -78,7 +78,7 @@ export default function CustomerMoneyTab() {
                   <Stack>
                     <Flex alignItems={'center'} gap={5}>
                       <Avatar.Root>
-                        <Avatar.Fallback name='user name' />
+                        <Avatar.Fallback name={customer.username} />
                       </Avatar.Root>
                       <Text>
                         {customer.username}

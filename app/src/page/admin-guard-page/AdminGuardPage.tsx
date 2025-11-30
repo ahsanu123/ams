@@ -2,12 +2,12 @@ import { LOGGED_ADMIN_INFORMATION_MESSAGE, NOT_LOGGED_ADMIN_INFORMATION_MESSAGE 
 import { AdminRoutes, AppRoutes } from '@/routes';
 import { useMainLayoutStore } from '@/state';
 import { calculatePassword, toaster } from '@/utility';
+import { Box, Button, Stack } from '@chakra-ui/react';
 import { useEffect } from 'react';
+import { AiOutlineArrowLeft } from 'react-icons/ai';
 import { useNavigate } from 'react-router';
 import VirtualKeypad from '../../component/VirtualKeypad';
 import './AdminGuardPage.css';
-import { Box, Button, Stack } from '@chakra-ui/react';
-import { AiOutlineArrowLeft } from 'react-icons/ai';
 
 
 export default function AdminGuardComponent() {
@@ -33,11 +33,6 @@ export default function AdminGuardComponent() {
         title: 'wrong password',
         type: 'error'
       })
-  }
-
-  const handleOnLogOut = () => {
-    setHeaderInformation(NOT_LOGGED_ADMIN_INFORMATION_MESSAGE)
-    setIsAdmin(false)
   }
 
   const handleOnBackButtonClicked = () => navigate(`${AppRoutes.Root}`)

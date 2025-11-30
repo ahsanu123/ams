@@ -1,6 +1,6 @@
 import { Stack, Text, Heading, Center } from "@chakra-ui/react";
 
-export default function ReportPage() {
+export default function AdminPage() {
   return (
     <Center
       backgroundSize={'contain'}

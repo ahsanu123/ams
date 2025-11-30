@@ -5,7 +5,7 @@ import { addMonths } from "date-fns"
 import React, { useEffect, useState } from "react"
 import CalendarCellComponent from "./CalendarCell"
 import "./Calendar.css"
-import { AiFillCaretLeft, AiFillCaretRight, AiOutlineCaretLeft, AiOutlineCaretRight, AiOutlineEnvironment, AiOutlineUser } from "react-icons/ai"
+import { AiFillCaretLeft, AiFillCaretRight, AiFillMoon, AiOutlineCaretLeft, AiOutlineCaretRight, AiOutlineEnvironment, AiOutlineUser } from "react-icons/ai"
 import { userManagementCommand } from '../commands/user-management-api'
 import { takingRecordCommand } from "@/commands"
 
@@ -144,8 +144,7 @@ export default function Calendar(props: CalendarProps) {
 
   }, [user, month])
 
-  const headerText = `🌕 
-                      ${date.toLocaleDateString("id-id", { month: 'long' })} 
+  const headerText = `${date.toLocaleDateString("id-id", { month: 'long' })} 
                       ${date.toLocaleDateString("id-id", { year: 'numeric' })} 
                       ${title ? ` - ${title}` : ""}`
 
@@ -153,7 +152,10 @@ export default function Calendar(props: CalendarProps) {
     <Box className="calendar">
       <Flex className="calendar-flex">
         <Heading minWidth={250} size={'2xl'}>
-          {headerText}
+          <Flex alignItems={'center'} gap={'15px'}>
+            <AiFillMoon size={'36px'} color='orange' />
+            {headerText}
+          </Flex>
         </Heading>
 
         {

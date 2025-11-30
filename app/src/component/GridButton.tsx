@@ -3,14 +3,12 @@ import "./GridButton.css"
 interface GridButtonProps {
   buttons: string[]
   onClick: (key: string) => void
-  breakpoint?: number
 }
 
 export default function GridButton(props: GridButtonProps) {
   const {
     buttons,
     onClick,
-    breakpoint = 3,
   } = props;
 
   return (

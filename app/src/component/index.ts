@@ -1,6 +1,4 @@
 export * from './VirtualKeypad'
 export * from './DregInputKeyboard'
 export * from './VirtualKeyboard'
-export * from './MenuTree'
 export * from './Scroller'
-export * from './Tab'

@@ -1,11 +1,11 @@
-import type { MakePaymentPageModel, RangePaymentInfo, TakingRecordWithPrice, UserModel } from "@/api-models"
-import { makePaymentCommand, takingRecordCommand, userManagementCommand } from "@/commands"
+import type { DregPriceModel, MakePaymentPageModel, RangePaymentInfo, TakingRecordWithPrice, UserModel } from "@/api-models"
+import { dregPriceCommand, makePaymentCommand, takingRecordCommand, userManagementCommand } from "@/commands"
 import Calendar from "@/component/Calendar"
 import Scroller from "@/component/Scroller"
 import { EMPTY_HEADER_INFORMATION } from "@/constants"
 import { useMainLayoutStore } from "@/state"
 import { formatAsRupiah, formatDateId, fromFormData, toFormData } from "@/utility"
-import { Badge, Box, Button, Card, DataList, Flex, Heading, Stack, Table, Tabs, Text } from "@chakra-ui/react"
+import { Avatar, Badge, Box, Button, Card, DataList, Flex, Heading, Stack, Table, Tabs, Text } from "@chakra-ui/react"
 import { format, setMonth } from "date-fns"
 import { id } from "date-fns/locale"
 import React, { useEffect, useState } from "react"
@@ -103,6 +103,7 @@ export default function MakePaymentPage({
   const setOneYearRecords = useMakePaymentPageState(state => state.setOneYearRecrods)
 
   // TODO: move this to state 
+  const [dregPrices, setDregPrices] = useState<DregPriceModel[]>([])
   const [fromDate, setFromDate] = useState<Date | undefined>(undefined)
   const [toDate, setToDate] = useState<Date | undefined>(undefined)
   const [dateOpen, setDateOpen] = useState(false)
@@ -163,7 +164,13 @@ export default function MakePaymentPage({
       <Card.Header>
         <Flex className="card-header">
           <Heading>
-            {selectedCustomer?.username}
+            <Flex gap={'15px'} alignItems={'center'}>
+              <Avatar.Root>
+                <Avatar.Fallback name={selectedCustomer?.username} />
+              </Avatar.Root>
+
+              <Text>{selectedCustomer?.username}</Text>
+            </Flex>
           </Heading>
           {
             record.takingRecord.isPaid
@@ -216,6 +223,8 @@ export default function MakePaymentPage({
                   <Table.Row>
                     <Table.ColumnHeader>Date</Table.ColumnHeader>
                     <Table.ColumnHeader>Amount</Table.ColumnHeader>
+                    <Table.ColumnHeader>Harga Satuan</Table.ColumnHeader>
+                    <Table.ColumnHeader>Harga Ambil</Table.ColumnHeader>
                   </Table.Row>
                 </Table.Header>
                 <Table.Body>
@@ -225,6 +234,8 @@ export default function MakePaymentPage({
                         <Table.Row key={record.id}>
                           <Table.Cell>{formatDateId(record.takenDate)}</Table.Cell>
                           <Table.Cell>{record.amount}</Table.Cell>
+                          <Table.Cell>{formatAsRupiah(dregPrices.find(pr => pr.id === record.priceId)?.price ?? 0)}</Table.Cell>
+                          <Table.Cell>{formatAsRupiah((dregPrices.find(pr => pr.id === record.priceId)?.price ?? 0) * record.amount)}</Table.Cell>
                         </Table.Row>
                       ))}
                 </Table.Body>
@@ -315,7 +326,7 @@ export default function MakePaymentPage({
       </label>
 
       {
-        rangeRecords
+        !rangeRecords
         && fromDate
         && toDate
         && <Heading>
@@ -336,13 +347,43 @@ export default function MakePaymentPage({
             </Card.Header>
 
             <Card.Body>
-              <DataList.Root>
+              <Flex>
+                <Box>
+                  <Card.Header>
+                    <Heading>
+                      Total Ambil
+                    </Heading>
+                  </Card.Header>
 
-                {dataListItemValue('Total', `${rangeRecords.detailInformation.totalAmount} Ampas`)}
-                {dataListItemValue('Terbayar', `${rangeRecords.detailInformation.paidAmount} Ampas`)}
-                {dataListItemValue('Belum Terbayar', `${rangeRecords.detailInformation.unpaidAmount} Ampas`)}
+                  <Card.Body>
+                    <DataList.Root>
 
-              </DataList.Root>
+                      {dataListItemValue('Total', `${rangeRecords.detailInformation.totalAmount} Ampas`)}
+                      {dataListItemValue('Terbayar', `${rangeRecords.detailInformation.paidAmount} Ampas`)}
+                      {dataListItemValue('Belum Terbayar', `${rangeRecords.detailInformation.unpaidAmount} Ampas`)}
+
+                    </DataList.Root>
+                  </Card.Body>
+                </Box>
+
+                <Box>
+                  <Card.Header>
+                    <Heading>
+                      Tagihan
+                    </Heading>
+                  </Card.Header>
+
+                  <Card.Body>
+                    <DataList.Root>
+
+                      {dataListItemValue('Total', `${formatAsRupiah(rangeRecords.detailInformation.totalBill)}`)}
+                      {dataListItemValue('Terbayar', `${formatAsRupiah(rangeRecords.detailInformation.paidBill)}`)}
+                      {dataListItemValue('Belum Terbayar', `${formatAsRupiah(rangeRecords.detailInformation.unpaidBill)}`)}
+
+                    </DataList.Root>
+                  </Card.Body>
+                </Box>
+              </Flex>
             </Card.Body>
 
           </Card.Root>
@@ -413,14 +454,20 @@ export default function MakePaymentPage({
     )
   }
 
-  useEffect(() => {
+  const getRangeRecords = () => {
     if (selectedCustomer && fromDate && toDate)
       takingRecordCommand.getTakingRecordByUserIdAndRangeMonth(selectedCustomer.id, fromDate, toDate)
         .then((records) => setRangeRecords(records))
+  }
+
+  useEffect(() => {
+    getRangeRecords()
 
   }, [fromDate, toDate, selectedCustomer])
 
   useEffect(() => {
+    dregPriceCommand.getAllDregPrice().then(prices => setDregPrices(prices))
+
     setListCustomer(activeCustomer)
     setHeaderInformation({
       title: 'Make Payment Page',
@@ -458,7 +505,7 @@ export default function MakePaymentPage({
       setPageModel(fetcher.data.pageModel)
       setShowDetailTaking(true)
     }
-
+    getRangeRecords()
   }, [fetcher.data])
 
 
@@ -530,6 +577,7 @@ export default function MakePaymentPage({
         {showDetailTaking && pageModel !== undefined && (
           <Box className="tabs-container">
             <Tabs.Root
+              variant={'outline'}
               value={activeTab}
               onValueChange={(e) => setActiveTab(e.value)}
               defaultValue={ListTabEnum.CustomerTakingRecordDetail}>

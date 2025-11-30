@@ -5,7 +5,7 @@ import { AdminRoutes, AppRoutes } from "@/routes";
 import { useMainLayoutStore } from "@/state";
 import { Box, Breadcrumb, Button, CloseButton, Dialog, Flex, Heading, Image, Portal, Stack, Text } from "@chakra-ui/react";
 import React, { useEffect } from "react";
-import { AiFillCopyrightCircle } from "react-icons/ai";
+import { AiFillCopyrightCircle, AiFillHome } from "react-icons/ai";
 import { Outlet, useNavigate } from "react-router";
 import Clock from "../component/Clock";
 import amsLogo from "../svg/ams-icon.svg";
@@ -38,7 +38,7 @@ export default function AdminLayout() {
         backgroundColor={'#becda8'}
         className="logo-and-info">
 
-        <Stack className="logo-and-breadcrumbs">
+        <Stack className="logo-and-breadcrumbs" gap={0}>
           <Stack direction={'row'} alignItems={'center'}>
             <Button
               variant={'ghost'}
@@ -59,7 +59,7 @@ export default function AdminLayout() {
             <Breadcrumb.Root>
               <Breadcrumb.List>
                 <Breadcrumb.Item>
-                  🏠
+                  <AiFillHome color='brown' />
                 </Breadcrumb.Item>
                 {menuPath.split('/').map((path) =>
                   <React.Fragment key={path}>

@@ -1,6 +1,6 @@
 import { SecretRoutes } from "@/routes";
 import { useMainLayoutStore } from "@/state";
-import { Box, Breadcrumb, Button, Flex, Heading, Image, Stack, Text } from "@chakra-ui/react";
+import { Box, Button, Flex, Heading, Image, Stack, Text } from "@chakra-ui/react";
 import { Outlet, useNavigate } from "react-router";
 import Clock from "../component/Clock";
 import amsLogo from "../svg/ams-icon.svg";
@@ -26,7 +26,7 @@ export default function AdminLayout() {
         backgroundColor={'#becda8'}
         className="logo-and-info">
 
-        <Stack className="logo-and-breadcrumbs">
+        <Stack className="logo-and-breadcrumbs" gap={0}>
           <Stack direction={'row'} alignItems={'center'}>
             <Image
               src={amsLogo}
