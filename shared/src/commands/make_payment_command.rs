@@ -71,7 +71,7 @@ impl MakePaymentCommandTrait for MakePaymentCommand {
             })
             .sum::<i64>();
 
-        let total_paid_bill = taking_record_with_price
+        let paid_bill = taking_record_with_price
             .iter()
             .filter(|pr| pr.taking_record.is_paid)
             .map(|record| {
@@ -80,7 +80,7 @@ impl MakePaymentCommandTrait for MakePaymentCommand {
             })
             .sum::<i64>();
 
-        let total_unpaid_bill = taking_record_with_price
+        let unpaid_bill = taking_record_with_price
             .iter()
             .filter(|pr| !pr.taking_record.is_paid)
             .map(|record| {
@@ -94,13 +94,13 @@ impl MakePaymentCommandTrait for MakePaymentCommand {
             .map(|record| record.taking_record.amount)
             .sum::<i64>();
 
-        let total_paid_amount = taking_record_with_price
+        let paid_amount = taking_record_with_price
             .iter()
             .filter(|pr| pr.taking_record.is_paid)
             .map(|record| record.taking_record.amount)
             .sum::<i64>();
 
-        let total_unpaid_amount = taking_record_with_price
+        let unpaid_amount = taking_record_with_price
             .iter()
             .filter(|pr| !pr.taking_record.is_paid)
             .map(|record| record.taking_record.amount)
@@ -112,12 +112,12 @@ impl MakePaymentCommandTrait for MakePaymentCommand {
             taking_records: taking_record_with_price,
             customers: active_customer,
             detail_information: DetailInformation {
-                total_bill: total_bill,
-                total_amount: total_amount,
-                paid_bill: total_paid_bill,
-                paid_amount: total_paid_amount,
-                unpaid_bill: total_unpaid_bill,
-                unpaid_amount: total_unpaid_amount,
+                total_bill,
+                total_amount,
+                paid_bill,
+                paid_amount,
+                unpaid_bill,
+                unpaid_amount,
             },
         })
     }

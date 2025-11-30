@@ -1,4 +1,4 @@
-import type { TakingRecordModel } from "@/api-models"
+import type { RangePaymentInfo, TakingRecordModel } from "@/api-models"
 import { API_ENDPOINT, IS_INSIDE_TAURI } from "@/constants"
 import { invoke } from "@tauri-apps/api/core"
 import { asConstant, asJson, del, post, transformObjectDates } from "./fetch-wrapper"
@@ -25,7 +25,7 @@ interface ITakingRecordApi {
   getTakingRecordByMonth: (date: Date) => Promise<Array<TakingRecordModel>>
   getTakingRecordByUserIdAndMonth: (userId: number, date: Date) => Promise<Array<TakingRecordModel>>
   getTakingRecordByUserIdAndYear: (userId: number, date: Date) => Promise<Array<TakingRecordModel>>
-  getTakingRecordByUserIdAndRangeMonth: (userId: number, from: Date, to: Date) => Promise<Array<TakingRecordModel>>
+  getTakingRecordByUserIdAndRangeMonth: (userId: number, from: Date, to: Date) => Promise<RangePaymentInfo>
   deleteTakingRecordById: (takingRecordId: number) => Promise<number>
   getTakingRecordByDay: (date: Date) => Promise<Array<TakingRecordModel>>
 }
@@ -69,9 +69,9 @@ const takingRecordApi: ITakingRecordApi = {
     const response = await post(`${API_ENDPOINT}${GET_TAKING_RECORD_BY_USER_ID_AND_MONTH}`, { userId, date })
     return asJson<Array<TakingRecordModel>>(response)
   },
-  getTakingRecordByUserIdAndRangeMonth: async function (userId: number, from: Date, to: Date): Promise<Array<TakingRecordModel>> {
+  getTakingRecordByUserIdAndRangeMonth: async function (userId: number, from: Date, to: Date): Promise<RangePaymentInfo> {
     const response = await post(`${API_ENDPOINT}${GET_TAKING_RECORD_BY_USER_ID_AND_RANGE_MONTH}`, { userId, from, to })
-    return asJson<Array<TakingRecordModel>>(response)
+    return asJson<RangePaymentInfo>(response)
   },
 
   getTakingRecordByUserIdAndYear: async function (userId: number, date: Date): Promise<Array<TakingRecordModel>> {
@@ -127,7 +127,7 @@ const takingRecordTauriCommand: ITakingRecordApi = {
   getTakingRecordByUserIdAndYear: async function (user_id: number, date: Date): Promise<Array<TakingRecordModel>> {
     return await invoke('get_taking_record_by_user_id_and_year', transformObjectDates({ user_id, date }))
   },
-  getTakingRecordByUserIdAndRangeMonth: async function (user_id: number, from: Date, to: Date): Promise<Array<TakingRecordModel>> {
+  getTakingRecordByUserIdAndRangeMonth: async function (user_id: number, from: Date, to: Date): Promise<RangePaymentInfo> {
     return await invoke('get_taking_record_by_user_id_and_month_range', transformObjectDates({ user_id, from, to }))
   }
 }

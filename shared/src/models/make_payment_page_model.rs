@@ -1,4 +1,5 @@
 use ams_entity::{price_history_table, taking_record_table, user_table};
+use chrono::NaiveDateTime;
 use serde::Serialize;
 
 #[derive(Debug, Serialize)]
@@ -25,4 +26,14 @@ pub struct MakePaymentPageModel {
     pub taking_records: Vec<TakingRecordWithPrice>,
     pub detail_information: DetailInformation,
     pub customers: Vec<user_table::Model>,
+}
+
+#[derive(Debug, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct RangePaymentInfo {
+    pub from: NaiveDateTime,
+    pub to: NaiveDateTime,
+    pub record_with_price: Vec<TakingRecordWithPrice>,
+    pub detail_information: DetailInformation,
+    pub customer: user_table::Model,
 }

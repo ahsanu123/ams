@@ -1,8 +1,13 @@
 use itertools::Itertools;
 
-use crate::repositories::{
-    abstract_repository_trait::AbstractRepository, get_sql_connection_trait::GetSqlConnectionTrait,
-    price_repositories::AdditionalPriceHistoryTableMethodTrait,
+use crate::{
+    models::make_payment_page_model::{DetailInformation, RangePaymentInfo, TakingRecordWithPrice},
+    repositories::{
+        abstract_repository_trait::AbstractRepository,
+        get_sql_connection_trait::GetSqlConnectionTrait,
+        price_repositories::AdditionalPriceHistoryTableMethodTrait,
+        user_repository::AdditionalUserTableMethodTrait,
+    },
 };
 use ams_entity::{prelude::*, taking_record_table};
 use chrono::{Datelike, Days, Local, Months, NaiveDateTime};
@@ -40,7 +45,7 @@ pub trait TakingRecordCommandTrait {
         user_id: i32,
         from: NaiveDateTime,
         to: NaiveDateTime,
-    ) -> Vec<taking_record_table::Model>;
+    ) -> RangePaymentInfo;
 }
 
 pub struct TakingRecordCommand;
@@ -144,13 +149,11 @@ impl TakingRecordCommandTrait for TakingRecordCommand {
     async fn get_taking_record_by_user_id(user_id: i32) -> Vec<taking_record_table::Model> {
         let conn = TakingRecordTable::get_connection().await;
 
-        let records = TakingRecordTable::find()
+        TakingRecordTable::find()
             .filter(taking_record_table::Column::UserId.eq(user_id))
             .all(conn)
             .await
-            .unwrap();
-
-        records
+            .unwrap()
     }
 
     async fn upsert_taking_record(record: taking_record_table::Model) -> i32 {
@@ -339,7 +342,7 @@ impl TakingRecordCommandTrait for TakingRecordCommand {
         user_id: i32,
         from: NaiveDateTime,
         to: NaiveDateTime,
-    ) -> Vec<taking_record_table::Model> {
+    ) -> RangePaymentInfo {
         let conn = TakingRecordTable::get_connection().await;
 
         let start_date = from
@@ -356,27 +359,71 @@ impl TakingRecordCommandTrait for TakingRecordCommand {
             .checked_add_months(Months::new(1))
             .unwrap();
 
-        let records = TakingRecordTable::find()
+        let record_with_price = TakingRecordTable::find()
+            .filter(taking_record_table::Column::UserId.eq(user_id))
             .filter(taking_record_table::Column::TakenDate.gte(start_date))
             .filter(taking_record_table::Column::TakenDate.lt(end_date))
-            .filter(taking_record_table::Column::UserId.eq(user_id))
+            .find_with_related(PriceHistoryTable)
             .all(conn)
             .await
-            .unwrap();
-
-        records
+            .unwrap()
             .iter()
-            .into_group_map_by(|item| item.taken_date.date())
-            .into_iter()
-            .map(|(_, records)| {
-                let total_taking = records.iter().map(|item| item.amount).sum::<i64>();
-
-                let mut first_data = (*records.first().unwrap()).clone();
-                first_data.amount = total_taking;
-
-                first_data
+            .map(|item| TakingRecordWithPrice {
+                taking_record: item.0.clone(),
+                price: item.1.first().unwrap().clone(),
             })
-            .collect::<Vec<taking_record_table::Model>>()
+            .collect::<Vec<TakingRecordWithPrice>>();
+
+        let total_bill = record_with_price
+            .iter()
+            .map(|record| record.taking_record.amount * record.price.price)
+            .sum::<i64>();
+
+        let paid_bill = record_with_price
+            .iter()
+            .filter(|pr| pr.taking_record.is_paid)
+            .map(|record| record.taking_record.amount * record.price.price)
+            .sum::<i64>();
+
+        let unpaid_bill = record_with_price
+            .iter()
+            .filter(|pr| !pr.taking_record.is_paid)
+            .map(|record| record.taking_record.amount * record.price.price)
+            .sum::<i64>();
+
+        let total_amount = record_with_price
+            .iter()
+            .map(|record| record.taking_record.amount)
+            .sum::<i64>();
+
+        let paid_amount = record_with_price
+            .iter()
+            .filter(|pr| pr.taking_record.is_paid)
+            .map(|record| record.taking_record.amount)
+            .sum::<i64>();
+
+        let unpaid_amount = record_with_price
+            .iter()
+            .filter(|pr| !pr.taking_record.is_paid)
+            .map(|record| record.taking_record.amount)
+            .sum::<i64>();
+
+        let customer = UserTable::get_by_id(user_id).await.unwrap().unwrap();
+
+        RangePaymentInfo {
+            from,
+            to,
+            record_with_price,
+            customer,
+            detail_information: DetailInformation {
+                total_bill,
+                total_amount,
+                paid_bill,
+                paid_amount,
+                unpaid_bill,
+                unpaid_amount,
+            },
+        }
     }
 }
 

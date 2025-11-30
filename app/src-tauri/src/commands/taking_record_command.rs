@@ -1,5 +1,8 @@
 use ams_entity::taking_record_table;
-use ams_shared::commands::taking_record_command::{TakingRecordCommand, TakingRecordCommandTrait};
+use ams_shared::{
+    commands::taking_record_command::{TakingRecordCommand, TakingRecordCommandTrait},
+    models::make_payment_page_model::RangePaymentInfo,
+};
 use chrono::NaiveDateTime;
 use tauri;
 
@@ -74,7 +77,7 @@ pub async fn get_taking_record_by_user_id_and_month_range(
     user_id: i32,
     from: NaiveDateTime,
     to: NaiveDateTime,
-) -> Vec<taking_record_table::Model> {
+) -> RangePaymentInfo {
     let result =
         TakingRecordCommand::get_taking_record_by_user_id_and_month_range(user_id, from, to).await;
     result

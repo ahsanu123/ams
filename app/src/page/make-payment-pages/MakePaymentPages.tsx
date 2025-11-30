@@ -1,4 +1,4 @@
-import type { MakePaymentPageModel, TakingRecordModel, TakingRecordWithPrice, UserModel } from "@/api-models"
+import type { MakePaymentPageModel, RangePaymentInfo, TakingRecordWithPrice, UserModel } from "@/api-models"
 import { makePaymentCommand, takingRecordCommand, userManagementCommand } from "@/commands"
 import Calendar from "@/component/Calendar"
 import Scroller from "@/component/Scroller"
@@ -109,7 +109,7 @@ export default function MakePaymentPage({
   const [fromDateOpen, setFromDateOpen] = useState(false)
   const [toDateOpen, setToDateOpen] = useState(false)
   const [activeTab, setActiveTab] = useState<string>(ListTabEnum.CustomerTakingRecordDetail)
-  const [rangeRecords, setRangeRecords] = useState<TakingRecordModel[]>([])
+  const [rangeRecords, setRangeRecords] = useState<RangePaymentInfo | undefined>()
 
   const listMonth = Array.from({ length: 12 }, (_, index) => index)
     .map((monthIndex) => setMonth(new Date(), monthIndex))
@@ -315,7 +315,7 @@ export default function MakePaymentPage({
       </label>
 
       {
-        rangeRecords.length <= 0
+        rangeRecords
         && fromDate
         && toDate
         && <Heading>
@@ -323,38 +323,26 @@ export default function MakePaymentPage({
         </Heading>
       }
       {
-        fromDate && toDate && rangeRecords.length > 0 && (
+        fromDate && toDate && rangeRecords && (
           <Card.Root>
             <Card.Header>
               <Heading>
-                Informasi {formatDateId(fromDate, "MMMM yyyy")}
+                Informasi {formatDateId(rangeRecords.from, "MMMM yyyy")}
                 {' '}
                 Hingga
                 {' '}
-                {formatDateId(toDate, "MMMM yyyy")}
+                {formatDateId(rangeRecords.to, "MMMM yyyy")}
               </Heading>
             </Card.Header>
 
             <Card.Body>
               <DataList.Root>
-                {/* FIXME: Fix this implementation to use api instead */}
-                {dataListItemValue('Total',
-                  `${rangeRecords.map((item) => item.amount)
-                    .reduceRight((a, c) => a + c, 0)
-                  } Ampas`)}
 
-                {dataListItemValue('Terbayar',
-                  `${rangeRecords.filter(pr => pr.isPaid)
-                    .map((item) => item.amount)
-                    .reduce((a, c) => a + c, 0)} Ampas`)}
-
-                {dataListItemValue('Belum Terbayar',
-                  `${rangeRecords.filter(pr => !pr.isPaid)
-                    .map((item) => item.amount)
-                    .reduce((a, c) => a + c, 0)} Ampas`)}
+                {dataListItemValue('Total', `${rangeRecords.detailInformation.totalAmount} Ampas`)}
+                {dataListItemValue('Terbayar', `${rangeRecords.detailInformation.paidAmount} Ampas`)}
+                {dataListItemValue('Belum Terbayar', `${rangeRecords.detailInformation.unpaidAmount} Ampas`)}
 
               </DataList.Root>
-
             </Card.Body>
 
           </Card.Root>
