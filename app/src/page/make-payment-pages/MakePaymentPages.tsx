@@ -282,11 +282,13 @@ export default function MakePaymentPage({
     <Scroller
       minHeight="70vh">
       {
-        listMonth.map((date) =>
-          <Calendar
-            user={selectedCustomer}
-            month={date}
-          />
+        listMonth.map((date, index) =>
+          <React.Fragment key={index}>
+            <Calendar
+              user={selectedCustomer}
+              month={date}
+            />
+          </React.Fragment>
         )
       }
     </Scroller>

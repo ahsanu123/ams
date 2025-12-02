@@ -14,7 +14,7 @@ interface VirtualKeypadProps {
   confirmText?: string
   inputType?: React.HTMLInputTypeAttribute
   disabled?: boolean,
-  handleOnConfirm: (value: number) => void
+  handleOnConfirm: (value: number, resetValue: () => void) => void
   validatorFunction?: (value: number) => string | undefined
 }
 
@@ -40,6 +40,11 @@ export default function VirtualKeypad(props: VirtualKeypadProps) {
     "Hapus", "Ok"
   ]
 
+  const resetValue = () => {
+    setValue(defaultValue)
+    setWarning('')
+  }
+
   const handleOnNumberClick = (num: number) => {
     setValue((value * 10 + num))
   }
@@ -60,7 +65,7 @@ export default function VirtualKeypad(props: VirtualKeypadProps) {
     }
 
     else if (cmd === 'Ok') {
-      handleOnConfirm(value)
+      handleOnConfirm(value, resetValue)
     }
 
   }

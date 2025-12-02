@@ -1,13 +1,13 @@
 import type { TakingRecordModel, UserModel } from "@/api-models"
-import { generateCalendarObject, type ICalendarCell } from "@/utility"
+import { takingRecordCommand } from "@/commands"
+import { formatDateId, generateCalendarObject, type ICalendarCell } from "@/utility"
 import { Avatar, Box, Button, Flex, Heading, Text } from "@chakra-ui/react"
 import { addMonths } from "date-fns"
 import React, { useEffect, useState } from "react"
+import { AiFillCaretLeft, AiFillCaretRight, AiFillMoon, AiOutlineCaretLeft, AiOutlineCaretRight, AiOutlineEnvironment } from "react-icons/ai"
+import { userManagementCommand } from '../commands/user-management-api'
 import CalendarCellComponent from "./CalendarCell"
 import "./Calendar.css"
-import { AiFillCaretLeft, AiFillCaretRight, AiFillMoon, AiOutlineCaretLeft, AiOutlineCaretRight, AiOutlineEnvironment, AiOutlineUser } from "react-icons/ai"
-import { userManagementCommand } from '../commands/user-management-api'
-import { takingRecordCommand } from "@/commands"
 
 interface CalendarProps {
   takingRecords?: TakingRecordModel[],
@@ -144,8 +144,7 @@ export default function Calendar(props: CalendarProps) {
 
   }, [user, month])
 
-  const headerText = `${date.toLocaleDateString("id-id", { month: 'long' })} 
-                      ${date.toLocaleDateString("id-id", { year: 'numeric' })} 
+  const headerText = `${formatDateId(date, "MMMM yyyy")} 
                       ${title ? ` - ${title}` : ""}`
 
   return (
@@ -206,14 +205,14 @@ export default function Calendar(props: CalendarProps) {
 
         {
           selectedCustomer && !hideCustomerAvatar &&
-          <>
+          <React.Fragment>
             <Avatar.Root>
               <Avatar.Fallback name={selectedCustomer.username} />
             </Avatar.Root>
             <Text textStyle={'md'} fontWeight={'bold'}>
               {selectedCustomer.username}
             </Text>
-          </>
+          </React.Fragment>
         }
       </Flex>
 

@@ -53,6 +53,8 @@
 }
 
 .highlight-current-day {
+  border: 3px solid green;
+  border-radius: 10px;
   background-color: beige;
 }
 

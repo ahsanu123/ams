@@ -1,7 +1,7 @@
 import type { TakingRecordModel } from "@/api-models"
 import { isSameDay, setDate } from "date-fns"
 
-const TOTAL_DAYS_TO_SHOW = 42
+const TOTAL_CALENDAR_CELL_TO_SHOW = 42
 const DAY_TO_DISPLAY = 7
 
 export interface CalendarObject {
@@ -51,13 +51,13 @@ export function generateCalendarObject(inputDate: Date, records: Array<TakingRec
   // use day name to get first index
   const dayFromPrevMonth = localDayName.findIndex((item) => item === firstDayNameOfMonth)
 
-  const calendarCellToShow = Array.from(Array(TOTAL_DAYS_TO_SHOW).keys())
+  const calendarCellToShow = Array.from(Array(TOTAL_CALENDAR_CELL_TO_SHOW).keys())
   const isHiddenCell = (day: number) => (
     day < dayFromPrevMonth
     ||
     day >= (dayFromPrevMonth + calendarObject.totalDays)
   )
-  const isCorrectDate = (date: number) => (date > 0 && date < calendarObject.totalDays)
+  const isCorrectDate = (date: number) => (date > 0 && date <= calendarObject.totalDays)
 
   const calendarGrid = calendarCellToShow.map<ICalendarCell>((day) => {
     const date = day - dayFromPrevMonth + 1
@@ -70,6 +70,7 @@ export function generateCalendarObject(inputDate: Date, records: Array<TakingRec
         ? records.find((item) => isSameDay(item.takenDate, currentDate))
         : undefined,
     }
+
     return calendarCell
   });
 

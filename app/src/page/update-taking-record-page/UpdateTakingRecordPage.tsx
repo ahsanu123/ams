@@ -1,16 +1,15 @@
-import React from "react"
+import type { TakingRecordModel, UserModel } from "@/api-models"
+import { takingRecordCommand, userManagementCommand } from "@/commands"
 import Calendar from "@/component/Calendar"
 import Scroller from "@/component/Scroller"
 import VirtualKeypad from "@/component/VirtualKeypad"
-import { Text, Box, Button, CloseButton, Drawer, Flex, Portal, Stack, Avatar, DataList, Table, Badge, Steps } from "@chakra-ui/react"
-import { useEffect, useState } from "react"
-import { AiFillEdit, AiOutlinePlusSquare, AiTwotoneCalendar } from "react-icons/ai"
-import { useUpdateTakingPageState } from "./update-taking-record-page-state"
-import { takingRecordCommand, userManagementCommand } from "@/commands"
-import type { Route } from "./+types/UpdateTakingRecordPage"
 import { dataListItemValue, formatDateId, toaster } from "@/utility"
-import type { TakingRecordModel, UserModel } from "@/api-models"
+import { Avatar, Badge, Box, Button, CloseButton, DataList, Drawer, Flex, Portal, Stack, Steps, Table, Text } from "@chakra-ui/react"
+import React, { useEffect, useState } from "react"
+import { AiFillEdit, AiOutlinePlusSquare, AiTwotoneCalendar } from "react-icons/ai"
 import { GoTrash } from "react-icons/go"
+import type { Route } from "./+types/UpdateTakingRecordPage"
+import { useUpdateTakingPageState } from "./update-taking-record-page-state"
 
 interface IStep {
   title: string,
@@ -132,7 +131,7 @@ export default function UpdateTakingRecordPage({
       })
   }
 
-  const handleOnAddRecord = (amount: number) => {
+  const handleOnAddRecord = (amount: number, resetValue: () => void) => {
     if (!selectedCustomer || !selectedDate) return
     takingRecordCommand.addNewTakingRecordByDate(selectedCustomer.id!, amount, selectedDate)
       .then(() => {
@@ -142,6 +141,7 @@ export default function UpdateTakingRecordPage({
         })
         setEditStep(EditStep.PickUser)
         setIsAddingAddNewRecord(false)
+        resetValue()
 
         // FIXME: Find Better way to to this
         loadTakingRecords(selectedDate)
@@ -150,6 +150,7 @@ export default function UpdateTakingRecordPage({
           title: `Success Updating, ${reason}`,
           type: 'error'
         })
+        resetValue()
       })
   }
 

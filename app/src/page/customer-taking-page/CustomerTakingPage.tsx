@@ -84,7 +84,7 @@ export default function CustomerTakingPage({
     <Grid className="user-container">
       {
         listUser.map((user, index) => (
-          <GridItem>
+          <GridItem key={index}>
             <Button
               key={index}
               onClick={() => handleOnClickUser(user)}

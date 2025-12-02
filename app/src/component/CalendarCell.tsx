@@ -1,7 +1,7 @@
-import type { ICalendarCell } from "@/utility";
-import { format, isSameDay } from "date-fns";
-import { id } from "date-fns/locale";
-import { Badge, Stack, Text } from "@chakra-ui/react";
+import { formatDateId, type ICalendarCell } from "@/utility";
+import { Box, Center, Text } from "@chakra-ui/react";
+import { isSameDay } from "date-fns";
+import { FaRoadBarrier } from "react-icons/fa6";
 import './CalendarCell.css';
 
 interface CalendarCellProps {
@@ -20,60 +20,58 @@ export default function CalendarCellComponent(props: CalendarCellProps) {
 
   const highlightCurrentDay = data.date && isSameDay(data.date, new Date())
 
-  const headerLabelComponent = () => (
-    <b>{data.headerLabelText}</b>
-  )
+  const headerLabelComponent = () =>
+    <Text fontWeight={'bold'}>{data.headerLabelText}</Text>
 
   const dateComponent = () => (
     <>
       {data.product
         ? (
-          <div
+          <Box
             onClick={() => isAdmin && onCellClicked?.(data.date)}
             className={`calendar-cell ${highlightCurrentDay ? 'highlight-current-day' : ''} ${isAdmin ? 'is-admin' : ''}`}
           >
-            <div className='current-day'>
+            <Center className='current-day'>
+              <Text>
+                {data.date && formatDateId(data.date, "dd")}
+              </Text>
+            </Center>
 
-              <sub>
-                {data.date && format(data.date, "dd", { locale: id })}
-              </sub>
-            </div>
-
-            <div className='taking-amount'>
-              <Stack>
-                <Text
-                  textDecor={data.product.isPaid ? 'line-through' : ''}
-                  textStyle={'6xl'}
-                  fontWeight={'bold'}>
-                  {data.product?.amount}
-                </Text>
-              </Stack>
-            </div>
-          </div>
+            <Center className='taking-amount'>
+              <Text
+                textDecor={data.product.isPaid ? 'line-through' : ''}
+                textStyle={'6xl'}
+                fontWeight={'bold'}>
+                {data.product?.amount}
+              </Text>
+            </Center>
+          </Box>
 
         )
         : (
-          <div
+          <Box
             onClick={() => isAdmin && onCellClicked?.(data.date)}
             className={`calendar-cell ${highlightCurrentDay ? 'highlight-current-day' : ''} ${isAdmin ? 'is-admin' : ''}`}
           >
-            <div className='current-day'>
-              <sub>
-                {data.date && format(data.date, "dd", { locale: id })}
-              </sub>
-            </div>
+            <Center className='current-day'>
+              <Text>
+                {data.date && formatDateId(data.date, "dd")}
+              </Text>
+            </Center>
 
-          </div>
+          </Box>
         )
       }
     </>
   )
 
   const hiddenDateComponent = () => (
-    <div
+    <Center
+      alignItems={'center'}
       className="calendar-cell stripe"
     >
-    </div>
+      <FaRoadBarrier size={'40px'} />
+    </Center>
   )
 
   switch (data.type) {
