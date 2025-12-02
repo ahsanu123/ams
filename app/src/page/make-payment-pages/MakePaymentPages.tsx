@@ -6,7 +6,7 @@ import { EMPTY_HEADER_INFORMATION } from "@/constants"
 import { useMainLayoutStore } from "@/state"
 import { formatAsRupiah, formatDateId, fromFormData, toFormData } from "@/utility"
 import { Avatar, Badge, Box, Button, Card, createListCollection, DataList, Flex, Heading, Portal, Select, Stack, Table, Tabs, Text } from "@chakra-ui/react"
-import { format, setMonth } from "date-fns"
+import { compareAsc, eachMonthOfInterval, format, isSameMonth, setMonth } from "date-fns"
 import { id } from "date-fns/locale"
 import React, { useEffect, useState } from "react"
 import DatePicker, { registerLocale } from "react-datepicker"
@@ -15,6 +15,9 @@ import { useFetcher } from "react-router"
 import type { Route } from "./+types/MakePaymentPages"
 import { useMakePaymentPageState } from "./make-payment-page-state"
 import './MakePaymentPages.css'
+
+// FIXME: 
+// simplify and refactor this page
 
 enum ListActionEnum {
   GetPageModel = 'GetPageModel',
@@ -161,6 +164,124 @@ export default function MakePaymentPage({
     })
   }
 
+  const rangeRecordsTab = () => {
+    if (!(fromDate && toDate && rangeRecords)) return;
+
+    const rangeMonths = eachMonthOfInterval({ start: fromDate, end: toDate })
+
+    return (
+      <Stack maxWidth={'900px'}>
+        <Tabs.Root
+          orientation='vertical'
+          defaultValue={formatDateId(fromDate, "MMMM")}>
+          <Tabs.List>
+            {
+              rangeMonths.map((month) =>
+                <Tabs.Trigger value={formatDateId(month, "MMMM")}>
+                  {formatDateId(month, "MMMM")}
+                </Tabs.Trigger>
+              )
+            }
+          </Tabs.List>
+
+          {
+            rangeMonths.map((month) =>
+              <Tabs.Content value={formatDateId(month, "MMMM")}>
+                <Scroller>
+                  <Table.Root
+                    striped
+                    stickyHeader
+                    strokeLinecap={'round'}
+                    size="lg"
+                    variant={'line'}>
+
+                    <Table.Header>
+                      <Table.Row>
+                        <Table.ColumnHeader>Jumlah</Table.ColumnHeader>
+                        <Table.ColumnHeader>Status</Table.ColumnHeader>
+                        <Table.ColumnHeader>Tanggal</Table.ColumnHeader>
+                      </Table.Row>
+                    </Table.Header>
+
+                    <Table.Body>
+
+                      Total
+                      {' '}
+                      {
+                        rangeRecords.recordWithPrice
+                          .filter(pr => isSameMonth(pr.takingRecord.takenDate, month))
+                          .map(record => record.takingRecord.amount)
+                          .reduce((p, c) => p + c, 0)
+                      }
+                      {' '} | {' '}
+                      {
+                        formatAsRupiah(
+                          rangeRecords.recordWithPrice
+                            .filter(pr => isSameMonth(pr.takingRecord.takenDate, month))
+                            .map(record => record.takingRecord.amount * record.price.price)
+                            .reduce((p, c) => p + c, 0)
+                        )
+                      }
+
+                      {
+                        rangeRecords.recordWithPrice
+                          .filter(pr => isSameMonth(pr.takingRecord.takenDate, month))
+                          .sort((p, n) => compareAsc(p.takingRecord.takenDate, n.takingRecord.takenDate))
+                          .map(record =>
+
+                            <Table.Row>
+                              <Table.Cell>
+                                {record.takingRecord.amount}
+                              </Table.Cell>
+
+                              <Table.Cell>
+                                <Text>
+                                  {formatAsRupiah(record.price.price)}
+                                </Text>
+
+                                {record.takingRecord.isPaid && (
+                                  <Badge colorPalette={'green'}>
+                                    Lunas
+                                  </Badge>
+                                )}
+                              </Table.Cell>
+
+                              <Table.Cell>
+                                {formatDateId(record.takingRecord.takenDate)}
+                              </Table.Cell>
+                            </Table.Row>
+                          )
+                      }
+                    </Table.Body>
+
+                  </Table.Root>
+                </Scroller>
+              </Tabs.Content>
+            )
+          }
+
+        </Tabs.Root>
+      </Stack>
+    )
+  }
+
+  const handleOnPayRangeButtonClicked = () => {
+    if (!fromDate || !toDate || !selectedCustomer) return
+
+    const rangeMonths = eachMonthOfInterval({ start: fromDate, end: toDate })
+    const rangePaymentPromises = rangeMonths.map(month =>
+      makePaymentCommand.makePayment(selectedCustomer.id, month)
+    )
+
+    Promise.all(rangePaymentPromises).then(_ =>
+      userManagementCommand.getById(selectedCustomer.id).then(customer => setSelectedCustomer(customer))
+    )
+  }
+
+  const isPayRangeButtonDisabled = () =>
+    toDate === undefined
+    || fromDate === undefined
+
   const isPayButtonDisabled = () =>
     selectedDate === undefined
     || (pageModel && pageModel.takingRecords.length <= 0)
@@ -302,38 +423,44 @@ export default function MakePaymentPage({
     </Stack>
 
   const rangeMonthInformation = () =>
-    <Stack maxWidth={'500px'}>
-      <Heading>Dari Bulan</Heading>
-      <label>
-        <DatePicker
-          placeholderText="Bulan Dan Tahun"
-          dateFormat="MMMM yyyy "
-          selected={fromDate}
-          onChange={(date) => handleOnFromDateChange(date)}
-          showMonthYearPicker
-          locale={'id'}
-          withPortal
-          open={fromDateOpen}
-          onClickOutside={() => setFromDateOpen(false)}
-          onInputClick={() => setFromDateOpen(true)}
-        />
-      </label>
+    <Stack>
+      <Flex justifyContent={'space-between'}>
+        <Box width={'100%'}>
+          <Heading>Dari Bulan</Heading>
+          <label>
+            <DatePicker
+              placeholderText="Bulan Dan Tahun"
+              dateFormat="MMMM yyyy "
+              selected={fromDate}
+              onChange={(date) => handleOnFromDateChange(date)}
+              showMonthYearPicker
+              locale={'id'}
+              withPortal
+              open={fromDateOpen}
+              onClickOutside={() => setFromDateOpen(false)}
+              onInputClick={() => setFromDateOpen(true)}
+            />
+          </label>
+        </Box>
 
-      <Heading>Sampai Bulan</Heading>
-      <label>
-        <DatePicker
-          placeholderText="Bulan Dan Tahun"
-          dateFormat="MMMM yyyy "
-          selected={toDate}
-          onChange={(date) => handleOnToDateChange(date)}
-          showMonthYearPicker
-          locale={'id'}
-          withPortal
-          open={toDateOpen}
-          onClickOutside={() => setToDateOpen(false)}
-          onInputClick={() => setToDateOpen(true)}
-        />
-      </label>
+        <Box width={'100%'}>
+          <Heading>Sampai Bulan</Heading>
+          <label>
+            <DatePicker
+              placeholderText="Bulan Dan Tahun"
+              dateFormat="MMMM yyyy "
+              selected={toDate}
+              onChange={(date) => handleOnToDateChange(date)}
+              showMonthYearPicker
+              locale={'id'}
+              withPortal
+              open={toDateOpen}
+              onClickOutside={() => setToDateOpen(false)}
+              onInputClick={() => setToDateOpen(true)}
+            />
+          </label>
+        </Box>
+      </Flex>
 
       {
         !rangeRecords
@@ -343,60 +470,78 @@ export default function MakePaymentPage({
           Tidak ada data dari {formatDateId(fromDate, "MMMM yyyy")} hingga {formatDateId(toDate, "MMMM yyyy")}
         </Heading>
       }
+
       {
         fromDate && toDate && rangeRecords && (
-          <Card.Root>
-            <Card.Header>
-              <Heading>
-                Informasi {formatDateId(rangeRecords.from, "MMMM yyyy")}
-                {' '}
-                Hingga
-                {' '}
-                {formatDateId(rangeRecords.to, "MMMM yyyy")}
-              </Heading>
-            </Card.Header>
+          <Flex>
+            <Card.Root>
+              <Card.Header>
+                <Heading>
+                  Informasi {formatDateId(rangeRecords.from, "MMMM yyyy")}
+                  {' '}
+                  Hingga
+                  {' '}
+                  {formatDateId(rangeRecords.to, "MMMM yyyy")}
+                </Heading>
+              </Card.Header>
 
-            <Card.Body>
-              <Flex>
-                <Box>
-                  <Card.Header>
-                    <Heading>
-                      Total Ambil
-                    </Heading>
-                  </Card.Header>
+              <Card.Body>
+                <Flex>
+                  <Box>
+                    <Card.Header>
+                      <Heading>
+                        Total Ambil
+                      </Heading>
+                    </Card.Header>
 
-                  <Card.Body>
-                    <DataList.Root>
+                    <Card.Body>
+                      <DataList.Root>
 
-                      {dataListItemValue('Total', `${rangeRecords.detailInformation.totalAmount} Ampas`)}
-                      {dataListItemValue('Terbayar', `${rangeRecords.detailInformation.paidAmount} Ampas`)}
-                      {dataListItemValue('Belum Terbayar', `${rangeRecords.detailInformation.unpaidAmount} Ampas`)}
+                        {dataListItemValue('Total', `${rangeRecords.detailInformation.totalAmount} Ampas`)}
+                        {dataListItemValue('Terbayar', `${rangeRecords.detailInformation.paidAmount} Ampas`)}
+                        {dataListItemValue('Belum Terbayar', `${rangeRecords.detailInformation.unpaidAmount} Ampas`)}
 
-                    </DataList.Root>
-                  </Card.Body>
-                </Box>
+                      </DataList.Root>
+                    </Card.Body>
+                  </Box>
 
-                <Box>
-                  <Card.Header>
-                    <Heading>
-                      Tagihan
-                    </Heading>
-                  </Card.Header>
+                  <Box>
+                    <Card.Header>
+                      <Heading>
+                        Tagihan
+                      </Heading>
+                    </Card.Header>
 
-                  <Card.Body>
-                    <DataList.Root>
+                    <Card.Body>
+                      <DataList.Root>
 
-                      {dataListItemValue('Total', `${formatAsRupiah(rangeRecords.detailInformation.totalBill)}`)}
-                      {dataListItemValue('Terbayar', `${formatAsRupiah(rangeRecords.detailInformation.paidBill)}`)}
-                      {dataListItemValue('Belum Terbayar', `${formatAsRupiah(rangeRecords.detailInformation.unpaidBill)}`)}
+                        {dataListItemValue('Total', `${formatAsRupiah(rangeRecords.detailInformation.totalBill)}`)}
+                        {dataListItemValue('Terbayar', `${formatAsRupiah(rangeRecords.detailInformation.paidBill)}`)}
+                        {dataListItemValue('Belum Terbayar', `${formatAsRupiah(rangeRecords.detailInformation.unpaidBill)}`)}
 
-                    </DataList.Root>
-                  </Card.Body>
-                </Box>
-              </Flex>
-            </Card.Body>
+                      </DataList.Root>
+                    </Card.Body>
+                  </Box>
+                </Flex>
+              </Card.Body>
 
-          </Card.Root>
+              <Card.Footer>
+                <Button
+                  onClick={() => handleOnPayRangeButtonClicked()}
+                  disabled={isPayRangeButtonDisabled()}
+                >
+                  Bayar {formatDateId(rangeRecords.from, "MMMM yyyy")}
+                  {' '}
+                  Hingga
+                  {' '}
+                  {formatDateId(rangeRecords.to, "MMMM yyyy")}
+                </Button>
+              </Card.Footer>
+
+            </Card.Root>
+
+            {rangeRecordsTab()}
+          </Flex>
         )
       }
 
@@ -408,7 +553,6 @@ export default function MakePaymentPage({
         <Card.Header>
           <Heading>
             <Flex alignItems={'center'}>
-              <AiFillCalendar />
               Informasi Bulan {formatDateId(selectedDate, "MMMM yyyy")}
             </Flex>
           </Heading>
