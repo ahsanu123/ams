@@ -84,9 +84,10 @@ export function usePaymentHistoryCommand() {
     queryFn: () => paymentHistoryCommand.getPaymentRecord(userId)
   })
 
-  const getPaymentRecordByUserIdAndMonth = (userId: number, date: Date) => useQuery({
-    queryKey: ['getPaymentRecordByUserIdAndMonth '],
-    queryFn: () => paymentHistoryCommand.getPaymentRecordByUserIdAndMonth(userId, date)
+  const getPaymentRecordByUserIdAndMonth = (userId: number | undefined, date: Date | undefined) => ({
+    queryKey: ['getPaymentRecordByUserIdAndMonth', userId, date],
+    queryFn: () => paymentHistoryCommand.getPaymentRecordByUserIdAndMonth(userId!, date!),
+    enabled: !!userId && !!date
   })
 
   const updateBulkPaymentRecord = (records: PaymentHistoryModel, paid: boolean) => useMutation({

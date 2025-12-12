@@ -1,13 +1,14 @@
-import { customerMoneyCommand, paymentHistoryCommand, userManagementCommand } from "@/commands";
+import { useCustomerMoneyCommand, usePaymentHistoryCommand, userManagementCommand } from "@/commands";
 import Scroller from "@/component/Scroller";
 import { EMPTY_HEADER_INFORMATION } from "@/constants";
 import { useMainLayoutStore } from "@/state";
 import { dataListItemValue, formatAsRupiah, formatDateId } from "@/utility";
-import { Badge, Box, Card, DataList, Flex, Heading, Image, Stack, Table } from "@chakra-ui/react";
+import { Badge, Box, Card, Text, createListCollection, DataList, Flex, Heading, Image, Portal, Select, Stack, Table } from "@chakra-ui/react";
 import { useEffect } from "react";
 import DatePicker from "react-datepicker";
 import type { Route } from "./+types/ListPaymentPage";
 import { useListPaymentPageState } from "./list-payment-page-state";
+import { useQuery } from "@tanstack/react-query";
 import './ListPaymentPage.css';
 
 export async function clientLoader() {
@@ -34,11 +35,18 @@ export default function ListPaymentPage({
   const selectedDate = useListPaymentPageState(state => state.selectedDate)
   const setSelectedDate = useListPaymentPageState(state => state.setSelectedDate)
 
-  const paymentRecords = useListPaymentPageState(state => state.paymentRecords)
-  const setPaymentRecords = useListPaymentPageState(state => state.setPaymentRecords)
+  const { getAllUserMoneyHistory } = useCustomerMoneyCommand()
+  const { getPaymentRecordByUserIdAndMonth } = usePaymentHistoryCommand()
 
-  const moneyHistories = useListPaymentPageState(state => state.moneyHistories)
-  const setMoneyHistories = useListPaymentPageState(state => state.setMoneyHistories)
+  const { data: moneyHistories } = useQuery(getAllUserMoneyHistory(selectedCustomer?.id))
+  const { data: paymentRecords } = useQuery(getPaymentRecordByUserIdAndMonth(selectedCustomer?.id, selectedDate))
+
+  const selectListCustomer = createListCollection({
+    items: listCustomer.map((customer) => ({
+      label: customer.username,
+      value: customer.id.toString()
+    }))
+  })
 
   const catatanPembayaran = () =>
     <Stack maxWidth={'1000px'} >
@@ -67,7 +75,7 @@ export default function ListPaymentPage({
         </Table.Header>
         <Table.Body>
           {
-            moneyHistories.map(money =>
+            moneyHistories && moneyHistories.map(money =>
               <Table.Row>
                 <Table.Cell>
                   {formatDateId(money.date)}
@@ -128,7 +136,7 @@ export default function ListPaymentPage({
         </Table.Header>
         <Table.Body>
           {
-            paymentRecords.map((payment) =>
+            paymentRecords && paymentRecords.map((payment) =>
               <Table.Row colorPalette={'green'}>
                 <Table.Cell>
                   {formatDateId(payment.date)}
@@ -158,18 +166,6 @@ export default function ListPaymentPage({
     </Scroller>
 
   useEffect(() => {
-
-    if (selectedCustomer && selectedDate) {
-      paymentHistoryCommand.getPaymentRecordByUserIdAndMonth(selectedCustomer.id, selectedDate)
-        .then((records) => setPaymentRecords(records))
-
-      customerMoneyCommand.getAllUserMoneyHistory(selectedCustomer.id)
-        .then((moneyHistories) => setMoneyHistories(moneyHistories))
-    }
-
-  }, [selectedCustomer, selectedDate])
-
-  useEffect(() => {
     setListCustomer(activeCustomer)
     setHeaderInformation({
       title: 'List Payment',
@@ -187,21 +183,48 @@ export default function ListPaymentPage({
           <Heading>
             Pilih Nama
           </Heading>
-          <select
-            onChange={(event) => setSelectedCustomer(listCustomer.find(pr => pr.id === Number(event.currentTarget.value)))}
-          >
-            <option value="">Nama</option>
-            {
-              listCustomer.map((customer, index) => (
-                <option
-                  key={index}
-                  value={customer.id}
-                >
-                  {customer.username}
-                </option>
-              ))
-            }
-          </select>
+
+          <Select.Root
+            size={'lg'}
+            value={selectedCustomer ? [selectedCustomer.id.toString()] : []}
+            collection={selectListCustomer}
+            onValueChange={(e) => {
+              if (e.value[0] !== undefined)
+                setSelectedCustomer(
+                  listCustomer.find(pr => pr.id === Number(e.value[0]))
+                )
+            }}>
+
+            <Select.HiddenSelect />
+
+            <Select.Control>
+              <Select.Trigger textStyle={'lg'}>
+                <Select.ValueText placeholder="Pilih Nama" />
+              </Select.Trigger>
+            </Select.Control>
+
+            <Portal>
+
+              <Select.Positioner>
+                <Select.Content>
+                  {
+                    selectListCustomer.items.map((item) => (
+                      <Select.Item
+                        item={item}
+                        key={item.value}>
+
+                        <Text textStyle={'lg'}>{item.label}</Text>
+                        <Select.ItemIndicator />
+
+                      </Select.Item>
+                    ))
+                  }
+                </Select.Content>
+              </Select.Positioner>
+
+            </Portal>
+
+          </Select.Root>
 
           {selectedCustomer && (
             <Card.Root>
@@ -234,10 +257,12 @@ export default function ListPaymentPage({
           />
         </Stack>
 
-        {paymentRecords.length > 0 && catatanPembayaran()}
+        {paymentRecords && paymentRecords.length > 0 && catatanPembayaran()}
+
         {
           selectedDate &&
           selectedCustomer &&
+          paymentRecords &&
           paymentRecords.length <= 0 &&
           <Stack alignItems={'center'}>
             <Heading>Tidak Ada Data</Heading>

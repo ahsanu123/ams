@@ -19,7 +19,7 @@
       padding: 15px;
       display: grid;
       width: 28vw;
-      grid-template-columns: repeat(3, 1fr);
+      grid-template-columns: repeat(3, 2fr);
       gap: 10px;
 
       .chakra-button {

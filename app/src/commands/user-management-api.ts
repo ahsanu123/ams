@@ -85,8 +85,7 @@ export function useUserManagementCommand() {
     queryKey: ['getUsers'],
     queryFn: userManagementCommand.getAllUser
   })
-
-  const getAllActiveUser = useQuery({
+  const getAllActiveUser = ({
     queryKey: ['getAllActiveUser'],
     queryFn: userManagementCommand.getAllActiveUser
   })

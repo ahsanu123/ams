@@ -138,18 +138,20 @@ export function useTakingRecordCommand() {
 
   const queryClient = useQueryClient()
 
-  const addNewtakingRecord = (user_id: number, amount: number) => useMutation({
+  const addNewtakingRecord = useMutation({
     onSuccess: () => queryClient.invalidateQueries({
       queryKey: ['getTakingRecords']
     }),
-    mutationFn: () => takingRecordCommand.addNewTakingRecord(user_id, amount)
+    mutationFn: ({ user_id, amount }: { user_id: number, amount: number }) =>
+      takingRecordCommand.addNewTakingRecord(user_id, amount)
   })
 
-  const addNewTakingRecordByDate = (userId: number, amount: number, date: Date) => useMutation({
+  const addNewTakingRecordByDate = useMutation({
     onSuccess: () => queryClient.invalidateQueries({
-      queryKey: ['getTakingRecords']
+      queryKey: ['getTakingRecords', 'getTakingRecordByUserIdAndMonth']
     }),
-    mutationFn: () => takingRecordCommand.addNewTakingRecordByDate(userId, amount, date)
+    mutationFn: ({ userId, amount, date }: { userId: number, amount: number, date: Date }) =>
+      takingRecordCommand.addNewTakingRecordByDate(userId, amount, date)
   })
 
   const getTakingRecordByUserId = (userId: number) => useQuery({
@@ -177,10 +179,14 @@ export function useTakingRecordCommand() {
     queryFn: () => takingRecordCommand.getTakingRecordByMonth(date)
   })
 
-  const getTakingRecordByUserIdAndMonth = (userId: number, date: Date) => useQuery({
-    queryKey: ['getTakingRecordByUserIdAndMonth'],
-    queryFn: () => takingRecordCommand.getTakingRecordByUserIdAndMonth(userId, date)
+
+  // Only return useQuery object argument
+  const getTakingRecordByUserIdAndMonth = (userId: number | undefined, date: Date) => ({
+    queryKey: ['getTakingRecordByUserIdAndMonth', userId],
+    queryFn: () => takingRecordCommand.getTakingRecordByUserIdAndMonth(userId!, date),
+    enabled: !!userId
   })
+
 
   const getTakingRecordByUserIdAndYear = (userId: number, date: Date) => useQuery({
     queryKey: ['getTakingRecordByUserIdAndYear'],

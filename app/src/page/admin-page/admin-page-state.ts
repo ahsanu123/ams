@@ -22,7 +22,7 @@ export const useAdminPageStore = create<AdminPageStore>()(
       })
     },
 
-    menuPath: "", // this should be => ETreeMenuList.Root,
+    menuPath: "",
     setMenuPath: (path) => {
       set((state) => {
         state.menuPathId = defaultTreeMenu.find(pr => pr.path === path)?.id
