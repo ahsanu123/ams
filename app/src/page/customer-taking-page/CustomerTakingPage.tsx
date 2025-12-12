@@ -29,7 +29,7 @@ export default function CustomerTakingPage({
   const setLastSelectedUser = useMainLayoutStore(state => state.setLastSelectedUser)
 
   const { getAllActiveUser } = useUserManagementCommand()
-  const { data: activeUsers } = useQuery(getAllActiveUser)
+  const { data: activeUsers } = useQuery(getAllActiveUser())
 
   const {
     getTakingRecordByUserIdAndMonth,

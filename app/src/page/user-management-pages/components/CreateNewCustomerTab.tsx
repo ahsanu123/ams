@@ -1,30 +1,25 @@
 import { dataListItemValue, textKeyboardLayout, textOrNumberKeyboardDisplay, toaster } from '@/utility';
-import { Avatar, Text, Button, Card, Flex, Heading, Input, Stack, Toaster, DataList } from '@chakra-ui/react';
+import { Avatar, Text, Button, Card, Flex, Heading, Input, Stack, DataList } from '@chakra-ui/react';
 import { AiFillContacts } from 'react-icons/ai';
 import Keyboard, { type SimpleKeyboard } from 'react-simple-keyboard';
 import { useCreateNewCustomerTabState } from './create-new-customer-tab-state';
-import { useEffect, useRef, useState } from 'react';
-import { userManagementCommand } from '@/commands';
+import { useRef } from 'react';
+import { userManagementCommand, useUserManagementCommand } from '@/commands';
 import Scroller from '@/component/Scroller';
 import type { UserModel } from '@/api-models';
 import { format } from 'date-fns';
 import { id } from 'date-fns/locale';
+import { useQuery } from '@tanstack/react-query';
 
-enum KeyboardChar {
-  Enter = "{enter}"
-}
 export default function CreateNewCustomerTab() {
 
   const newUserName = useCreateNewCustomerTabState(state => state.newUserName)
   const setNewUserName = useCreateNewCustomerTabState(state => state.setNewUserName)
-  const [customers, setCustomers] = useState<UserModel[]>([])
+
+  const { getAllUser } = useUserManagementCommand()
+  const { data: customers } = useQuery(getAllUser)
 
   const keyboardRef = useRef<SimpleKeyboard>(null)
-
-  const handleOnNewCustomerKeyPress = (button: string) => {
-    if (button === KeyboardChar.Enter) {
-    }
-  }
 
   const customerCard = (customer: UserModel) =>
     <Card.Root>
@@ -71,11 +66,6 @@ export default function CreateNewCustomerTab() {
 
   }
 
-  useEffect(() => {
-    userManagementCommand.getAllUser()
-      .then(customers => setCustomers(customers))
-  }, [])
-
   return (
     <Stack className='create-new-user-tab-content'>
       <Heading size={'2xl'}>
@@ -91,7 +81,6 @@ export default function CreateNewCustomerTab() {
             variant="subtle"
           />
           <Keyboard
-            onKeyPress={handleOnNewCustomerKeyPress}
             keyboardRef={kb => keyboardRef.current = kb as SimpleKeyboard}
             onChange={(value, _) => setNewUserName(value)}
             layout={textKeyboardLayout}
@@ -109,7 +98,7 @@ export default function CreateNewCustomerTab() {
 
         <Scroller>
           {
-            customers.map((customer) => customerCard(customer))
+            customers && customers.map((customer) => customerCard(customer))
           }
         </Scroller>
 

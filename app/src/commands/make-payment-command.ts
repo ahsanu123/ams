@@ -46,16 +46,18 @@ export const makePaymentCommand = IS_INSIDE_TAURI ? makePaymentTauriCommand : ma
 export function useMakePaymentCommand() {
   const queryClient = useQueryClient()
 
-  const getPageModel = (userId: number, date: Date) => useQuery({
-    queryKey: ['getPageModel'],
-    queryFn: () => makePaymentCommand.getPageModel(userId, date)
+  const getPageModel = (userId: number | undefined, date: Date | undefined) => ({
+    queryKey: ['getPageModel', userId, date],
+    queryFn: () => makePaymentCommand.getPageModel(userId!, date!),
+    enabled: !!userId && !!date
   })
 
-  const makePayment = (userId: number, date: Date) => useMutation({
+  const makePayment = useMutation({
     onSuccess: () => queryClient.invalidateQueries({
       queryKey: ['getPageModel']
     }),
-    mutationFn: () => makePaymentCommand.makePayment(userId, date)
+    mutationFn: ({ userId, date }: { userId: number, date: Date }) =>
+      makePaymentCommand.makePayment(userId, date)
   })
 
   return {

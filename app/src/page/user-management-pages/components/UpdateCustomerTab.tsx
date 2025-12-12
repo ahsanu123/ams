@@ -21,6 +21,7 @@ export default function UpdateCustomerTab() {
   const handleOnEditCustomer = (customer: UserModel) => {
     setSelectedCustomer(customer)
   }
+
   const handleOnCofirmDeleteCustomer = () => {
     if (deleteCandidate)
       customerMoneyCommand.deleteUser(deleteCandidate.id)

@@ -1,71 +1,19 @@
-import type { DregPriceModel, MakePaymentPageModel, RangePaymentInfo, TakingRecordWithPrice, UserModel } from "@/api-models"
-import { dregPriceCommand, makePaymentCommand, takingRecordCommand, userManagementCommand } from "@/commands"
+import type { TakingRecordWithPrice } from "@/api-models"
+import { makePaymentCommand, useDregPriceCommand, useMakePaymentCommand, userManagementCommand, useTakingRecordCommand, useUserManagementCommand } from "@/commands"
 import Calendar from "@/component/Calendar"
 import Scroller from "@/component/Scroller"
 import { EMPTY_HEADER_INFORMATION } from "@/constants"
 import { useMainLayoutStore } from "@/state"
-import { formatAsRupiah, formatDateId, fromFormData, toFormData } from "@/utility"
-import { Avatar, Badge, Box, Button, Card, createListCollection, DataList, Flex, Heading, Portal, Select, Stack, Table, Tabs, Text } from "@chakra-ui/react"
+import { formatAsRupiah, formatDateId } from "@/utility"
+import { Avatar, Badge, Box, Button, Card, Center, createListCollection, DataList, Flex, Heading, Portal, Select, Spinner, Stack, Table, Tabs, Text, VStack } from "@chakra-ui/react"
 import { compareAsc, eachMonthOfInterval, format, isSameMonth, setMonth } from "date-fns"
 import { id } from "date-fns/locale"
 import React, { useEffect, useState } from "react"
 import DatePicker, { registerLocale } from "react-datepicker"
 import { AiFillCalendar, AiFillGolden, AiFillNotification, AiFillSliders } from "react-icons/ai"
-import { useFetcher } from "react-router"
-import type { Route } from "./+types/MakePaymentPages"
 import { useMakePaymentPageState } from "./make-payment-page-state"
+import { useQuery } from "@tanstack/react-query"
 import './MakePaymentPages.css'
-
-// FIXME: 
-// simplify and refactor this page
-
-enum ListActionEnum {
-  GetPageModel = 'GetPageModel',
-  MakePayment = 'MakePayment'
-}
-
-interface IFetcherActionResult {
-  pageModel: MakePaymentPageModel,
-  customerData: UserModel
-}
-
-interface IGetPageModelClientRequest {
-  userId: number,
-  date: Date,
-  _action: ListActionEnum,
-}
-
-export async function clientLoader() {
-  const activeCustomer = await userManagementCommand.getAllActiveUser()
-  return {
-    activeCustomer
-  }
-}
-
-export async function clientAction({ request }: Route.ClientActionArgs): Promise<IFetcherActionResult> {
-  const parsedRequest = await fromFormData<IGetPageModelClientRequest>(request)
-
-  if (parsedRequest._action === ListActionEnum.MakePayment) {
-    const pageModel = await makePaymentCommand.makePayment(parsedRequest.userId, parsedRequest.date)
-    const customerData = await userManagementCommand.getById(parsedRequest.userId)
-
-    return {
-      pageModel,
-      customerData
-    }
-  }
-
-  else {
-    const pageModel = await makePaymentCommand.getPageModel(parsedRequest.userId, parsedRequest.date)
-    const customerData = await userManagementCommand.getById(parsedRequest.userId)
-
-    return {
-      pageModel,
-      customerData
-    }
-  }
-
-}
 
 enum ListTabEnum {
   CustomerTakingRecordDetail = 'Daftar Ambil',
@@ -75,20 +23,19 @@ enum ListTabEnum {
   RangeMonthInformation = 'Informasi Beberapa Bulan',
 }
 
-export default function MakePaymentPage({
-  loaderData
-}: Route.ComponentProps) {
-
-  const { activeCustomer } = loaderData
-
+export default function MakePaymentPage() {
   registerLocale('id', id)
 
-  const fetcher = useFetcher<IFetcherActionResult>()
+  const { getAllActiveUser } = useUserManagementCommand()
+  const { getPageModel, makePayment } = useMakePaymentCommand()
+  const { getAllDregPrice } = useDregPriceCommand()
+  const {
+    getTakingRecordByUserIdAndRangeMonth,
+    getTakingRecordByUserIdAndYear
+  } = useTakingRecordCommand()
 
   const setHeaderInformation = useMainLayoutStore(state => state.setHeaderInformation)
-
-  const listCustomer = useMakePaymentPageState(state => state.listCustomer)
-  const setListCustomer = useMakePaymentPageState(state => state.setListCustomer)
+  const { data: listCustomer } = useQuery(getAllActiveUser())
 
   const selectedCustomer = useMakePaymentPageState(state => state.selectedCustomer)
   const setSelectedCustomer = useMakePaymentPageState(state => state.setSelectedCustomer)
@@ -99,11 +46,48 @@ export default function MakePaymentPage({
   const showDetailTaking = useMakePaymentPageState(state => state.showDetailTaking)
   const setShowDetailTaking = useMakePaymentPageState(state => state.setShowDetailTaking)
 
-  const pageModel = useMakePaymentPageState(state => state.pageModel)
-  const setPageModel = useMakePaymentPageState(state => state.setPageModel)
+  const [fromDate, setFromDate] = useState<Date | undefined>(undefined)
+  const [toDate, setToDate] = useState<Date | undefined>(undefined)
+  const [dateOpen, setDateOpen] = useState(false)
+  const [fromDateOpen, setFromDateOpen] = useState(false)
+  const [toDateOpen, setToDateOpen] = useState(false)
+  const [activeTab, setActiveTab] = useState<string>(ListTabEnum.CustomerTakingRecordDetail)
 
-  const oneYearRecords = useMakePaymentPageState(state => state.oneYearRecords)
-  const setOneYearRecords = useMakePaymentPageState(state => state.setOneYearRecrods)
+  const { data: pageModel } = useQuery(getPageModel(selectedCustomer?.id, selectedDate))
+  const { data: oneYearRecords } = useQuery(getTakingRecordByUserIdAndYear(selectedCustomer?.id, selectedDate))
+  const { data: rangeRecords } = useQuery(getTakingRecordByUserIdAndRangeMonth(selectedCustomer?.id, fromDate, toDate))
+  const { data: dregPrices } = useQuery(getAllDregPrice());
+
+  useEffect(() => {
+    setHeaderInformation({
+      title: 'Make Payment Page',
+      description: 'place for customer to pay bill'
+    })
+
+    return () => setHeaderInformation(EMPTY_HEADER_INFORMATION)
+  }, [])
+
+  useEffect(() => {
+    if (selectedCustomer === undefined || selectedDate === undefined)
+      setShowDetailTaking(false)
+  }, [selectedCustomer, selectedDate])
+
+  useEffect(() => {
+    if (!!pageModel) {
+      setShowDetailTaking(true)
+    }
+  }, [pageModel])
+
+  if (!listCustomer || !dregPrices) return (
+    <Center>
+      <VStack>
+        <Spinner size={'xl'} />
+        <Heading>Loading...</Heading>
+        {!pageModel ? "pageModel is undefined" : ""}
+      </VStack>
+    </Center>
+  )
+
 
   const selectListCustomer = createListCollection({
     items: listCustomer.map((customer) => ({
@@ -111,16 +95,6 @@ export default function MakePaymentPage({
       value: customer.id.toString()
     }))
   })
-
-  // TODO: move this to state 
-  const [dregPrices, setDregPrices] = useState<DregPriceModel[]>([])
-  const [fromDate, setFromDate] = useState<Date | undefined>(undefined)
-  const [toDate, setToDate] = useState<Date | undefined>(undefined)
-  const [dateOpen, setDateOpen] = useState(false)
-  const [fromDateOpen, setFromDateOpen] = useState(false)
-  const [toDateOpen, setToDateOpen] = useState(false)
-  const [activeTab, setActiveTab] = useState<string>(ListTabEnum.CustomerTakingRecordDetail)
-  const [rangeRecords, setRangeRecords] = useState<RangePaymentInfo | undefined>()
 
   const listMonth = Array.from({ length: 12 }, (_, index) => index)
     .map((monthIndex) => setMonth(new Date(), monthIndex))
@@ -151,17 +125,8 @@ export default function MakePaymentPage({
   }
 
   const handleOnPayButtonClicked = () => {
-    if (selectedCustomer === undefined) return;
-
-    const serializedData = toFormData({
-      userId: selectedCustomer.id,
-      date: selectedDate,
-      _action: ListActionEnum.MakePayment
-    })
-
-    fetcher.submit(serializedData, {
-      method: 'post',
-    })
+    if (!selectedCustomer || !selectedDate) return;
+    makePayment.mutate({ userId: selectedCustomer.id, date: selectedDate })
   }
 
   const rangeRecordsTab = () => {
@@ -274,7 +239,8 @@ export default function MakePaymentPage({
     )
 
     Promise.all(rangePaymentPromises).then(_ =>
-      userManagementCommand.getById(selectedCustomer.id).then(customer => setSelectedCustomer(customer))
+      userManagementCommand.getById(selectedCustomer.id)
+        .then(customer => setSelectedCustomer(customer))
     )
   }
 
@@ -329,7 +295,7 @@ export default function MakePaymentPage({
     const customerData = pageModel?.customers.find(pr => pr.id === selectedCustomer?.id)
     return (
       <>
-        {customerData !== undefined && (
+        {oneYearRecords && customerData !== undefined && (
           <Stack>
             <DataList.Root>
               {dataListItemValue('Nama', `${customerData.username}`)}
@@ -607,61 +573,6 @@ export default function MakePaymentPage({
       </Card.Root>
     )
   }
-
-  const getRangeRecords = () => {
-    if (selectedCustomer && fromDate && toDate)
-      takingRecordCommand.getTakingRecordByUserIdAndRangeMonth(selectedCustomer.id, fromDate, toDate)
-        .then((records) => setRangeRecords(records))
-  }
-
-  useEffect(() => {
-    getRangeRecords()
-
-  }, [fromDate, toDate, selectedCustomer])
-
-  useEffect(() => {
-    dregPriceCommand.getAllDregPrice().then(prices => setDregPrices(prices))
-
-    setListCustomer(activeCustomer)
-    setHeaderInformation({
-      title: 'Make Payment Page',
-      description: 'place for customer to pay bill'
-    })
-
-    return () => setHeaderInformation(EMPTY_HEADER_INFORMATION)
-  }, [])
-
-  useEffect(() => {
-
-    if (selectedCustomer === undefined || selectedDate === undefined)
-      setShowDetailTaking(false)
-
-    if (selectedCustomer !== undefined && selectedDate !== undefined) {
-      takingRecordCommand.getTakingRecordByUserIdAndYear(selectedCustomer.id, selectedDate)
-        .then((records) => setOneYearRecords(records))
-
-      const serializedData = toFormData({
-        userId: selectedCustomer.id,
-        date: selectedDate,
-        _action: ListActionEnum.GetPageModel
-      })
-
-      fetcher.submit(serializedData, {
-        method: 'post',
-      })
-    }
-
-  }, [selectedCustomer, selectedDate])
-
-  useEffect(() => {
-
-    if (fetcher.data !== undefined) {
-      setPageModel(fetcher.data.pageModel)
-      setShowDetailTaking(true)
-    }
-    getRangeRecords()
-  }, [fetcher.data])
-
 
   const dataListItemValue = (item: string, value: string) =>
     <DataList.Item>

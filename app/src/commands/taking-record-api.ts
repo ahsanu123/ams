@@ -188,14 +188,16 @@ export function useTakingRecordCommand() {
   })
 
 
-  const getTakingRecordByUserIdAndYear = (userId: number, date: Date) => useQuery({
-    queryKey: ['getTakingRecordByUserIdAndYear'],
-    queryFn: () => takingRecordCommand.getTakingRecordByUserIdAndYear(userId, date)
+  const getTakingRecordByUserIdAndYear = (userId?: number, date?: Date) => ({
+    queryKey: ['getTakingRecordByUserIdAndYear', userId, date],
+    queryFn: () => takingRecordCommand.getTakingRecordByUserIdAndYear(userId!, date!),
+    enabled: !!userId && !!date
   })
 
-  const getTakingRecordByUserIdAndRangeMonth = (userId: number, from: Date, to: Date) => useQuery({
-    queryKey: ['getTakingRecordByUserIdAndRangeMonth'],
-    queryFn: () => takingRecordCommand.getTakingRecordByUserIdAndRangeMonth(userId, from, to)
+  const getTakingRecordByUserIdAndRangeMonth = (userId?: number, from?: Date, to?: Date) => ({
+    queryKey: ['getTakingRecordByUserIdAndRangeMonth', userId, from, to],
+    queryFn: () => takingRecordCommand.getTakingRecordByUserIdAndRangeMonth(userId!, from!, to!),
+    enabled: !!userId && !!from && !!to
   })
 
   const deleteTakingRecordById = (takingRecordId: number) => useMutation({

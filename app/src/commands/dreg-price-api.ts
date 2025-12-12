@@ -52,9 +52,9 @@ export function useDregPriceCommand() {
     queryFn: dregPriceCommand.getLatestDregPrice
   })
 
-  const getAllDregPrice = useQuery({
+  const getAllDregPrice = () => ({
     queryKey: ['getAllDregPrice'],
-    queryFn: dregPriceCommand.getLatestDregPrice
+    queryFn: dregPriceCommand.getAllDregPrice
   })
   const updateDregPrice = (newPrice: number) => useMutation({
     onSuccess: () => queryClient.invalidateQueries({

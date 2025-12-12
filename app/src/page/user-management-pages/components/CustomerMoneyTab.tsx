@@ -4,19 +4,24 @@ import 'react-simple-keyboard/build/css/index.css';
 import Scroller from '@/component/Scroller';
 import { formatAsRupiah, formatDateId, numberLayout, textOrNumberKeyboardDisplay, toaster } from '@/utility';
 import { useEffect, useRef, useState } from 'react';
-import type { MoneyHistoryModel, UserModel } from '@/api-models';
-import { customerMoneyCommand, userManagementCommand } from '@/commands';
+import type { UserModel } from '@/api-models';
+import { customerMoneyCommand, useCustomerMoneyCommand, useUserManagementCommand } from '@/commands';
 import { AiFillDollarCircle } from 'react-icons/ai';
+import { useQuery } from '@tanstack/react-query';
 
 const MINIMUM_ADD_MONEY = 10000
 
 export default function CustomerMoneyTab() {
 
   const keyboardRef = useRef<SimpleKeyboard>(null)
-  // FIXME: move this state to its own state file 
   const [selectedCustomer, setSelectedCustomer] = useState<UserModel | undefined>(undefined)
-  const [customers, setCustomers] = useState<UserModel[]>([])
-  const [moneyHistory, setMoneyHistory] = useState<MoneyHistoryModel[]>([])
+
+  const { getAllUser } = useUserManagementCommand()
+  const { getAllUserMoneyHistory } = useCustomerMoneyCommand()
+
+  const { data: customers, refetch: refetchAllCustomer } = useQuery(getAllUser)
+  const { data: moneyHistory, refetch: refetchMoneyHistory } = useQuery(getAllUserMoneyHistory(selectedCustomer?.id));
+
   const [addMoneyAmount, setAddMoneyAmount] = useState<number>(0)
 
   const handleOnAddMoney = () => {
@@ -40,28 +45,13 @@ export default function CustomerMoneyTab() {
     }
   }
 
-  const getAllUserMoney = () => {
-
-    if (selectedCustomer)
-      customerMoneyCommand.getAllUserMoneyHistory(selectedCustomer.id)
-        .then((moneys) => setMoneyHistory(moneys))
-  }
-
-  const loadAllUser = () => {
-    userManagementCommand.getAllActiveUser()
-      .then((users) => setCustomers(users))
-  }
-
   useEffect(() => {
+    refetchAllCustomer()
+    refetchMoneyHistory()
+
     setAddMoneyAmount(0)
-    loadAllUser()
-    getAllUserMoney()
     keyboardRef.current?.setInput('0')
   }, [selectedCustomer])
-
-  useEffect(() => {
-    loadAllUser()
-  }, [])
 
   const listCustomer = () =>
     <Stack maxWidth={'400px'}>
@@ -71,7 +61,7 @@ export default function CustomerMoneyTab() {
         leftNavigation
       >
         {
-          customers.map((customer) =>
+          customers?.map((customer) =>
             <Card.Root>
               <Card.Body>
                 <Flex justifyContent={'space-between'}>
@@ -112,6 +102,7 @@ export default function CustomerMoneyTab() {
     <Stack>
       {
         selectedCustomer &&
+        moneyHistory &&
         moneyHistory.length > 0 &&
         (
           <Box>
@@ -165,7 +156,7 @@ export default function CustomerMoneyTab() {
           </Box>
         )}
 
-      {moneyHistory.length <= 0 && selectedCustomer && (
+      {moneyHistory && moneyHistory.length <= 0 && selectedCustomer && (
         <>
           <Heading size={'4xl'}>
             <Flex gap={5} alignItems={'center'}>
