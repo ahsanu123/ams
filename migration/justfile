@@ -7,10 +7,6 @@
 # - run seed_database.rs
 # - copy database to api folder
 
-# run migration and seed data
-mig-and-seed:
-  echo "todo"
-
 # migrate and generate entity
 mage:
   just delete-database-file

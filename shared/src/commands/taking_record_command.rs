@@ -85,7 +85,8 @@ impl TakingRecordCommandTrait for TakingRecordCommand {
                 .unwrap();
             return res.id;
         } else {
-            let res = TakingRecordCommand::add_new_taking_record(user_id, amount).await;
+            let res =
+                TakingRecordCommand::add_new_taking_record_by_date(user_id, amount, date).await;
             return res;
         }
     }
