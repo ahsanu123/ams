@@ -65,28 +65,19 @@ impl MakePaymentCommandTrait for MakePaymentCommand {
 
         let total_bill = taking_record_with_price
             .iter()
-            .map(|record| {
-                let bill = record.taking_record.amount * record.price.price;
-                bill
-            })
+            .map(|record| record.taking_record.amount * record.price.price)
             .sum::<i64>();
 
         let paid_bill = taking_record_with_price
             .iter()
             .filter(|pr| pr.taking_record.is_paid)
-            .map(|record| {
-                let bill = record.taking_record.amount * record.price.price;
-                bill
-            })
+            .map(|record| record.taking_record.amount * record.price.price)
             .sum::<i64>();
 
         let unpaid_bill = taking_record_with_price
             .iter()
             .filter(|pr| !pr.taking_record.is_paid)
-            .map(|record| {
-                let bill = record.taking_record.amount * record.price.price;
-                bill
-            })
+            .map(|record| record.taking_record.amount * record.price.price)
             .sum::<i64>();
 
         let total_amount = taking_record_with_price
@@ -184,8 +175,9 @@ impl MakePaymentCommandTrait for MakePaymentCommand {
         let final_money = customer.money - total_bill;
 
         let description = format!(
-            "{0} is paying Rp.{1}, initial money Rp.{2}, final money Rp.{3}",
+            "{0} is paying month {1} Rp.{2}, initial money Rp.{3}, final money Rp.{4}",
             customer.username,
+            date.format("%B"),
             format_as_idr(total_bill),
             format_as_idr(customer.money),
             format_as_idr(final_money)
@@ -210,7 +202,7 @@ impl MakePaymentCommandTrait for MakePaymentCommand {
                 user_id: Set(user_id as i64),
                 date: Set(Local::now().naive_local()),
                 money_amount: Set(final_money),
-                description: Set(description.into()),
+                description: Set(description),
             })
             .await
             .unwrap();

@@ -20,7 +20,7 @@ impl MigrationTrait for Migration {
         let predefined_users: Vec<user_table::ActiveModel> = vec![
             user_table::ActiveModel {
                 id: NotSet,
-                username: Set("Brisbane".into()),
+                username: Set("lurah".into()),
                 is_active: Set(true),
                 is_admin: Set(false),
                 money: Set(0),
@@ -29,7 +29,7 @@ impl MigrationTrait for Migration {
             },
             user_table::ActiveModel {
                 id: NotSet,
-                username: Set("Adelaide".into()),
+                username: Set("tresno".into()),
                 is_active: Set(true),
                 is_admin: Set(false),
                 money: Set(0),
@@ -38,7 +38,7 @@ impl MigrationTrait for Migration {
             },
             user_table::ActiveModel {
                 id: NotSet,
-                username: Set("Sheerman".into()),
+                username: Set("sinin".into()),
                 is_active: Set(true),
                 is_admin: Set(false),
                 money: Set(0),
@@ -47,25 +47,7 @@ impl MigrationTrait for Migration {
             },
             user_table::ActiveModel {
                 id: NotSet,
-                username: Set("Walaye".into()),
-                is_active: Set(true),
-                is_admin: Set(false),
-                money: Set(0),
-                created_date: Set(Local::now().naive_local()),
-                updated_date: Set(Local::now().naive_local()),
-            },
-            user_table::ActiveModel {
-                id: NotSet,
-                username: Set("Mike".into()),
-                is_active: Set(true),
-                is_admin: Set(false),
-                money: Set(0),
-                created_date: Set(Local::now().naive_local()),
-                updated_date: Set(Local::now().naive_local()),
-            },
-            user_table::ActiveModel {
-                id: NotSet,
-                username: Set("Johnson".into()),
+                username: Set("misbah".into()),
                 is_active: Set(true),
                 is_admin: Set(false),
                 money: Set(0),
@@ -82,7 +64,7 @@ impl MigrationTrait for Migration {
                 .await
                 .unwrap();
 
-            if !user_exists.is_some() {
+            if user_exists.is_none() {
                 let _ = user.insert(db).await;
             }
         }

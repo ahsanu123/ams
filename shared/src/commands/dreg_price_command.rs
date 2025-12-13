@@ -44,15 +44,11 @@ impl DregPriceCommandTrait for DregPriceCommand {
             price: Set(new_price),
         };
 
-        let updated_result = PriceHistoryTable::create(updated_data).await.unwrap();
-
-        updated_result
+        PriceHistoryTable::create(updated_data).await.unwrap()
     }
 
     async fn get_all_dreg_price() -> Vec<price_history_table::Model> {
-        let prices = PriceHistoryTable::get_all().await.unwrap();
-
-        prices
+        PriceHistoryTable::get_all().await.unwrap()
     }
 }
 

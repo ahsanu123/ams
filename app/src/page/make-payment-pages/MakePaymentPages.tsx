@@ -53,9 +53,9 @@ export default function MakePaymentPage() {
   const [toDateOpen, setToDateOpen] = useState(false)
   const [activeTab, setActiveTab] = useState<string>(ListTabEnum.CustomerTakingRecordDetail)
 
-  const { data: pageModel } = useQuery(getPageModel(selectedCustomer?.id, selectedDate))
+  const { data: pageModel, refetch: refetchPageModel } = useQuery(getPageModel(selectedCustomer?.id, selectedDate))
   const { data: oneYearRecords } = useQuery(getTakingRecordByUserIdAndYear(selectedCustomer?.id, selectedDate))
-  const { data: rangeRecords } = useQuery(getTakingRecordByUserIdAndRangeMonth(selectedCustomer?.id, fromDate, toDate))
+  const { data: rangeRecords, refetch: refetchRangeRecord } = useQuery(getTakingRecordByUserIdAndRangeMonth(selectedCustomer?.id, fromDate, toDate))
   const { data: dregPrices } = useQuery(getAllDregPrice());
 
   useEffect(() => {
@@ -230,18 +230,20 @@ export default function MakePaymentPage() {
     )
   }
 
-  const handleOnPayRangeButtonClicked = () => {
+  const handleOnPayRangeButtonClicked = async () => {
     if (!fromDate || !toDate || !selectedCustomer) return
 
     const rangeMonths = eachMonthOfInterval({ start: fromDate, end: toDate })
-    const rangePaymentPromises = rangeMonths.map(month =>
-      makePaymentCommand.makePayment(selectedCustomer.id, month)
-    )
 
-    Promise.all(rangePaymentPromises).then(_ =>
-      userManagementCommand.getById(selectedCustomer.id)
-        .then(customer => setSelectedCustomer(customer))
-    )
+    for (const month of rangeMonths) {
+      await makePaymentCommand.makePayment(selectedCustomer.id, month)
+    }
+
+    await refetchRangeRecord()
+    await refetchPageModel()
+
+    const customer = await userManagementCommand.getById(selectedCustomer.id)
+    setSelectedCustomer(customer)
   }
 
   const isPayRangeButtonDisabled = () =>

@@ -1,4 +1,3 @@
-pub mod base_command_trait;
 pub mod customer_money_command;
 pub mod dreg_price_command;
 pub mod make_payment_command;

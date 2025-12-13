@@ -58,8 +58,7 @@ impl CustomerMoneyCommandTrait for CustomerMoneyCommand {
                 "Add Money Rp.{0}, final money amount Rp.{1}",
                 format_as_idr(amount),
                 format_as_idr(updated_user.money)
-            )
-            .into()),
+            )),
         };
 
         let _ = MoneyHistoryTable::create(money_history).await.unwrap();
@@ -69,7 +68,7 @@ impl CustomerMoneyCommandTrait for CustomerMoneyCommand {
             let _insert_customer_money_history =
                 MoneyHistoryTable::create(money_history_table::ActiveModel {
                     id: NotSet,
-                    user_id: Set(user_id as i64),
+                    user_id: Set(user_id),
                     date: Set(Local::now().naive_local()),
                     money_amount: Set(updated_user.money),
                     description: Set(format!(
@@ -84,7 +83,7 @@ impl CustomerMoneyCommandTrait for CustomerMoneyCommand {
             let _insert_payment_history =
                 PaymentHistoryTable::create(payment_history_table::ActiveModel {
                     id: NotSet,
-                    user_id: Set(user_id as i64),
+                    user_id: Set(user_id),
                     date: Set(Local::now().naive_local()),
                     bill_amount: Set(user.money.abs()),
                     initial_money: Set(user.money),
@@ -101,14 +100,12 @@ impl CustomerMoneyCommandTrait for CustomerMoneyCommand {
     async fn get_all_user_money_history(user_id: i64) -> Vec<money_history_table::Model> {
         let conn = MoneyHistoryTable::get_connection().await;
 
-        let datas = MoneyHistoryTable::find()
+        MoneyHistoryTable::find()
             .filter(money_history_table::Column::UserId.eq(user_id))
             .order_by(money_history_table::Column::Date, Order::Desc)
             .all(conn)
             .await
-            .unwrap();
-
-        datas
+            .unwrap()
     }
 
     async fn delete_user(user_id: i32) -> Result<u64, Error> {

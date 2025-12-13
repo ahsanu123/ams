@@ -42,13 +42,11 @@ impl PaymentHistoryCommandTrait for PaymentHistoryCommad {
     async fn get_payment_record_by_user_id(user_id: i32) -> Vec<payment_history_table::Model> {
         let conn = PaymentHistoryTable::get_connection().await;
 
-        let records = PaymentHistoryTable::find()
+        PaymentHistoryTable::find()
             .filter(payment_history_table::Column::UserId.eq(user_id))
             .all(conn)
             .await
-            .unwrap();
-
-        records
+            .unwrap()
     }
 
     async fn get_payment_record_by_user_id_and_month(
@@ -76,15 +74,13 @@ impl PaymentHistoryCommandTrait for PaymentHistoryCommad {
                 .unwrap()
         };
 
-        let records = PaymentHistoryTable::find()
+        PaymentHistoryTable::find()
             .filter(payment_history_table::Column::UserId.eq(user_id))
             .filter(payment_history_table::Column::Date.lt(end_month))
             .filter(payment_history_table::Column::Date.gte(start_month))
             .all(conn)
             .await
-            .unwrap();
-
-        records
+            .unwrap()
     }
 
     async fn get_month_summary(date: NaiveDateTime) -> Vec<payment_history_table::Model> {
@@ -104,14 +100,12 @@ impl PaymentHistoryCommandTrait for PaymentHistoryCommad {
             .with_day(1)
             .unwrap();
 
-        let summaries = PaymentHistoryTable::find()
+        PaymentHistoryTable::find()
             .filter(payment_history_table::Column::Date.lt(end_date))
             .filter(payment_history_table::Column::Date.gte(start_date))
             .all(conn)
             .await
-            .unwrap();
-
-        summaries
+            .unwrap()
     }
 
     async fn get_month_summary_by_user_id(
@@ -134,15 +128,13 @@ impl PaymentHistoryCommandTrait for PaymentHistoryCommad {
             .with_day(1)
             .unwrap();
 
-        let summaries = PaymentHistoryTable::find()
+        PaymentHistoryTable::find()
             .filter(payment_history_table::Column::UserId.eq(user_id))
             .filter(payment_history_table::Column::Date.lt(end_date))
             .filter(payment_history_table::Column::Date.gte(start_date))
             .all(conn)
             .await
-            .unwrap();
-
-        summaries
+            .unwrap()
     }
 
     async fn update_payment_record(
@@ -160,11 +152,9 @@ impl PaymentHistoryCommandTrait for PaymentHistoryCommad {
             added_money: Set(record.added_money),
         };
 
-        let result = PaymentHistoryTable::update_by_model(active_model)
+        PaymentHistoryTable::update_by_model(active_model)
             .await
-            .unwrap();
-
-        result
+            .unwrap()
     }
 
     async fn update_bulk_payment_record(

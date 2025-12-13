@@ -1,6 +1,5 @@
 use crate::repositories::{
     abstract_repository_trait::AbstractRepository, get_sql_connection_trait::GetSqlConnectionTrait,
-    user_repository::AdditionalUserTableMethodTrait,
 };
 use ams_entity::{prelude::*, user_table};
 use chrono::Local;
@@ -88,13 +87,11 @@ impl UserManagementCommandTrait for UserManagementCommand {
     async fn get_all_active_user() -> Vec<user_table::Model> {
         let conn = UserTable::get_connection().await;
 
-        let active_user = UserTable::find()
+        UserTable::find()
             .filter(user_table::Column::IsActive.eq(true))
             .all(conn)
             .await
-            .unwrap();
-
-        active_user
+            .unwrap()
     }
 
     async fn upsert_user(user: user_table::Model) -> i32 {
