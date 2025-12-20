@@ -20,19 +20,27 @@ export default function UserManagementPage() {
       <Tabs.Root defaultValue={UserManagementTabs.CreateNewCustomer}>
         <Tabs.List>
 
-          <Tabs.Trigger value={UserManagementTabs.CreateNewCustomer}>
+          <Tabs.Trigger
+            fontSize={'xl'}
+            value={UserManagementTabs.CreateNewCustomer}>
             {UserManagementTabs.CreateNewCustomer}
           </Tabs.Trigger>
 
-          <Tabs.Trigger value={UserManagementTabs.UpdateCustomer}>
+          <Tabs.Trigger
+            fontSize={'xl'}
+            value={UserManagementTabs.UpdateCustomer}>
             {UserManagementTabs.UpdateCustomer}
           </Tabs.Trigger>
 
-          <Tabs.Trigger value={UserManagementTabs.CustomerMoneyManagement}>
+          <Tabs.Trigger
+            fontSize={'xl'}
+            value={UserManagementTabs.CustomerMoneyManagement}>
             {UserManagementTabs.CustomerMoneyManagement}
           </Tabs.Trigger>
 
-          <Tabs.Trigger value={UserManagementTabs.UpdateDregPrice}>
+          <Tabs.Trigger
+            fontSize={'xl'}
+            value={UserManagementTabs.UpdateDregPrice}>
             {UserManagementTabs.UpdateDregPrice}
           </Tabs.Trigger>
 

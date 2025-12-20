@@ -36,18 +36,22 @@ export default function CustomerTakingPage({
     addNewtakingRecord
   } = useTakingRecordCommand();
 
-  const { data: userTakingRecords } = useQuery(getTakingRecordByUserIdAndMonth(
-    lastSelectedUser?.id ?? activeUsers?.[0].id,
-    new Date()
-  ));
+  const { data: userTakingRecords, refetch: refetchTakingRecords } =
+    useQuery(getTakingRecordByUserIdAndMonth(
+      lastSelectedUser?.id ?? activeUsers?.[0].id,
+      new Date()
+    ));
 
-  const handleOnPickDregs = (amount: number) => {
+  const handleOnPickDregs = async (amount: number) => {
     if (!customer) return;
 
-    addNewtakingRecord.mutate({
+    await addNewtakingRecord.mutateAsync({
       user_id: customer.id,
       amount
     })
+
+    setLastSelectedUser(customer)
+    await refetchTakingRecords()
 
     setCustomer(undefined)
     setHeaderInformation(EMPTY_HEADER_INFORMATION)
@@ -110,7 +114,7 @@ export default function CustomerTakingPage({
     <Box
       className="customer-taking-page"
     >
-      <Flex justifyContent={'space-evenly'} className="keyboard-and-calendar">
+      <Flex justifyContent={'start'} className="keyboard-and-calendar">
         {
           customer ? showVirtualKeypad() : showUserSelector()
         }

@@ -1,20 +1,25 @@
-import { Box, Button, Flex, Heading, Input, Text, Stack, Card, Avatar, DataList, CheckboxCard, IconButton, Dialog, Portal, CloseButton } from '@chakra-ui/react';
+import { Box, Button, Flex, Heading, Input, Text, Stack, Card, Avatar, DataList, CheckboxCard, IconButton, Dialog, Portal, CloseButton, Spinner } from '@chakra-ui/react';
 import { GoAlertFill, GoTrash } from "react-icons/go";
 import Keyboard, { type SimpleKeyboard } from 'react-simple-keyboard';
 import Scroller from '@/component/Scroller';
 import { dataListItemValue, textKeyboardLayout, textOrNumberKeyboardDisplay, toaster } from '@/utility';
 import { useEffect, useRef, useState } from 'react';
 import type { UserModel } from '@/api-models';
-import { customerMoneyCommand, userManagementCommand } from '@/commands';
+import { useCustomerMoneyCommand, useUserManagementCommand } from '@/commands';
 import { format } from 'date-fns';
 import { id } from 'date-fns/locale';
+import { useQuery } from '@tanstack/react-query';
 
 export default function UpdateCustomerTab() {
 
   const [selectedCustomer, setSelectedCustomer] = useState<UserModel | undefined>(undefined)
   const [deleteCandidate, setDeleteCandidate] = useState<UserModel | undefined>(undefined)
-  const [customers, setCustomers] = useState<UserModel[]>([])
   const [dialogOpen, setDialogOpen] = useState<boolean>(false)
+
+  const { deleteUser } = useCustomerMoneyCommand()
+  const { upsertUser, getAllUser } = useUserManagementCommand()
+
+  const { data: customers, refetch: refetchCustomer } = useQuery(getAllUser)
 
   const keyboardRef = useRef<SimpleKeyboard>(null)
 
@@ -22,30 +27,33 @@ export default function UpdateCustomerTab() {
     setSelectedCustomer(customer)
   }
 
-  const handleOnCofirmDeleteCustomer = () => {
-    if (deleteCandidate)
-      customerMoneyCommand.deleteUser(deleteCandidate.id)
-        .then((res) => {
-          toaster.create({
-            title: `Succes To Delete ${deleteCandidate.username}, ${res}`,
-            type: 'success'
-          })
-          setSelectedCustomer(undefined)
-          setDeleteCandidate(undefined)
-          setDialogOpen(false)
-        })
-        .catch(e => {
-          toaster.create({
-            title: `Error To Delete ${deleteCandidate.username} ${e}`,
-            type: 'error'
-          })
-          setSelectedCustomer(undefined)
-          setDeleteCandidate(undefined)
-          setDialogOpen(false)
-        })
+  const handleOnCofirmDeleteCustomer = async () => {
+    if (!deleteCandidate) return;
+
+    const res = await deleteUser.mutateAsync({ userId: deleteCandidate.id })
+
+    if (res > 0) {
+      toaster.create({
+        title: `Succes To Delete ${deleteCandidate.username}, ${res}`,
+        type: 'success'
+      })
+      setSelectedCustomer(undefined)
+      setDeleteCandidate(undefined)
+      setDialogOpen(false)
+    }
+    else {
+      toaster.create({
+        title: `Error To Delete ${deleteCandidate.username}`,
+        type: 'error'
+      })
+      setSelectedCustomer(undefined)
+      setDeleteCandidate(undefined)
+      setDialogOpen(false)
+    }
+    await refetchCustomer()
   }
 
-  const handleOnUpdateCustomer = () => {
+  const handleOnUpdateCustomer = async () => {
     if (selectedCustomer === undefined) return
     if (selectedCustomer.username === '') {
       toaster.create({
@@ -55,18 +63,17 @@ export default function UpdateCustomerTab() {
       return;
     }
 
-    userManagementCommand.upsertUser(selectedCustomer)
-      .then(id => {
-        if (id === 0)
-          toaster.create({
-            title: `Fail To Update ${selectedCustomer.username}`,
-            type: 'error'
-          })
-        else
-          toaster.create({
-            title: `Success to update ${selectedCustomer.username}`,
-            type: 'success'
-          })
+    const id = await upsertUser.mutateAsync({ user: selectedCustomer })
+
+    if (id === 0)
+      toaster.create({
+        title: `Fail To Update ${selectedCustomer.username}`,
+        type: 'error'
+      })
+    else
+      toaster.create({
+        title: `Success to update ${selectedCustomer.username}`,
+        type: 'success'
       })
 
     setSelectedCustomer(undefined)
@@ -177,14 +184,16 @@ export default function UpdateCustomerTab() {
     </Dialog.Root>
 
   useEffect(() => {
-    userManagementCommand.getAllUser()
-      .then(customers => setCustomers(customers))
-  }, [selectedCustomer])
-
-  useEffect(() => {
     if (selectedCustomer && keyboardRef.current)
       keyboardRef.current?.setInput(selectedCustomer.username)
   }, [selectedCustomer])
+
+  if (!customers) return (
+    <Stack>
+      <Spinner />
+      <Text>User Empty</Text>
+    </Stack>
+  )
 
   return (
     <Flex>
@@ -206,7 +215,7 @@ export default function UpdateCustomerTab() {
           Nama Pelanggan
         </Heading>
 
-        <Card.Root minWidth={'500px'}>
+        <Card.Root width={'700px'}>
           <Card.Header>
             <Heading>
               Editing {selectedCustomer?.username}
@@ -258,6 +267,8 @@ export default function UpdateCustomerTab() {
             />
 
             <Button
+              height={'80px'}
+              fontSize={'2xl'}
               onClick={() => handleOnUpdateCustomer()}
             >
               Update Customer

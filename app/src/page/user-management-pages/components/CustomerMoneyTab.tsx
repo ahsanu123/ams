@@ -189,6 +189,8 @@ export default function CustomerMoneyTab() {
           onChange={(value) => setAddMoneyAmount(Number(value))}
         />
         <Button
+          height={'80px'}
+          fontSize={'2xl'}
           onClick={() => handleOnAddMoney()}
         >
           Add Money

@@ -22,7 +22,7 @@ export default function AdminLayout() {
         padding={'0 20px'}
         backgroundImage={'url(/ams-hero-4.png)'}
         backgroundSize={'contain'}
-        height={'120px'}
+        height={'140px'}
         backgroundColor={'#becda8'}
         className="logo-and-info">
 
@@ -43,16 +43,13 @@ export default function AdminLayout() {
             <Text>{headerInformation.description}</Text>
           </Stack>
         </Stack>
-      </Flex>
-      <hr />
 
-      <Box>
-        <Outlet />
-      </Box>
-
-      <footer>
-        <Flex alignItems={'center'}>
+        <Flex
+          className="copyright-container"
+          alignItems={'center'}
+          backgroundColor={'white'}>
           <Button
+            size={'xl'}
             variant={'ghost'}
             onClick={() => handleAdminLogin()}
           >
@@ -62,7 +59,12 @@ export default function AdminLayout() {
             Copyright {new Date().getFullYear()}
           </Text>
         </Flex>
-      </footer>
+      </Flex>
+      <hr />
+
+      <Box>
+        <Outlet />
+      </Box>
     </Box>
   )
 }

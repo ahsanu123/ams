@@ -77,6 +77,7 @@ export default function UpdateDregPriceTab() {
       <Flex>
         <Stack>
           <NumberInput.Root
+            defaultValue="0"
             value={newDregPrice.toString()}
             formatOptions={{
               style: "currency",
@@ -93,6 +94,8 @@ export default function UpdateDregPriceTab() {
             onChange={(value) => setNewDregPrice(Number(value))}
           />
           <Button
+            height={'80px'}
+            fontSize={'2xl'}
             onClick={() => handleOnUpdateDregPrice()}
           >
             Ganti Harga

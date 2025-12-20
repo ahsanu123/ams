@@ -1,5 +1,4 @@
-@media (max-width: 1300px){
-  body{
-    transform: scale(0.7);
-  }
+.hg-button{
+  height: 80px !important;
 }
+

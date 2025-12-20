@@ -14,6 +14,7 @@ import { IS_INSIDE_TAURI } from "./constants";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { queryClient } from "./commands";
 import "react-datepicker/dist/react-datepicker.css"
+import "root.css"
 
 const system = createSystem(defaultConfig);
 

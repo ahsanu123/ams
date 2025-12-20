@@ -34,7 +34,7 @@ export default function AdminLayout() {
         padding={'0 20px'}
         backgroundImage={'url(/ams-hero-4.png)'}
         backgroundSize={'contain'}
-        height={'120px'}
+        height={'140px'}
         backgroundColor={'#becda8'}
         className="logo-and-info">
 
@@ -79,35 +79,25 @@ export default function AdminLayout() {
           </Flex>
         </Stack>
 
-      </Flex>
-      <hr />
+        <Flex
+          className="copyright-container"
+          alignItems={'center'}
+          backgroundColor={'white'}>
 
-      <Flex
-        className="menu-and-outlet"
-      >
-        <Box width={'280px'}>
-          <TreeMenuComponent />
-        </Box>
-        <Box flex={5}>
-          <Outlet />
-        </Box>
-      </Flex>
-
-      <footer>
-        <Flex alignItems={'center'}>
           <Button
+            size={'xl'}
             variant={'ghost'}
             onClick={() => handleOnBackToCustomerTakingPage()}
           >
             <AiFillCopyrightCircle />
           </Button>
-          <Text>
+          <Text fontSize={'xl'}>
             Copyright {new Date().getFullYear()}
           </Text>
 
           <Dialog.Root>
             <Dialog.Trigger asChild>
-              <Button variant="ghost" size="sm">
+              <Button variant="ghost" size="lg">
                 About
               </Button>
             </Dialog.Trigger>
@@ -124,14 +114,14 @@ export default function AdminLayout() {
                         height={30}
                         width={35}
                       />
-                      <Dialog.Title>AMS - About</Dialog.Title>
+                      <Dialog.Title fontSize={'4xl'}>AMS - About</Dialog.Title>
                     </Flex>
                   </Dialog.Header>
 
                   <Dialog.Body>
-                    <p>
+                    <Text fontSize={'xl'}>
                       Ampas Management System (AMS) is a personal project designed to modernize and streamline the selling workflow of soybean dregs (ampas). It helps simplify daily operations by providing an organized, reliable system to record sales, track transactions, and manage day-to-day data with ease.
-                    </p>
+                    </Text>
                   </Dialog.Body>
 
                   <Dialog.Footer>
@@ -155,7 +145,21 @@ export default function AdminLayout() {
           </Dialog.Root>
 
         </Flex>
-      </footer>
+
+      </Flex>
+      <hr />
+
+      <Flex
+        className="menu-and-outlet"
+      >
+        <Box minWidth={'280px'}>
+          <TreeMenuComponent />
+        </Box>
+        <Box flex={5}>
+          <Outlet />
+        </Box>
+      </Flex>
+
     </Box>
   )
 }

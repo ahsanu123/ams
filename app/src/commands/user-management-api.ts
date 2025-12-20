@@ -96,12 +96,13 @@ export function useUserManagementCommand() {
     enabled: !!id
   })
 
-  const createNewUser = (username: string) => useMutation({
+  const createNewUser = useMutation({
     onSuccess: () => queryClient.invalidateQueries({
       queryKey: ['getUsers']
     }),
 
-    mutationFn: () => userManagementCommand.createNewUser(username)
+    mutationFn: ({ username }: { username: string }) =>
+      userManagementCommand.createNewUser(username)
   })
 
   const insertNewUser = (user: UserModel) => useMutation({
@@ -112,12 +113,12 @@ export function useUserManagementCommand() {
     mutationFn: () => userManagementCommand.insertNewUser(user)
   })
 
-  const upsertUser = (user: UserModel) => useMutation({
+  const upsertUser = useMutation({
     onSuccess: () => queryClient.invalidateQueries({
       queryKey: ['getUsers']
     }),
 
-    mutationFn: () => userManagementCommand.upsertUser(user)
+    mutationFn: ({ user }: { user: UserModel }) => userManagementCommand.upsertUser(user)
   })
 
   return {

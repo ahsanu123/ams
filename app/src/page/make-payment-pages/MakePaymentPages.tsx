@@ -517,7 +517,7 @@ export default function MakePaymentPage() {
 
   const detailOneMonth = () => {
     return showDetailTaking && pageModel && selectedDate && (
-      <Card.Root>
+      <Card.Root size={'lg'}>
         <Card.Header>
           <Heading>
             <Flex alignItems={'center'}>
@@ -599,7 +599,7 @@ export default function MakePaymentPage() {
       <Stack direction={'row'} className="detailed-info-container">
         <Stack className="left-container">
 
-          <Heading>
+          <Heading fontSize={'2xl'}>
             Pilih Nama
           </Heading>
 
@@ -645,7 +645,7 @@ export default function MakePaymentPage() {
 
           </Select.Root>
 
-          <Heading>
+          <Heading fontSize={'2xl'}>
             Pilih Bulan dan Tahun
           </Heading>
 
@@ -676,27 +676,37 @@ export default function MakePaymentPage() {
               defaultValue={ListTabEnum.CustomerTakingRecordDetail}>
 
               <Tabs.List>
-                <Tabs.Trigger value={ListTabEnum.CustomerTakingRecordDetail}>
+                <Tabs.Trigger
+                  fontSize={'xl'}
+                  value={ListTabEnum.CustomerTakingRecordDetail}>
                   <AiFillSliders />
                   {ListTabEnum.CustomerTakingRecordDetail}
                 </Tabs.Trigger>
 
-                <Tabs.Trigger value={ListTabEnum.CustomerDetailInformation}>
+                <Tabs.Trigger
+                  fontSize={'xl'}
+                  value={ListTabEnum.CustomerDetailInformation}>
                   <AiFillNotification />
                   {ListTabEnum.CustomerDetailInformation}
                 </Tabs.Trigger>
 
-                <Tabs.Trigger value={ListTabEnum.CustomerTakingCalendar}>
+                <Tabs.Trigger
+                  fontSize={'xl'}
+                  value={ListTabEnum.CustomerTakingCalendar}>
                   <AiFillCalendar />
                   {ListTabEnum.CustomerTakingCalendar}
                 </Tabs.Trigger>
 
-                <Tabs.Trigger value={ListTabEnum.AllYearCalendar}>
+                <Tabs.Trigger
+                  fontSize={'xl'}
+                  value={ListTabEnum.AllYearCalendar}>
                   <AiFillCalendar />
                   {ListTabEnum.AllYearCalendar}
                 </Tabs.Trigger>
 
-                <Tabs.Trigger value={ListTabEnum.RangeMonthInformation}>
+                <Tabs.Trigger
+                  fontSize={'xl'}
+                  value={ListTabEnum.RangeMonthInformation}>
                   <AiFillCalendar />
                   {ListTabEnum.RangeMonthInformation}
                 </Tabs.Trigger>

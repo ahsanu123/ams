@@ -69,7 +69,7 @@ export function useCustomerMoneyCommand() {
 
   const deleteUser = useMutation({
     onSuccess: () => queryClient.invalidateQueries({
-      queryKey: ['getAllUserMoneyHistory'],
+      queryKey: ['getAllUserMoneyHistory', 'getUsers'],
     }),
     mutationFn: ({ userId }: { userId: number }) => customerMoneyCommand.deleteUser(userId)
   })

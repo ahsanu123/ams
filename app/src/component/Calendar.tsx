@@ -209,7 +209,7 @@ export default function Calendar(props: CalendarProps) {
             <Avatar.Root>
               <Avatar.Fallback name={selectedCustomer.username} />
             </Avatar.Root>
-            <Text textStyle={'md'} fontWeight={'bold'}>
+            <Text textStyle={'4xl'} fontWeight={'bold'}>
               {selectedCustomer.username}
             </Text>
           </React.Fragment>
@@ -231,6 +231,6 @@ export default function Calendar(props: CalendarProps) {
           </React.Fragment>
         ))}
       </Box>
-    </Box>
+    </Box >
   )
 }

@@ -16,7 +16,7 @@ export default function CreateNewCustomerTab() {
   const newUserName = useCreateNewCustomerTabState(state => state.newUserName)
   const setNewUserName = useCreateNewCustomerTabState(state => state.setNewUserName)
 
-  const { getAllUser } = useUserManagementCommand()
+  const { getAllUser, createNewUser } = useUserManagementCommand()
   const { data: customers } = useQuery(getAllUser)
 
   const keyboardRef = useRef<SimpleKeyboard>(null)
@@ -39,31 +39,37 @@ export default function CreateNewCustomerTab() {
 
       <Card.Body>
         <DataList.Root>
-          {dataListItemValue("Pelanggan Sejak:", `${format(customer.createdDate, "PPPP", { locale: id })}`)}
+          {dataListItemValue(
+            "Pelanggan Sejak:",
+            `${format(customer.createdDate, "PPPP", { locale: id })}`
+          )}
         </DataList.Root>
       </Card.Body>
 
     </Card.Root>
 
-  const handleOnCreateNewCustomer = () => {
-    if (newUserName === '') return;
-
-    userManagementCommand.createNewUser(newUserName)
-      .then(id => {
-        if (id === 0)
-          toaster.create({
-            title: `Fail to create new customer named ${newUserName}, username Already Taken`,
-            type: 'error'
-          })
-        else
-          toaster.create({
-            title: `Success to create new customer named ${newUserName}`,
-            type: 'success'
-          })
-        setNewUserName('')
-        keyboardRef.current?.setInput('')
+  const handleOnCreateNewCustomer = async () => {
+    if (newUserName === '') {
+      toaster.create({
+        title: 'username is empty!!',
+        type: 'error'
       })
+      return;
+    };
 
+    const id = await createNewUser.mutateAsync({ username: newUserName })
+    if (id === 0)
+      toaster.create({
+        title: `Fail to create new customer named ${newUserName}, username Already Taken`,
+        type: 'error'
+      })
+    else
+      toaster.create({
+        title: `Success to create new customer named ${newUserName}`,
+        type: 'success'
+      })
+    setNewUserName('')
+    keyboardRef.current?.setInput('')
   }
 
   return (
@@ -75,6 +81,7 @@ export default function CreateNewCustomerTab() {
       <Flex gap={2}>
         <Stack className='keyboard-container'>
           <Input
+            defaultValue={""}
             value={newUserName}
             size={'2xl'}
             placeholder="contoh: sukijan"
@@ -87,6 +94,8 @@ export default function CreateNewCustomerTab() {
             display={textOrNumberKeyboardDisplay}
           />
           <Button
+            height={'80px'}
+            fontSize={'2xl'}
             disabled={newUserName === ''}
             onClick={handleOnCreateNewCustomer}
           >
