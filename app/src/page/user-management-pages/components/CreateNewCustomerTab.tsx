@@ -90,6 +90,7 @@ export default function CreateNewCustomerTab() {
           <Keyboard
             keyboardRef={kb => keyboardRef.current = kb as SimpleKeyboard}
             onChange={(value, _) => setNewUserName(value)}
+            onKeyPress={() => undefined}
             layout={textKeyboardLayout}
             display={textOrNumberKeyboardDisplay}
           />

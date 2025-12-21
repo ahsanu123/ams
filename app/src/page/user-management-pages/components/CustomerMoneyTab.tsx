@@ -187,6 +187,7 @@ export default function CustomerMoneyTab() {
           layout={numberLayout}
           display={textOrNumberKeyboardDisplay}
           onChange={(value) => setAddMoneyAmount(Number(value))}
+          onKeyPress={() => undefined}
         />
         <Button
           height={'80px'}
