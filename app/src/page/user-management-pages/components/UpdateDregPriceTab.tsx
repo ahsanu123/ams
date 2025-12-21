@@ -92,6 +92,7 @@ export default function UpdateDregPriceTab() {
             layout={numberLayout}
             display={textOrNumberKeyboardDisplay}
             onChange={(value) => setNewDregPrice(Number(value))}
+            onKeyPress={() => undefined}
           />
           <Button
             height={'80px'}

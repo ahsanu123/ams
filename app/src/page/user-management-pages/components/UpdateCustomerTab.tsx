@@ -260,6 +260,7 @@ export default function UpdateCustomerTab() {
               keyboardRef={(kb) => keyboardRef.current = kb as SimpleKeyboard}
               layout={textKeyboardLayout}
               display={textOrNumberKeyboardDisplay}
+              onKeyPress={() => undefined}
               onChange={(username) => selectedCustomer && setSelectedCustomer({
                 ...selectedCustomer,
                 username
