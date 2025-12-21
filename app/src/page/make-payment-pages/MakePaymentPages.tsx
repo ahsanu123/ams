@@ -51,7 +51,7 @@ export default function MakePaymentPage() {
   const [dateOpen, setDateOpen] = useState(false)
   const [fromDateOpen, setFromDateOpen] = useState(false)
   const [toDateOpen, setToDateOpen] = useState(false)
-  const [activeTab, setActiveTab] = useState<string>(ListTabEnum.CustomerTakingRecordDetail)
+  const [activeTab, setActiveTab] = useState<string>(ListTabEnum.CustomerTakingCalendar)
 
   const { data: pageModel, refetch: refetchPageModel } = useQuery(getPageModel(selectedCustomer?.id, selectedDate))
   const { data: oneYearRecords } = useQuery(getTakingRecordByUserIdAndYear(selectedCustomer?.id, selectedDate))
@@ -565,10 +565,10 @@ export default function MakePaymentPage() {
 
         <Card.Footer>
           <Button
+            size={'2xl'}
             onClick={() => handleOnPayButtonClicked()}
             disabled={isPayButtonDisabled()}
           >
-            <AiFillGolden />
             Bayar Bulan {selectedDate && format(selectedDate, 'MMMM yyyy', { locale: id })}
           </Button>
         </Card.Footer>
@@ -617,8 +617,8 @@ export default function MakePaymentPage() {
             <Select.HiddenSelect />
 
             <Select.Control>
-              <Select.Trigger textStyle={'lg'}>
-                <Select.ValueText placeholder="Pilih Nama" />
+              <Select.Trigger textStyle={'4xl'}>
+                <Select.ValueText textStyle={'4xl'} placeholder="Pilih Nama" />
               </Select.Trigger>
             </Select.Control>
 
@@ -673,9 +673,16 @@ export default function MakePaymentPage() {
             <Tabs.Root
               value={activeTab}
               onValueChange={(e) => setActiveTab(e.value)}
-              defaultValue={ListTabEnum.CustomerTakingRecordDetail}>
+              defaultValue={ListTabEnum.CustomerTakingCalendar}>
 
               <Tabs.List>
+                <Tabs.Trigger
+                  fontSize={'xl'}
+                  value={ListTabEnum.CustomerTakingCalendar}>
+                  <AiFillCalendar />
+                  {ListTabEnum.CustomerTakingCalendar}
+                </Tabs.Trigger>
+
                 <Tabs.Trigger
                   fontSize={'xl'}
                   value={ListTabEnum.CustomerTakingRecordDetail}>
@@ -688,13 +695,6 @@ export default function MakePaymentPage() {
                   value={ListTabEnum.CustomerDetailInformation}>
                   <AiFillNotification />
                   {ListTabEnum.CustomerDetailInformation}
-                </Tabs.Trigger>
-
-                <Tabs.Trigger
-                  fontSize={'xl'}
-                  value={ListTabEnum.CustomerTakingCalendar}>
-                  <AiFillCalendar />
-                  {ListTabEnum.CustomerTakingCalendar}
                 </Tabs.Trigger>
 
                 <Tabs.Trigger
@@ -712,16 +712,16 @@ export default function MakePaymentPage() {
                 </Tabs.Trigger>
               </Tabs.List>
 
+              <Tabs.Content value={ListTabEnum.CustomerTakingCalendar}>
+                {currentMonthCalender()}
+              </Tabs.Content>
+
               <Tabs.Content value={ListTabEnum.CustomerTakingRecordDetail}>
                 {scrollerUserTakingRecordComponent()}
               </Tabs.Content>
 
               <Tabs.Content value={ListTabEnum.CustomerDetailInformation}>
                 {userDetailComponent()}
-              </Tabs.Content>
-
-              <Tabs.Content value={ListTabEnum.CustomerTakingCalendar}>
-                {currentMonthCalender()}
               </Tabs.Content>
 
               <Tabs.Content value={ListTabEnum.AllYearCalendar}>
