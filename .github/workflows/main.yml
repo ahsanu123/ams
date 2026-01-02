@@ -8,19 +8,18 @@ on:
 jobs:
   build_armv7:
     runs-on: ubuntu-latest
-    name: Build on Ubuntu ARMv7
+    name: Build on Ubuntu armv7
 
     steps:
       - uses: actions/checkout@v4
 
-      - name: Build inside ARMv7 environment
+      - name: Build inside armv7 environment
         id: runcmd
         uses: uraimo/run-on-arch-action@v3
         with:
           arch: armv7
           distro: ubuntu24.04
           githubToken: ${{ github.token }}
-          cpu: 2
           run: |
             echo "📦 Installing system dependencies..."
             apt-get update
@@ -38,7 +37,7 @@ jobs:
             echo "🦀 Installing Rust..."
             curl https://sh.rustup.rs -sSf | sh -s -- -y
             source $HOME/.cargo/env
-            rustup target add armv7-unknown-linux-gnueabihf
+            # rustup target add armv7-unknown-linux-gnueabihf
             rustup default stable
 
             echo "🟢 Installing Node & Yarn..."
@@ -53,10 +52,10 @@ jobs:
 
             echo "BUILD_DONE"
 
-      - name: Upload ARMv7 binary
+      - name: Upload armv7 binary
         uses: actions/upload-artifact@v4
         with:
-          name: ams-release
+          name: ams-release-armv7
           path: | 
             app/src-tauri/target/release/ams
             app/src-tauri/target/release/ams.d
@@ -69,6 +68,70 @@ jobs:
             scripts/initial-setup.sh
             scripts/reboot.service
             scripts/reboot.timer
+            scripts/.gitignore
             ams-prod.sqlite
 
+  build_aarch64:
+    runs-on: ubuntu-latest
+    name: Build on Ubuntu aarch64
 
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build inside aarch64 environment
+        id: runcmd
+        uses: uraimo/run-on-arch-action@v3
+        with:
+          arch: aarch64
+          distro: ubuntu24.04
+          githubToken: ${{ github.token }}
+          run: |
+            echo "📦 Installing system dependencies..."
+            apt-get update
+            apt-get install -y \
+              libwebkit2gtk-4.1-dev \
+              build-essential \
+              curl \
+              wget \
+              file \
+              libxdo-dev \
+              libssl-dev \
+              libayatana-appindicator3-dev \
+              librsvg2-dev
+
+            echo "🦀 Installing Rust..."
+            curl https://sh.rustup.rs -sSf | sh -s -- -y
+            source $HOME/.cargo/env
+            # rustup target add aarch64-unknown-linux-gnu
+            rustup default stable
+
+            echo "🟢 Installing Node & Yarn..."
+            curl -fsSL https://deb.nodesource.com/setup_20.x | bash -
+            apt-get install -y nodejs
+            npm install -g yarn
+
+            echo "🚀 Building Tauri app..."
+            cd app
+            yarn install
+            yarn tauri build --no-bundle
+
+            echo "BUILD_DONE"
+
+      - name: Upload aarch64 binary
+        uses: actions/upload-artifact@v4
+        with:
+          name: ams-release-aarch64
+          path: | 
+            app/src-tauri/target/release/ams
+            app/src-tauri/target/release/ams.d
+            app/src-tauri/target/release/ams.sqlite
+            app/src-tauri/target/release/.env
+            scripts/Production-Auto-Backup.md
+            scripts/ams-prod-db-backup.service
+            scripts/ams-prod-db-backup.timer
+            scripts/auto-backup-to-github.sh
+            scripts/initial-setup.sh
+            scripts/reboot.service
+            scripts/reboot.timer
+            scripts/.gitignore
+            ams-prod.sqlite
