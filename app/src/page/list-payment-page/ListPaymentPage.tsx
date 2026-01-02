@@ -1,4 +1,4 @@
-import { useCustomerMoneyCommand, usePaymentHistoryCommand, userManagementCommand } from "@/commands";
+import { useCustomerMoneyCommand, usePaymentHistoryCommand, userManagementCommand, useUserManagementCommand } from "@/commands";
 import Scroller from "@/component/Scroller";
 import { EMPTY_HEADER_INFORMATION } from "@/constants";
 import { useMainLayoutStore } from "@/state";
@@ -6,23 +6,14 @@ import { dataListItemValue, formatAsRupiah, formatDateId } from "@/utility";
 import { Badge, Box, Card, Text, createListCollection, DataList, Flex, Heading, Image, Portal, Select, Stack, Table } from "@chakra-ui/react";
 import { useEffect } from "react";
 import DatePicker from "react-datepicker";
-import type { Route } from "./+types/ListPaymentPage";
 import { useListPaymentPageState } from "./list-payment-page-state";
 import { useQuery } from "@tanstack/react-query";
 import './ListPaymentPage.css';
 
-export async function clientLoader() {
-  const activeCustomer = await userManagementCommand.getAllActiveUser()
-  return {
-    activeCustomer
-  }
-}
+export default function ListPaymentPage() {
 
-export default function ListPaymentPage({
-  loaderData
-}: Route.ComponentProps) {
-
-  const { activeCustomer } = loaderData
+  const { getAllUser } = useUserManagementCommand()
+  const { data: activeCustomer } = useQuery(getAllUser)
 
   const setHeaderInformation = useMainLayoutStore(state => state.setHeaderInformation)
 
@@ -38,8 +29,8 @@ export default function ListPaymentPage({
   const { getAllUserMoneyHistory } = useCustomerMoneyCommand()
   const { getPaymentRecordByUserIdAndMonth } = usePaymentHistoryCommand()
 
-  const { data: moneyHistories } = useQuery(getAllUserMoneyHistory(selectedCustomer?.id))
-  const { data: paymentRecords } = useQuery(getPaymentRecordByUserIdAndMonth(selectedCustomer?.id, selectedDate))
+  const { data: moneyHistories, refetch: refetchMoneyHistory } = useQuery(getAllUserMoneyHistory(selectedCustomer?.id))
+  const { data: paymentRecords, refetch: refetchPaymentRecords } = useQuery(getPaymentRecordByUserIdAndMonth(selectedCustomer?.id, selectedDate))
 
   const selectListCustomer = createListCollection({
     items: listCustomer.map((customer) => ({
@@ -166,14 +157,21 @@ export default function ListPaymentPage({
     </Scroller>
 
   useEffect(() => {
-    setListCustomer(activeCustomer)
-    setHeaderInformation({
-      title: 'List Payment',
-      description: 'Place To See All Taking Record'
-    })
+    if (activeCustomer) {
+      setListCustomer(activeCustomer)
+      setHeaderInformation({
+        title: 'List Payment',
+        description: 'Place To See All Taking Record'
+      })
+    }
 
     return () => setHeaderInformation(EMPTY_HEADER_INFORMATION)
-  }, [])
+  }, [activeCustomer])
+
+  useEffect(() => {
+    refetchPaymentRecords()
+    refetchMoneyHistory()
+  }, [selectedDate, selectedCustomer])
 
   return (
     <Box className="list-payment-page">

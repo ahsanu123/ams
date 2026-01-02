@@ -119,7 +119,7 @@ export default function Calendar(props: CalendarProps) {
       .then((customers) => {
         setListCustomer(customers)
 
-        if (customers.length > 0) {
+        if (customers.length > 0 && user === undefined) {
           const customer = customers[0]
           setSelectedCustomer(customer)
           onCustomerIdChange?.(customer.id!)
@@ -130,7 +130,7 @@ export default function Calendar(props: CalendarProps) {
   useEffect(() => {
     setSelectedCustomer(user)
     if (user)
-      onCustomerIdChange?.(user.id!)
+      onCustomerIdChange?.(user.id)
 
     if (user && month) {
       setDate(month)

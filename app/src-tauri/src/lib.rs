@@ -41,7 +41,13 @@ pub fn run() {
             let abs_env_path = path::absolute(&env_path).unwrap();
             let _ = from_path(abs_env_path);
 
-            let sqlite_path = path::PathBuf::from(format!("{}/ams.sqlite", current_dir.display()));
+            let production_mode = env::args().any(|arg| arg.contains("--production-mode"));
+
+            let sqlite_path: path::PathBuf = if production_mode {
+                path::PathBuf::from(format!("{}/ams-prod.sqlite", current_dir.display()))
+            } else {
+                path::PathBuf::from(format!("{}/ams.sqlite", current_dir.display()))
+            };
 
             log::info!(
                 "sqlite://{}?mode=rwc",

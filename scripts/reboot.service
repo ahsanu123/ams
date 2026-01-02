@@ -1,0 +1,6 @@
+[Unit]
+Description=Reboot AMS system at 06:00
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/systemctl reboot

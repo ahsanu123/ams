@@ -53,6 +53,9 @@ The goal of AMS is to deliver a simple, fast, and reliable system tailored for p
 - to debug output of macro run `dbg!(variable);`
 - **quote!** repetition -> [repetition](https://docs.rs/quote/latest/quote/macro.quote.html#interpolation)
 - swagger ui with utoipa actix swagger-ui `http://localhost:9090/swagger-ui/index.html`
+- [read more on auto backup database](./scripts/Production-Auto-Backup.md)
+- ams-prod.sqlite in root folder is empty database for production
+
  
 ## ⚓ Reference  
 

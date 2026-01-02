@@ -1,0 +1,16 @@
+# copy this file to:
+# ~/.config/systemd/user/
+#
+# then run with 
+# systemctl --user daemon-reload
+# systemctl --user enable --now ams-prod-db-backup.timer
+
+[Unit]
+Description=Run ams production database backup to github
+
+[Timer]
+OnCalendar=22:00
+Persistent=true
+
+[Install]
+WantedBy=timers.target

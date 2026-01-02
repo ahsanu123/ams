@@ -56,11 +56,19 @@ jobs:
       - name: Upload ARMv7 binary
         uses: actions/upload-artifact@v4
         with:
-          name: tauri-armv7
+          name: ams-release
           path: | 
             app/src-tauri/target/release/ams
             app/src-tauri/target/release/ams.d
             app/src-tauri/target/release/ams.sqlite
             app/src-tauri/target/release/.env
+            scripts/Production-Auto-Backup.md
+            scripts/ams-prod-db-backup.service
+            scripts/ams-prod-db-backup.timer
+            scripts/auto-backup-to-github.sh
+            scripts/initial-setup.sh
+            scripts/reboot.service
+            scripts/reboot.timer
+            ams-prod.sqlite
 
 

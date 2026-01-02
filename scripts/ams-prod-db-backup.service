@@ -1,0 +1,10 @@
+# copy this file to:
+# ~/.config/systemd/user/
+
+[Unit]
+Description=Run ams production database backup to github
+
+[Service]
+Type=oneshot
+ExecStart=~/ams-root/auto-backup-to-github.sh
+ExecStartPost=/usr/bin/systemctl poweroff

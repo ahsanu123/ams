@@ -5,6 +5,7 @@ export function calculatePassword(): number {
   const monthYear = (now.getMonth() + 1) * now.getFullYear()
 
   if (dateMonth === 0) dateMonth = 1
+  else if (dateMonth < 0) dateMonth = Math.abs(dateMonth)
 
   return Math.abs(dateMonth * monthYear)
 }
