@@ -1,0 +1,6 @@
+[Unit]
+Description=Exit Sway After 10 Night
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/swaymsg exit
