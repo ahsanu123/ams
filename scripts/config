@@ -8,7 +8,9 @@ bar {
   mode invisible
 }
 
-exec_always --no-startup-id sh -c 'sleep 25 && swaymsg "[title="ams"] fullscreen enable"'
+exec systemctl --user import-environment SWAYSOCK WAYLAND_DISPLAY XDG_RUNTIME_DIR
+
+exec_always --no-startup-id sh -c 'sleep 85 && swaymsg "[title="ams"] fullscreen enable"'
 
 exec_always --no-startup-id GDK_DPI_SCALE=1.15 ~/ams-root/ams  --production-mode
 
