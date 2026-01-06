@@ -1,0 +1,14 @@
+set $mod Mod4
+bindsym $mod+Shift+q  exec swaymsg exit 
+
+default_border none 
+default_floating_border none
+
+bar {
+  mode invisible
+}
+
+exec_always --no-startup-id sh -c 'sleep 1.5 && swaymsg "[title="ams"] fullscreen enable"'
+
+exec_always --no-startup-id GDK_DPI_SCALE=1.15 ~/ams-root/ams  --production-mode
+
