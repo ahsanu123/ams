@@ -4,8 +4,8 @@ import { Box, Button, Flex, Heading, Image, Stack, Text } from "@chakra-ui/react
 import { Outlet, useNavigate } from "react-router";
 import Clock from "../component/Clock";
 import amsLogo from "../svg/ams-icon.svg";
-import "./AdminLayout.css";
 import { AiFillCopyrightCircle } from "react-icons/ai";
+import "./AdminLayout.css";
 
 export default function AdminLayout() {
   const navigate = useNavigate();
