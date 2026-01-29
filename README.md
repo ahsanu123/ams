@@ -15,6 +15,8 @@
 
  <img alt="logo" src="./docs/ams-logo.svg">
 
+> [!NOTE]  
+> Progress Port To [Slint](http://slint.dev/)!!
 
 # 🥔 Introduction
 
