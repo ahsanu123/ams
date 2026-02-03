@@ -13,13 +13,10 @@ import { Toaster } from "./utility";
 import { IS_INSIDE_TAURI } from "./constants";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { queryClient } from "./commands";
-import { getCurrentWindow } from '@tauri-apps/api/window';
 import "react-datepicker/dist/react-datepicker.css"
 import "root.css"
 
 const system = createSystem(defaultConfig);
-
-await getCurrentWindow().setFullscreen(true)
 
 export default function Root() {
   return (

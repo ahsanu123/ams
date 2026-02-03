@@ -1,5 +1,4 @@
 pub(crate) mod commands;
-pub(crate) mod models;
 pub(crate) mod repositories;
 pub(crate) mod utilities;
 
@@ -12,6 +11,7 @@ pub use commands::taking_record_command::TakingRecordCommandTrait;
 pub use commands::user_management_command::UserManagementCommandTrait;
 
 pub mod helper;
+pub mod models;
 pub mod singletons;
 
 pub mod prelude {

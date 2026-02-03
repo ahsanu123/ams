@@ -35,12 +35,5 @@
       "ams.sqlite",
       ".env"
     ]
-  },
-  "tauri": {
-      "allowlist": {
-          "window": {
-              "setFullscreen": true
-          }
-      }
   }
 }

@@ -6,7 +6,6 @@ use chrono::Local;
 use sea_orm::{
     ActiveValue::{NotSet, Set},
     EntityTrait, QueryOrder,
-    prelude::async_trait,
 };
 use std::fmt::Error;
 

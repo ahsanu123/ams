@@ -1,6 +1,6 @@
 use ams_shared::{
-    commands::make_payment_command::{MakePaymentCommand, MakePaymentCommandTrait},
-    models::make_payment_page_model::MakePaymentPageModel,
+    models::make_payment_page_model::MakePaymentPageModel, prelude::*,
+    singletons::MAKE_PAYMENT_COMMAND,
 };
 use chrono::NaiveDateTime;
 
@@ -9,7 +9,10 @@ pub async fn payment_page_get_page_model(
     user_id: i32,
     date: NaiveDateTime,
 ) -> MakePaymentPageModel {
-    let result = MakePaymentCommand::get_page_model(user_id, date)
+    let result = MAKE_PAYMENT_COMMAND
+        .lock()
+        .await
+        .get_page_model(user_id, date)
         .await
         .unwrap();
 
@@ -18,7 +21,10 @@ pub async fn payment_page_get_page_model(
 
 #[tauri::command(rename_all = "snake_case")]
 pub async fn payment_page_make_payment(user_id: i32, date: NaiveDateTime) -> MakePaymentPageModel {
-    let result = MakePaymentCommand::make_payment(user_id, date)
+    let result = MAKE_PAYMENT_COMMAND
+        .lock()
+        .await
+        .make_payment(user_id, date)
         .await
         .unwrap();
 

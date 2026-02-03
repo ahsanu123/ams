@@ -15,9 +15,6 @@
 
  <img alt="logo" src="./docs/ams-logo.svg">
 
-> [!NOTE]  
-> Progress Port To [Slint](http://slint.dev/)!!
-
 # 🥔 Introduction
 
 Ampas Management System (AMS) is a personal project built to streamline and manage the selling process of soybean dregs (ampas). It simplifies daily operations by providing an efficient way to track sales and manage records, making day-to-day management easier and more organized.
