@@ -8,10 +8,8 @@ use crate::endpoints::{
     user_management_enpoint::UserManagementServiceExtensionTrait,
 };
 use actix_cors::Cors;
+use actix_files::Files;
 use actix_web::{App, HttpServer, middleware::Logger};
-
-use ams_shared::helper::ENV_VAR;
-use ams_shared::helper::environment_variable::EnvironmentVariable;
 use utoipa::OpenApi;
 use utoipa_actix_web::AppExt;
 use utoipa_swagger_ui::{Config, SwaggerUi};
@@ -23,10 +21,6 @@ pub fn start_server_blocking() -> std::io::Result<()> {
 }
 
 pub async fn start_server() -> std::io::Result<()> {
-    dotenvy::dotenv().ok();
-
-    // let _ = ENV_VAR.set(EnvironmentVariable::new());
-
     env_logger::init_from_env(env_logger::Env::new().default_filter_or("debug"));
 
     HttpServer::new(move || {
@@ -46,6 +40,7 @@ pub async fn start_server() -> std::io::Result<()> {
                     .config(Config::default().try_it_out_enabled(true))
             })
             .into_app()
+            .service(Files::new("/", "./static").index_file("index.html"))
             // register all endpoint here to be able to accessed
             .register_customer_endpoints()
             .register_dregs_price_endpoints()

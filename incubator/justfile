@@ -1,0 +1,6 @@
+
+
+updateIncubator: 
+  cd ../app && yarn tauri build --no-bundle
+  cp ../app/src-tauri/target/release/ams .
+  chmod +x ./ams
