@@ -1,27 +1,36 @@
 use crate::repositories::{
-    get_sql_connection_trait::GetSqlConnectionTrait,
-    price_repositories::AdditionalPriceHistoryTableMethodTrait,
-    soybean_price_repository::AdditionalSoybeanPriceHistoryTableMethodTrait,
+    database_connection::get_database_connection,
+    price_repositories::{AdditionalPriceHistoryTableMethodTrait, PriceRepository},
+    soybean_price_repository::{
+        AdditionalSoybeanPriceHistoryTableMethodTrait, SoybeanPriceRepository,
+    },
 };
-use ams_entity::{
-    prelude::{PriceHistoryTable, SoybeanPriceHistoryTable},
-    production_record_table,
-};
-use sea_orm::{entity::*, prelude::async_trait};
+use ams_entity::production_record_table;
+use sea_orm::entity::*;
 
-#[async_trait::async_trait]
 pub trait ProductionRecordCommandTrait {
-    async fn insert_production_record(record: production_record_table::Model) -> i32;
+    async fn insert_production_record(&mut self, record: production_record_table::Model) -> i32;
 }
 
-pub struct ProductionRecordCommand;
+pub struct ProductionRecordCommand {
+    price_repository: PriceRepository,
+    soybean_price_repository: SoybeanPriceRepository,
+}
 
-#[async_trait::async_trait]
+impl Default for ProductionRecordCommand {
+    fn default() -> Self {
+        Self {
+            price_repository: PriceRepository::default(),
+            soybean_price_repository: SoybeanPriceRepository::default(),
+        }
+    }
+}
+
 impl ProductionRecordCommandTrait for ProductionRecordCommand {
-    async fn insert_production_record(record: production_record_table::Model) -> i32 {
-        let conn = PriceHistoryTable::get_connection().await;
-        let latest_dreg_price = PriceHistoryTable::get_latest_price().await;
-        let latest_soybean_price = SoybeanPriceHistoryTable::get_latest_price().await;
+    async fn insert_production_record(&mut self, record: production_record_table::Model) -> i32 {
+        let conn = get_database_connection().await;
+        let latest_dreg_price = self.price_repository.get_latest_price().await;
+        let latest_soybean_price = self.soybean_price_repository.get_latest_price().await;
 
         let insert_result = production_record_table::ActiveModel {
             id: NotSet,

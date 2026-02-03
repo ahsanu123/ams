@@ -1,29 +1,34 @@
 use crate::repositories::{
-    abstract_repository_trait::AbstractRepository, get_sql_connection_trait::GetSqlConnectionTrait,
+    abstract_repository_trait::AbstractRepository, database_connection::get_database_connection,
 };
 use ams_entity::{prelude::*, user_table};
 use chrono::Local;
-use sea_orm::{
-    ActiveValue::NotSet, ActiveValue::Set, EntityTrait, QueryFilter, entity::*,
-    prelude::async_trait,
-};
+use sea_orm::{ActiveValue::NotSet, ActiveValue::Set, EntityTrait, QueryFilter, entity::*};
 
-#[async_trait::async_trait]
 pub trait UserManagementCommandTrait {
-    async fn create_new_user(username: String) -> i32;
-    async fn insert_new_user(new_user: user_table::Model) -> i32;
-    async fn get_all_user() -> Vec<user_table::Model>;
-    async fn get_all_active_user() -> Vec<user_table::Model>;
-    async fn upsert_user(user: user_table::Model) -> i32;
-    async fn get_by_user_id(id: i32) -> Option<user_table::Model>;
+    async fn create_new_user(&mut self, username: String) -> i32;
+    async fn insert_new_user(&mut self, new_user: user_table::Model) -> i32;
+    async fn get_all_user(&mut self) -> Vec<user_table::Model>;
+    async fn get_all_active_user(&mut self) -> Vec<user_table::Model>;
+    async fn upsert_user(&mut self, user: user_table::Model) -> i32;
+    async fn get_by_user_id(&mut self, id: i32) -> Option<user_table::Model>;
 }
 
-pub struct UserManagementCommand;
+pub struct UserManagementCommand {
+    user_table: UserTable,
+}
 
-#[async_trait::async_trait]
+impl Default for UserManagementCommand {
+    fn default() -> Self {
+        Self {
+            user_table: UserTable,
+        }
+    }
+}
+
 impl UserManagementCommandTrait for UserManagementCommand {
-    async fn create_new_user(username: String) -> i32 {
-        let conn = UserTable::get_connection().await;
+    async fn create_new_user(&mut self, username: String) -> i32 {
+        let conn = get_database_connection().await;
 
         let user_exist = UserTable::find()
             .filter(user_table::Column::Username.eq(username.clone()))
@@ -45,13 +50,13 @@ impl UserManagementCommandTrait for UserManagementCommand {
             updated_date: Set(Local::now().naive_local()),
         };
 
-        let result = UserTable::create(active_model).await.unwrap();
+        let result = self.user_table.create(active_model).await.unwrap();
 
         result.id
     }
 
-    async fn insert_new_user(new_user: user_table::Model) -> i32 {
-        let conn = UserTable::get_connection().await;
+    async fn insert_new_user(&mut self, new_user: user_table::Model) -> i32 {
+        let conn = get_database_connection().await;
 
         let username = new_user.clone().username;
 
@@ -75,17 +80,17 @@ impl UserManagementCommandTrait for UserManagementCommand {
             updated_date: Set(new_user.updated_date),
         };
 
-        let result = UserTable::create(active_model).await.unwrap();
+        let result = self.user_table.create(active_model).await.unwrap();
 
         result.id
     }
 
-    async fn get_all_user() -> Vec<user_table::Model> {
-        UserTable::get_all().await.unwrap()
+    async fn get_all_user(&mut self) -> Vec<user_table::Model> {
+        self.user_table.get_all().await.unwrap()
     }
 
-    async fn get_all_active_user() -> Vec<user_table::Model> {
-        let conn = UserTable::get_connection().await;
+    async fn get_all_active_user(&mut self) -> Vec<user_table::Model> {
+        let conn = get_database_connection().await;
 
         UserTable::find()
             .filter(user_table::Column::IsActive.eq(true))
@@ -94,7 +99,7 @@ impl UserManagementCommandTrait for UserManagementCommand {
             .unwrap()
     }
 
-    async fn upsert_user(user: user_table::Model) -> i32 {
+    async fn upsert_user(&mut self, user: user_table::Model) -> i32 {
         let active_model = user_table::ActiveModel {
             id: Set(user.id),
             username: Set(user.username),
@@ -105,13 +110,13 @@ impl UserManagementCommandTrait for UserManagementCommand {
             updated_date: Set(Local::now().naive_local()),
         };
 
-        let result = UserTable::update_by_model(active_model).await.unwrap();
+        let result = self.user_table.update_by_model(active_model).await.unwrap();
 
         result.id
     }
 
-    async fn get_by_user_id(id: i32) -> Option<user_table::Model> {
-        UserTable::get_by_id(id).await.unwrap()
+    async fn get_by_user_id(&mut self, id: i32) -> Option<user_table::Model> {
+        self.user_table.get_by_id(id).await.unwrap()
     }
 }
 
@@ -131,13 +136,15 @@ mod test {
             updated_date: Local::now().naive_local(),
         };
 
-        let result = UserManagementCommand::insert_new_user(new_user).await;
+        let mut command = UserManagementCommand::default();
+        let result = command.insert_new_user(new_user).await;
         println!("result: {result:#?}");
     }
 
     #[tokio::test]
     async fn command_get_all_user() {
-        let result = UserManagementCommand::get_all_user().await;
+        let mut command = UserManagementCommand::default();
+        let result = command.get_all_user().await;
 
         println!("result: {result:#?}");
     }

@@ -1,32 +1,61 @@
 use crate::{
     models::monthly_payment_summary::MonthlyPaymentSummary,
-    repositories::abstract_repository_trait::AbstractRepository,
+    repositories::{
+        abstract_repository_trait::AbstractRepository, database_connection::get_database_connection,
+    },
 };
 use ams_entity::{payment_history_table, prelude::*, taking_record_table};
 use chrono::{Days, NaiveDateTime};
-use sea_orm::{
-    entity::*,
-    prelude::{Expr, async_trait::async_trait},
-    query::*,
-};
+use sea_orm::{entity::*, prelude::Expr, query::*};
 
-use crate::repositories::get_sql_connection_trait::GetSqlConnectionTrait;
+pub trait AdditionalPaymentHistoryRepoTrait {
+    async fn get_payment_history_by_user_id(
+        &mut self,
+        user_id: i32,
+    ) -> Vec<payment_history_table::Model>;
 
-#[async_trait]
-pub trait AdditionalPaymentHistoryTableMethodTrait {
-    async fn get_payment_history_by_user_id(user_id: i32) -> Vec<payment_history_table::Model>;
-    async fn update_payment_bulk(from: NaiveDateTime, to: NaiveDateTime, status: bool) -> u64;
-    async fn update_payment_record(record: payment_history_table::Model) -> i32;
+    async fn update_payment_bulk(
+        &mut self,
+        from: NaiveDateTime,
+        to: NaiveDateTime,
+        status: bool,
+    ) -> u64;
+
+    async fn update_payment_record(&mut self, record: payment_history_table::Model) -> i32;
+
     async fn get_monthly_summary_by_user_id(
+        &mut self,
         user_id: i32,
         date: NaiveDateTime,
     ) -> MonthlyPaymentSummary;
 }
 
-#[async_trait]
-impl AdditionalPaymentHistoryTableMethodTrait for PaymentHistoryTable {
-    async fn get_payment_history_by_user_id(user_id: i32) -> Vec<payment_history_table::Model> {
-        let conn = PaymentHistoryTable::get_connection().await;
+pub struct PaymentHistoryRepository {
+    payment_history_table: PaymentHistoryTable,
+    user_table: UserTable,
+    price_history_table: PriceHistoryTable,
+}
+
+impl PaymentHistoryRepository {
+    pub fn new(
+        payment_history_table: PaymentHistoryTable,
+        user_table: UserTable,
+        price_history_table: PriceHistoryTable,
+    ) -> Self {
+        Self {
+            payment_history_table,
+            user_table,
+            price_history_table,
+        }
+    }
+}
+
+impl AdditionalPaymentHistoryRepoTrait for PaymentHistoryRepository {
+    async fn get_payment_history_by_user_id(
+        &mut self,
+        user_id: i32,
+    ) -> Vec<payment_history_table::Model> {
+        let conn = get_database_connection().await;
 
         let result = PaymentHistoryTable::find()
             .filter(payment_history_table::Column::UserId.eq(user_id))
@@ -36,8 +65,13 @@ impl AdditionalPaymentHistoryTableMethodTrait for PaymentHistoryTable {
 
         result
     }
-    async fn update_payment_bulk(from: NaiveDateTime, to: NaiveDateTime, status: bool) -> u64 {
-        let conn = PaymentHistoryTable::get_connection().await;
+    async fn update_payment_bulk(
+        &mut self,
+        from: NaiveDateTime,
+        to: NaiveDateTime,
+        status: bool,
+    ) -> u64 {
+        let conn = get_database_connection().await;
 
         let from = from.date().and_hms_opt(0, 0, 0).unwrap();
         let to = to
@@ -57,9 +91,12 @@ impl AdditionalPaymentHistoryTableMethodTrait for PaymentHistoryTable {
 
         updated_taking_record.rows_affected
     }
-    async fn update_payment_record(record: payment_history_table::Model) -> i32 {
+    async fn update_payment_record(&mut self, record: payment_history_table::Model) -> i32 {
         let active_model: payment_history_table::ActiveModel = record.into();
-        let result = PaymentHistoryTable::update_by_model(active_model)
+
+        let result = self
+            .payment_history_table
+            .update_by_model(active_model)
             .await
             .unwrap();
 
@@ -67,16 +104,18 @@ impl AdditionalPaymentHistoryTableMethodTrait for PaymentHistoryTable {
     }
 
     async fn get_monthly_summary_by_user_id(
+        &mut self,
         user_id: i32,
         date: NaiveDateTime,
     ) -> MonthlyPaymentSummary {
-        let conn = TakingRecordTable::get_connection().await;
+        let conn = get_database_connection().await;
 
         // TODO:
         // change date to filter by month,
         // still dont know how to do that
 
-        let all_price = PriceHistoryTable::get_all().await.unwrap();
+        let all_price = self.price_history_table.get_all().await.unwrap();
+
         // let default_price = all_price
         //     .first()
         //     .expect("please insert default price")
@@ -118,23 +157,20 @@ impl AdditionalPaymentHistoryTableMethodTrait for PaymentHistoryTable {
             })
             .sum();
 
-        let user_money = UserTable::get_by_id(user_id).await.unwrap().unwrap().money;
+        let user_money = self
+            .user_table
+            .get_by_id(user_id)
+            .await
+            .unwrap()
+            .unwrap()
+            .money;
 
         MonthlyPaymentSummary {
             userid: user_id,
             total_taking: taking_this_month,
             total_paid: total_paid_this_month,
             bill: customer_bill,
-            user_money: user_money,
+            user_money,
         }
-    }
-}
-
-#[cfg(test)]
-mod test {
-
-    #[test]
-    fn name() {
-        todo!();
     }
 }

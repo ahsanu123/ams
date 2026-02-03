@@ -1,46 +1,61 @@
 use crate::repositories::{
-    abstract_repository_trait::AbstractRepository, get_sql_connection_trait::GetSqlConnectionTrait,
+    abstract_repository_trait::AbstractRepository, database_connection::get_database_connection,
 };
 use ams_entity::{payment_history_table, prelude::*, taking_record_table};
 use chrono::{Datelike, Days, Months, NaiveDate, NaiveDateTime};
-use sea_orm::{
-    EntityTrait, QueryFilter,
-    entity::*,
-    prelude::{Expr, async_trait},
-};
+use sea_orm::{EntityTrait, QueryFilter, entity::*, prelude::Expr};
 
-#[async_trait::async_trait]
 pub trait PaymentHistoryCommandTrait {
-    async fn get_payment_record_by_user_id(user_id: i32) -> Vec<payment_history_table::Model>;
+    async fn get_payment_record_by_user_id(
+        &mut self,
+        user_id: i32,
+    ) -> Vec<payment_history_table::Model>;
 
-    async fn get_month_summary(date: NaiveDateTime) -> Vec<payment_history_table::Model>;
+    async fn get_month_summary(&mut self, date: NaiveDateTime)
+    -> Vec<payment_history_table::Model>;
 
     async fn get_payment_record_by_user_id_and_month(
+        &mut self,
         user_id: i32,
         date: NaiveDateTime,
     ) -> Vec<payment_history_table::Model>;
 
     async fn get_month_summary_by_user_id(
+        &mut self,
         user_id: i32,
         date: NaiveDateTime,
     ) -> Vec<payment_history_table::Model>;
 
     async fn update_payment_record(
+        &mut self,
         record: payment_history_table::Model,
     ) -> payment_history_table::Model;
 
     async fn update_bulk_payment_record(
+        &mut self,
         records: Vec<payment_history_table::Model>,
         paid: bool,
     ) -> u64;
 }
 
-pub struct PaymentHistoryCommad;
+pub struct PaymentHistoryCommad {
+    payment_history_table: PaymentHistoryTable,
+}
 
-#[async_trait::async_trait]
+impl Default for PaymentHistoryCommad {
+    fn default() -> Self {
+        Self {
+            payment_history_table: PaymentHistoryTable,
+        }
+    }
+}
+
 impl PaymentHistoryCommandTrait for PaymentHistoryCommad {
-    async fn get_payment_record_by_user_id(user_id: i32) -> Vec<payment_history_table::Model> {
-        let conn = PaymentHistoryTable::get_connection().await;
+    async fn get_payment_record_by_user_id(
+        &mut self,
+        user_id: i32,
+    ) -> Vec<payment_history_table::Model> {
+        let conn = get_database_connection().await;
 
         PaymentHistoryTable::find()
             .filter(payment_history_table::Column::UserId.eq(user_id))
@@ -50,10 +65,11 @@ impl PaymentHistoryCommandTrait for PaymentHistoryCommad {
     }
 
     async fn get_payment_record_by_user_id_and_month(
+        &mut self,
         user_id: i32,
         date: NaiveDateTime,
     ) -> Vec<payment_history_table::Model> {
-        let conn = PaymentHistoryTable::get_connection().await;
+        let conn = get_database_connection().await;
 
         let start_month = date
             .date()
@@ -83,8 +99,12 @@ impl PaymentHistoryCommandTrait for PaymentHistoryCommad {
             .unwrap()
     }
 
-    async fn get_month_summary(date: NaiveDateTime) -> Vec<payment_history_table::Model> {
-        let conn = PaymentHistoryTable::get_connection().await;
+    async fn get_month_summary(
+        &mut self,
+        date: NaiveDateTime,
+    ) -> Vec<payment_history_table::Model> {
+        let conn = get_database_connection().await;
+
         let start_date = date
             .date()
             .with_day(1)
@@ -109,10 +129,12 @@ impl PaymentHistoryCommandTrait for PaymentHistoryCommad {
     }
 
     async fn get_month_summary_by_user_id(
+        &mut self,
         user_id: i32,
         date: NaiveDateTime,
     ) -> Vec<payment_history_table::Model> {
-        let conn = PaymentHistoryTable::get_connection().await;
+        let conn = get_database_connection().await;
+
         let start_date = date
             .date()
             .with_day(1)
@@ -138,6 +160,7 @@ impl PaymentHistoryCommandTrait for PaymentHistoryCommad {
     }
 
     async fn update_payment_record(
+        &mut self,
         record: payment_history_table::Model,
     ) -> payment_history_table::Model {
         // TODO: this step is not optimal and good i think,
@@ -152,16 +175,18 @@ impl PaymentHistoryCommandTrait for PaymentHistoryCommad {
             added_money: Set(record.added_money),
         };
 
-        PaymentHistoryTable::update_by_model(active_model)
+        self.payment_history_table
+            .update_by_model(active_model)
             .await
             .unwrap()
     }
 
     async fn update_bulk_payment_record(
+        &mut self,
         records: Vec<payment_history_table::Model>,
         paid: bool,
     ) -> u64 {
-        let conn = PaymentHistoryTable::get_connection().await;
+        let conn = get_database_connection().await;
 
         let start_date = records.iter().map(|item| item.date).min().unwrap();
         let end_date = records.iter().map(|item| item.date).max().unwrap();

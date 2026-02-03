@@ -1,24 +1,24 @@
-use ams_entity::{prelude::*, production_record_table, taking_record_table};
-use chrono::{Datelike, Month, Months, NaiveDateTime};
-use sea_orm::{entity::*, prelude::async_trait::async_trait, query::*};
+use ams_entity::{prelude::*, production_record_table};
+use chrono::{Datelike, Months, NaiveDateTime};
+use sea_orm::{entity::*, query::*};
 
-use crate::repositories::{
-    abstract_repository_trait::AbstractRepository, get_sql_connection_trait::GetSqlConnectionTrait,
-};
+use crate::repositories::database_connection::get_database_connection;
 
-#[async_trait]
 pub trait AdditionalProductionRecordTableMethodTrait {
     async fn get_production_record_by_month(
+        &mut self,
         date: NaiveDateTime,
     ) -> Vec<production_record_table::Model>;
 }
 
-#[async_trait]
-impl AdditionalProductionRecordTableMethodTrait for ProductionRecordTable {
+pub struct ProductionRecordRepository {}
+
+impl AdditionalProductionRecordTableMethodTrait for ProductionRecordRepository {
     async fn get_production_record_by_month(
+        &mut self,
         date: NaiveDateTime,
     ) -> Vec<production_record_table::Model> {
-        let conn = ProductionRecordTable::get_connection().await;
+        let conn = get_database_connection().await;
 
         let start_month = date
             .with_day(1)

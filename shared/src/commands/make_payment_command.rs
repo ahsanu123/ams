@@ -2,8 +2,8 @@ use crate::models::make_payment_page_model::{
     DetailInformation, MakePaymentPageModel, TakingRecordWithPrice,
 };
 use crate::repositories::abstract_repository_trait::AbstractRepository;
-use crate::repositories::get_sql_connection_trait::GetSqlConnectionTrait;
-use crate::repositories::user_repository::AdditionalUserTableMethodTrait;
+use crate::repositories::database_connection::get_database_connection;
+use crate::repositories::user_repository::{AdditionalUserTableMethodTrait, UserRepository};
 use crate::utilities::format_as_idr::format_as_idr;
 use ams_entity::{
     money_history_table, payment_history_table, prelude::*, taking_record_table, user_table,
@@ -14,30 +14,48 @@ use sea_orm::{
     ActiveValue::{NotSet, Set},
     EntityTrait, QueryFilter,
     entity::*,
-    prelude::async_trait,
 };
 use std::fmt::Error;
 
-#[async_trait::async_trait]
 pub trait MakePaymentCommandTrait {
     async fn get_page_model(
+        &mut self,
         user_id: i32,
         date: NaiveDateTime,
     ) -> Result<MakePaymentPageModel, Error>;
 
-    async fn make_payment(user_id: i32, date: NaiveDateTime)
-    -> Result<MakePaymentPageModel, Error>;
+    async fn make_payment(
+        &mut self,
+        user_id: i32,
+        date: NaiveDateTime,
+    ) -> Result<MakePaymentPageModel, Error>;
 }
 
-pub struct MakePaymentCommand;
+pub struct MakePaymentCommand {
+    payment_history_table: PaymentHistoryTable,
+    money_history_table: MoneyHistoryTable,
+    user_table: UserTable,
+    user_repository: UserRepository,
+}
 
-#[async_trait::async_trait]
+impl Default for MakePaymentCommand {
+    fn default() -> Self {
+        Self {
+            payment_history_table: PaymentHistoryTable,
+            money_history_table: MoneyHistoryTable,
+            user_table: UserTable,
+            user_repository: UserRepository::default(),
+        }
+    }
+}
+
 impl MakePaymentCommandTrait for MakePaymentCommand {
     async fn get_page_model(
+        &mut self,
         user_id: i32,
         date: NaiveDateTime,
     ) -> Result<MakePaymentPageModel, Error> {
-        let conn = TakingRecordTable::get_connection().await;
+        let conn = get_database_connection().await;
 
         let start_month = date
             .date()
@@ -97,7 +115,7 @@ impl MakePaymentCommandTrait for MakePaymentCommand {
             .map(|record| record.taking_record.amount)
             .sum::<i64>();
 
-        let active_customer = UserTable::get_all_active_user().await;
+        let active_customer = self.user_repository.get_all_active_user().await;
 
         Ok(MakePaymentPageModel {
             taking_records: taking_record_with_price,
@@ -114,10 +132,11 @@ impl MakePaymentCommandTrait for MakePaymentCommand {
     }
 
     async fn make_payment(
+        &mut self,
         user_id: i32,
         date: NaiveDateTime,
     ) -> Result<MakePaymentPageModel, Error> {
-        let conn = TakingRecordTable::get_connection().await;
+        let conn = get_database_connection().await;
 
         let start_month = date
             .date()
@@ -128,7 +147,7 @@ impl MakePaymentCommandTrait for MakePaymentCommand {
 
         let end_month = start_month.checked_add_months(Months::new(1)).unwrap();
 
-        let customer = UserTable::get_by_id(user_id).await.unwrap();
+        let customer = self.user_table.get_by_id(user_id).await.unwrap();
 
         if customer.is_none() {
             return Err(Error);
@@ -169,7 +188,7 @@ impl MakePaymentCommandTrait for MakePaymentCommand {
 
         // doesnt need to update anything
         if total_bill == 0 {
-            return Self::get_page_model(user_id, date).await;
+            return self.get_page_model(user_id, date).await;
         }
 
         let final_money = customer.money - total_bill;
@@ -183,8 +202,9 @@ impl MakePaymentCommandTrait for MakePaymentCommand {
             format_as_idr(final_money)
         );
 
-        let _insert_payment_history =
-            PaymentHistoryTable::create(payment_history_table::ActiveModel {
+        let _insert_payment_history = self
+            .payment_history_table
+            .create(payment_history_table::ActiveModel {
                 id: NotSet,
                 user_id: Set(user_id as i64),
                 date: Set(Local::now().naive_local()),
@@ -196,8 +216,9 @@ impl MakePaymentCommandTrait for MakePaymentCommand {
             .await
             .unwrap();
 
-        let _insert_customer_money_history =
-            MoneyHistoryTable::create(money_history_table::ActiveModel {
+        let _insert_customer_money_history = self
+            .money_history_table
+            .create(money_history_table::ActiveModel {
                 id: NotSet,
                 user_id: Set(user_id as i64),
                 date: Set(Local::now().naive_local()),
@@ -212,7 +233,7 @@ impl MakePaymentCommandTrait for MakePaymentCommand {
 
         let _updated_customer = customer_active_model.update(conn).await.unwrap();
 
-        Self::get_page_model(user_id, date).await
+        self.get_page_model(user_id, date).await
     }
 }
 
@@ -223,7 +244,9 @@ mod make_payment_command_test {
 
     #[tokio::test]
     async fn test_get_page_model() {
-        let page_model = MakePaymentCommand::get_page_model(1, Local::now().naive_local())
+        let mut command = MakePaymentCommand::default();
+        let page_model = command
+            .get_page_model(1, Local::now().naive_local())
             .await
             .expect("can't find requested data!!!");
 
@@ -232,7 +255,9 @@ mod make_payment_command_test {
 
     #[tokio::test]
     async fn test_make_payment() {
-        let page_model = MakePaymentCommand::make_payment(1, Local::now().naive_local())
+        let mut command = MakePaymentCommand::default();
+        let page_model = command
+            .make_payment(1, Local::now().naive_local())
             .await
             .expect("somethink went wrong");
 

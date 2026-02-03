@@ -1,17 +1,18 @@
-use ams_entity::{prelude::*, price_history_table, soybean_price_history_table};
+use ams_entity::{prelude::*, soybean_price_history_table};
 use sea_orm::{entity::*, prelude::async_trait::async_trait, query::*};
 
-use crate::repositories::get_sql_connection_trait::GetSqlConnectionTrait;
+use crate::repositories::database_connection::get_database_connection;
 
-#[async_trait]
 pub trait AdditionalSoybeanPriceHistoryTableMethodTrait {
-    async fn get_latest_price() -> soybean_price_history_table::Model;
+    async fn get_latest_price(&mut self) -> soybean_price_history_table::Model;
 }
 
-#[async_trait]
-impl AdditionalSoybeanPriceHistoryTableMethodTrait for SoybeanPriceHistoryTable {
-    async fn get_latest_price() -> soybean_price_history_table::Model {
-        let conn = SoybeanPriceHistoryTable::get_connection().await;
+#[derive(Default)]
+pub struct SoybeanPriceRepository {}
+
+impl AdditionalSoybeanPriceHistoryTableMethodTrait for SoybeanPriceRepository {
+    async fn get_latest_price(&mut self) -> soybean_price_history_table::Model {
+        let conn = get_database_connection().await;
 
         let latest_price = SoybeanPriceHistoryTable::find()
             .order_by_desc(soybean_price_history_table::Column::Date)

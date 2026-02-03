@@ -18,6 +18,7 @@ pub async fn get_database_connection() -> &'static DatabaseConnection {
 
             let mut connect_option =
                 ConnectOptions::new(may_env.unwrap().sqlite_connection_string.clone());
+
             connect_option
                 .max_connections(MAX_CONNECTION)
                 .min_connections(MIN_CONNECTION)
