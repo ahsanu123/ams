@@ -1,10 +1,12 @@
+use tokio::sync::Mutex;
+
 use crate::commands::{
     customer_money_command::CustomerMoneyCommand, dreg_price_command::DregPriceCommand,
     make_payment_command::MakePaymentCommand, payment_history_command::PaymentHistoryCommad,
     production_record_command::ProductionRecordCommand, taking_record_command::TakingRecordCommand,
     user_management_command::UserManagementCommand,
 };
-use std::sync::{LazyLock, Mutex};
+use std::sync::LazyLock;
 
 // NOTE:
 // singleton for service maybe look bad,

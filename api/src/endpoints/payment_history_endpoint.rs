@@ -6,9 +6,8 @@ use actix_web::{
     web::Json,
 };
 use ams_entity::payment_history_table;
-use ams_shared::commands::payment_history_command::{
-    PaymentHistoryCommad, PaymentHistoryCommandTrait,
-};
+use ams_shared::prelude::*;
+use ams_shared::singletons::PAYMENT_HISTORY_COMMAND;
 use chrono::NaiveDateTime;
 use serde::Deserialize;
 use utoipa::ToSchema;
@@ -88,7 +87,11 @@ where
 pub async fn get_payment_record_by_user_id(
     request: Json<request_model::GetPaymentRecordByUserId>,
 ) -> impl Responder {
-    let result = PaymentHistoryCommad::get_payment_record_by_user_id(request.user_id).await;
+    let result = PAYMENT_HISTORY_COMMAND
+        .lock()
+        .await
+        .get_payment_record_by_user_id(request.user_id)
+        .await;
     HttpResponse::Ok().json(result)
 }
 
@@ -109,7 +112,12 @@ pub async fn get_payment_record_by_user_id(
 pub async fn get_month_summary(
     request: Json<request_model::GetMonthSummaryByDate>,
 ) -> impl Responder {
-    let result = PaymentHistoryCommad::get_month_summary(request.date).await;
+    let result = PAYMENT_HISTORY_COMMAND
+        .lock()
+        .await
+        .get_month_summary(request.date)
+        .await;
+
     HttpResponse::Ok().json(result)
 }
 
@@ -130,11 +138,12 @@ pub async fn get_month_summary(
 pub async fn get_payment_record_by_user_id_and_month(
     request: Json<request_model::GetPaymentRecordByUserIdAndDate>,
 ) -> impl Responder {
-    let result = PaymentHistoryCommad::get_payment_record_by_user_id_and_month(
-        request.user_id,
-        request.date,
-    )
-    .await;
+    let result = PAYMENT_HISTORY_COMMAND
+        .lock()
+        .await
+        .get_payment_record_by_user_id_and_month(request.user_id, request.date)
+        .await;
+
     HttpResponse::Ok().json(result)
 }
 
@@ -178,7 +187,12 @@ pub async fn get_payment_record_by_user_id_and_month(
 pub async fn update_payment_record(
     request: Json<request_model::UpdatePaymentRecord>,
 ) -> impl Responder {
-    let result = PaymentHistoryCommad::update_payment_record(request.record.clone()).await;
+    let result = PAYMENT_HISTORY_COMMAND
+        .lock()
+        .await
+        .update_payment_record(request.record.clone())
+        .await;
+
     HttpResponse::Ok().json(result)
 }
 
@@ -199,9 +213,11 @@ pub async fn update_payment_record(
 pub async fn update_bulk_payment_record(
     request: Json<request_model::UpdateBulkPaymentRecord>,
 ) -> impl Responder {
-    let result =
-        PaymentHistoryCommad::update_bulk_payment_record(request.records.clone(), request.paid)
-            .await;
+    let result = PAYMENT_HISTORY_COMMAND
+        .lock()
+        .await
+        .update_bulk_payment_record(request.records.clone(), request.paid)
+        .await;
 
     HttpResponse::Ok().json(result)
 }

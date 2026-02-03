@@ -5,9 +5,8 @@ use actix_web::{
     post,
     web::Json,
 };
-use ams_shared::commands::customer_money_command::{
-    CustomerMoneyCommand, CustomerMoneyCommandTrait,
-};
+use ams_shared::prelude::*;
+use ams_shared::singletons::CUSTOMER_MONEY_COMMAND;
 use serde::Deserialize;
 use utoipa::ToSchema;
 
@@ -65,9 +64,13 @@ where
 )]
 #[post("/customer/add-money")]
 pub async fn add_money(request: Json<request_model::AddMoney>) -> impl Responder {
-    let result = CustomerMoneyCommand::add_money(request.user_id, request.amount)
+    let result = CUSTOMER_MONEY_COMMAND
+        .lock()
+        .await
+        .add_money(request.user_id, request.amount)
         .await
         .unwrap();
+
     HttpResponse::Ok().json(result)
 }
 
@@ -88,7 +91,11 @@ pub async fn add_money(request: Json<request_model::AddMoney>) -> impl Responder
 pub async fn get_all_user_money_history(
     request: Json<request_model::GetAllUserMoney>,
 ) -> impl Responder {
-    let result = CustomerMoneyCommand::get_all_user_money_history(request.user_id).await;
+    let result = CUSTOMER_MONEY_COMMAND
+        .lock()
+        .await
+        .get_all_user_money_history(request.user_id)
+        .await;
 
     HttpResponse::Ok().json(result)
 }
@@ -108,7 +115,10 @@ pub async fn get_all_user_money_history(
 )]
 #[delete("/customer/delete")]
 pub async fn delete_customer(request: Json<request_model::DeleteCustomer>) -> impl Responder {
-    let result = CustomerMoneyCommand::delete_user(request.user_id as i32)
+    let result = CUSTOMER_MONEY_COMMAND
+        .lock()
+        .await
+        .delete_user(request.user_id as i32)
         .await
         .unwrap();
 

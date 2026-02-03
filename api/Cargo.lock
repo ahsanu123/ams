@@ -295,7 +295,7 @@ dependencies = [
 
 [[package]]
 name = "ams_shared"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "ams_entity",
  "ams_macro",

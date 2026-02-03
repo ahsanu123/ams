@@ -5,7 +5,7 @@ use actix_web::{
     post,
     web::Json,
 };
-use ams_shared::commands::make_payment_command::{MakePaymentCommand, MakePaymentCommandTrait};
+use ams_shared::{prelude::*, singletons::MAKE_PAYMENT_COMMAND};
 use chrono::NaiveDateTime;
 use serde::Deserialize;
 use utoipa::ToSchema;
@@ -54,7 +54,10 @@ where
 pub async fn payment_page_get_page_model(
     request: Json<request_model::UserIdAndDateRequestModel>,
 ) -> impl Responder {
-    let result = MakePaymentCommand::get_page_model(request.user_id, request.date)
+    let result = MAKE_PAYMENT_COMMAND
+        .lock()
+        .await
+        .get_page_model(request.user_id, request.date)
         .await
         .unwrap();
 
@@ -78,7 +81,10 @@ pub async fn payment_page_get_page_model(
 pub async fn payment_page_make_payment(
     request: Json<request_model::UserIdAndDateRequestModel>,
 ) -> impl Responder {
-    let result = MakePaymentCommand::make_payment(request.user_id, request.date)
+    let result = MAKE_PAYMENT_COMMAND
+        .lock()
+        .await
+        .make_payment(request.user_id, request.date)
         .await
         .unwrap();
 

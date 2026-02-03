@@ -6,9 +6,7 @@ use actix_web::{
     web::Json,
 };
 use ams_entity::user_table;
-use ams_shared::commands::user_management_command::{
-    UserManagementCommand, UserManagementCommandTrait,
-};
+use ams_shared::{prelude::*, singletons::USER_MANAGEMENT_COMMAND};
 use serde::Deserialize;
 use utoipa::ToSchema;
 
@@ -77,7 +75,12 @@ where
 )]
 #[post("/user-management/create-new-user")]
 pub async fn create_new_user(request: Json<request_model::CreateNewUser>) -> impl Responder {
-    let result = UserManagementCommand::create_new_user(request.0.username).await;
+    let result = USER_MANAGEMENT_COMMAND
+        .lock()
+        .await
+        .create_new_user(request.0.username)
+        .await;
+
     HttpResponse::Ok().json(result)
 }
 
@@ -96,7 +99,12 @@ pub async fn create_new_user(request: Json<request_model::CreateNewUser>) -> imp
 )]
 #[post("/user-management/insert-new-user")]
 pub async fn insert_new_user(request: Json<request_model::InsertNewUser>) -> impl Responder {
-    let result = UserManagementCommand::insert_new_user(request.new_user.clone()).await;
+    let result = USER_MANAGEMENT_COMMAND
+        .lock()
+        .await
+        .insert_new_user(request.new_user.clone())
+        .await;
+
     HttpResponse::Ok().json(result)
 }
 
@@ -111,7 +119,7 @@ pub async fn insert_new_user(request: Json<request_model::InsertNewUser>) -> imp
 )]
 #[get("/user-management/get-all-user")]
 pub async fn get_all_user() -> impl Responder {
-    let result = UserManagementCommand::get_all_user().await;
+    let result = USER_MANAGEMENT_COMMAND.lock().await.get_all_user().await;
     HttpResponse::Ok().json(result)
 }
 
@@ -126,7 +134,12 @@ pub async fn get_all_user() -> impl Responder {
 )]
 #[get("/user-management/get-all-active-user")]
 pub async fn get_all_active_user() -> impl Responder {
-    let result = UserManagementCommand::get_all_active_user().await;
+    let result = USER_MANAGEMENT_COMMAND
+        .lock()
+        .await
+        .get_all_active_user()
+        .await;
+
     HttpResponse::Ok().json(result)
 }
 
@@ -145,7 +158,12 @@ pub async fn get_all_active_user() -> impl Responder {
 )]
 #[post("/user-management/upsert-user")]
 pub async fn upsert_user(request: Json<request_model::UpsertUser>) -> impl Responder {
-    let result = UserManagementCommand::upsert_user(request.user.clone()).await;
+    let result = USER_MANAGEMENT_COMMAND
+        .lock()
+        .await
+        .upsert_user(request.user.clone())
+        .await;
+
     HttpResponse::Ok().json(result)
 }
 
@@ -164,6 +182,11 @@ pub async fn upsert_user(request: Json<request_model::UpsertUser>) -> impl Respo
 )]
 #[post("/user-management/get-by-user-id")]
 pub async fn get_by_user_id(request: Json<request_model::UserIdRequest>) -> impl Responder {
-    let result = UserManagementCommand::get_by_user_id(request.user_id).await;
+    let result = USER_MANAGEMENT_COMMAND
+        .lock()
+        .await
+        .get_by_user_id(request.user_id)
+        .await;
+
     HttpResponse::Ok().json(result)
 }

@@ -7,7 +7,8 @@ use actix_web::{
 };
 
 use ams_entity::taking_record_table;
-use ams_shared::commands::taking_record_command::{TakingRecordCommand, TakingRecordCommandTrait};
+use ams_shared::prelude::*;
+use ams_shared::singletons::TAKING_RECORD_COMMAND;
 use chrono::NaiveDateTime;
 use serde::Deserialize;
 use utoipa::ToSchema;
@@ -121,7 +122,12 @@ where
 pub async fn get_taking_record_by_day(
     request: Json<request_model::GetTakingRecordByDate>,
 ) -> impl Responder {
-    let result = TakingRecordCommand::get_taking_record_by_day(request.date).await;
+    let result = TAKING_RECORD_COMMAND
+        .lock()
+        .await
+        .get_taking_record_by_day(request.date)
+        .await;
+
     HttpResponse::Ok().json(result)
 }
 
@@ -142,12 +148,12 @@ pub async fn get_taking_record_by_day(
 pub async fn upsert_taking_record_by_date(
     request: Json<request_model::UpsertByDate>,
 ) -> impl Responder {
-    let result = TakingRecordCommand::upsert_taking_record_by_date(
-        request.user_id,
-        request.amount,
-        request.date,
-    )
-    .await;
+    let result = TAKING_RECORD_COMMAND
+        .lock()
+        .await
+        .upsert_taking_record_by_date(request.user_id, request.amount, request.date)
+        .await;
+
     HttpResponse::Ok().json(result)
 }
 
@@ -168,7 +174,12 @@ pub async fn upsert_taking_record_by_date(
 pub async fn delete_taking_record_by_id(
     request: Json<request_model::DeleteTakingRecord>,
 ) -> impl Responder {
-    let result = TakingRecordCommand::delete_taking_record(request.taking_record_id).await;
+    let result = TAKING_RECORD_COMMAND
+        .lock()
+        .await
+        .delete_taking_record(request.taking_record_id)
+        .await;
+
     HttpResponse::Ok().json(result)
 }
 
@@ -189,7 +200,12 @@ pub async fn delete_taking_record_by_id(
 pub async fn add_new_taking_record(
     request: Json<request_model::AddNewTakingRecord>,
 ) -> impl Responder {
-    let result = TakingRecordCommand::add_new_taking_record(request.user_id, request.amount).await;
+    let result = TAKING_RECORD_COMMAND
+        .lock()
+        .await
+        .add_new_taking_record(request.user_id, request.amount)
+        .await;
+
     HttpResponse::Ok().json(result)
 }
 
@@ -210,12 +226,12 @@ pub async fn add_new_taking_record(
 pub async fn add_new_taking_record_by_date(
     request: Json<request_model::AddNewTakingRecordByDate>,
 ) -> impl Responder {
-    let result = TakingRecordCommand::add_new_taking_record_by_date(
-        request.user_id,
-        request.amount,
-        request.date,
-    )
-    .await;
+    let result = TAKING_RECORD_COMMAND
+        .lock()
+        .await
+        .add_new_taking_record_by_date(request.user_id, request.amount, request.date)
+        .await;
+
     HttpResponse::Ok().json(result)
 }
 
@@ -236,7 +252,12 @@ pub async fn add_new_taking_record_by_date(
 pub async fn get_taking_record_by_user_id(
     request: Json<request_model::GetTakingRecordByUserId>,
 ) -> impl Responder {
-    let result = TakingRecordCommand::get_taking_record_by_user_id(request.user_id).await;
+    let result = TAKING_RECORD_COMMAND
+        .lock()
+        .await
+        .get_taking_record_by_user_id(request.user_id)
+        .await;
+
     HttpResponse::Ok().json(result)
 }
 
@@ -257,7 +278,12 @@ pub async fn get_taking_record_by_user_id(
 pub async fn upsert_taking_record(
     request: Json<request_model::UpdateTakingRecord>,
 ) -> impl Responder {
-    let result = TakingRecordCommand::upsert_taking_record(request.record.clone()).await;
+    let result = TAKING_RECORD_COMMAND
+        .lock()
+        .await
+        .upsert_taking_record(request.record.clone())
+        .await;
+
     HttpResponse::Ok().json(result)
 }
 
@@ -278,7 +304,11 @@ pub async fn upsert_taking_record(
 pub async fn get_taking_record_by_month(
     request: Json<request_model::GetTakingRecordByDate>,
 ) -> impl Responder {
-    let result = TakingRecordCommand::get_taking_record_by_month(request.date).await;
+    let result = TAKING_RECORD_COMMAND
+        .lock()
+        .await
+        .get_taking_record_by_month(request.date)
+        .await;
     HttpResponse::Ok().json(result)
 }
 
@@ -299,9 +329,12 @@ pub async fn get_taking_record_by_month(
 pub async fn get_taking_record_by_user_id_and_month(
     request: Json<request_model::GetTakingRecordByUserIdAndMonth>,
 ) -> impl Responder {
-    let result =
-        TakingRecordCommand::get_taking_record_by_user_id_and_month(request.user_id, request.date)
-            .await;
+    let result = TAKING_RECORD_COMMAND
+        .lock()
+        .await
+        .get_taking_record_by_user_id_and_month(request.user_id, request.date)
+        .await;
+
     HttpResponse::Ok().json(result)
 }
 
@@ -322,9 +355,11 @@ pub async fn get_taking_record_by_user_id_and_month(
 pub async fn get_taking_record_by_user_id_and_year(
     request: Json<request_model::GetTakingRecordByUserIdAndMonth>,
 ) -> impl Responder {
-    let result =
-        TakingRecordCommand::get_taking_record_by_user_id_and_year(request.user_id, request.date)
-            .await;
+    let result = TAKING_RECORD_COMMAND
+        .lock()
+        .await
+        .get_taking_record_by_user_id_and_year(request.user_id, request.date)
+        .await;
     HttpResponse::Ok().json(result)
 }
 
@@ -345,11 +380,11 @@ pub async fn get_taking_record_by_user_id_and_year(
 pub async fn get_taking_record_by_user_id_and_month_range(
     request: Json<request_model::GetTakingRecordByUserIdAndMonthRange>,
 ) -> impl Responder {
-    let result = TakingRecordCommand::get_taking_record_by_user_id_and_month_range(
-        request.user_id,
-        request.from,
-        request.to,
-    )
-    .await;
+    let result = TAKING_RECORD_COMMAND
+        .lock()
+        .await
+        .get_taking_record_by_user_id_and_month_range(request.user_id, request.from, request.to)
+        .await;
+
     HttpResponse::Ok().json(result)
 }
