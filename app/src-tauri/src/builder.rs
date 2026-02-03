@@ -6,7 +6,10 @@ use std::env;
 
 pub fn build_and_run() {
     tauri::Builder::default()
-        .setup(|_| Ok(()))
+        .setup(|_| {
+            std::thread::spawn(ams_api::start_server_blocking);
+            Ok(())
+        })
         // .plugin(tauri_plugin_log::Builder::new().build())
         .plugin(tauri_plugin_opener::init())
         .invoke_handler(tauri::generate_handler![

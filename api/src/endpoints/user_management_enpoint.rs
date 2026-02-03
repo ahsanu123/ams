@@ -120,6 +120,7 @@ pub async fn insert_new_user(request: Json<request_model::InsertNewUser>) -> imp
 #[get("/user-management/get-all-user")]
 pub async fn get_all_user() -> impl Responder {
     let result = USER_MANAGEMENT_COMMAND.lock().await.get_all_user().await;
+
     HttpResponse::Ok().json(result)
 }
 

@@ -53,6 +53,7 @@ pub async fn get_latest_dreg_price() -> impl Responder {
         .get_latest_dreg_price()
         .await
         .unwrap();
+
     HttpResponse::Ok().json(result)
 }
 

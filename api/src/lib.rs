@@ -40,7 +40,6 @@ pub async fn start_server() -> std::io::Result<()> {
                     .config(Config::default().try_it_out_enabled(true))
             })
             .into_app()
-            .service(Files::new("/", "./static").index_file("index.html"))
             // register all endpoint here to be able to accessed
             .register_customer_endpoints()
             .register_dregs_price_endpoints()
@@ -48,6 +47,9 @@ pub async fn start_server() -> std::io::Result<()> {
             .register_taking_record_endpoints()
             .register_user_management_endpoints()
             .register_make_payment_page_endpoints()
+            //  static file service
+            //  TODO: move static file path to environment variable
+            .service(Files::new("/", "./static").index_file("index.html"))
     })
     .bind(("127.0.0.1", 9090))?
     .run()
