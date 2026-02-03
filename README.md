@@ -61,5 +61,6 @@ The goal of AMS is to deliver a simple, fast, and reliable system tailored for p
 - [Chakra UI](https://chakra-ui.com/)
 - [Sea-ORM](https://www.sea-ql.org/SeaORM/)
 - [CrossCompile](./docs/cross_compile.md)
+- [tauri and start actix disscussion](https://github.com/orgs/tauri-apps/discussions/2751)
 
 <sub> Work In Progress, Made With ❤️ By Ah...</sub>
