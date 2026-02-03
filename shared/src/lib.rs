@@ -1,6 +1,7 @@
-pub mod commands;
-pub mod helper;
-pub mod models;
-pub mod repositories;
+pub(crate) mod commands;
+pub(crate) mod helper;
+pub(crate) mod models;
+pub(crate) mod repositories;
+pub(crate) mod utilities;
+
 pub mod singletons;
-pub mod utilities;

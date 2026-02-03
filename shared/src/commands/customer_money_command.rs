@@ -16,11 +16,14 @@ use sea_orm::{
 };
 use std::fmt::Error;
 
-trait CustomerMoneyCommandTrait {
+pub trait CustomerMoneyCommandTrait {
     async fn add_money(&mut self, user_id: i64, amount: i64) -> Result<user_table::Model, Error>;
+
     async fn delete_user(&mut self, user_id: i32) -> Result<u64, Error>;
+
     async fn get_all_user_money_history(&mut self, user_id: i64)
     -> Vec<money_history_table::Model>;
+
     async fn make_payment(
         &mut self,
         user_id: i64,
@@ -29,6 +32,7 @@ trait CustomerMoneyCommandTrait {
     ) -> Option<user_table::Model>;
 }
 
+#[derive(Default)]
 pub struct CustomerMoneyCommand {
     user_table: UserTable,
     money_history_table: MoneyHistoryTable,
