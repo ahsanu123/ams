@@ -1,0 +1,1 @@
+import{j as t}from"./stack-CD8du1Wu.js";const{withContext:e}=t({key:"heading"}),a=e("h2");a.displayName="Heading";const{withContext:n}=t({key:"text"}),o=n("p");o.displayName="Text";export{a as H,o as T};

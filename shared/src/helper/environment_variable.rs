@@ -2,9 +2,10 @@ use once_cell::sync::OnceCell;
 
 pub static ENV_VAR: OnceCell<EnvironmentVariable> = OnceCell::new();
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct EnvironmentVariable {
     pub sqlite_connection_string: String,
+    pub static_file_path: String,
 }
 
 #[cfg(test)]

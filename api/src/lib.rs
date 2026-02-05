@@ -10,6 +10,7 @@ use crate::endpoints::{
 use actix_cors::Cors;
 use actix_files::Files;
 use actix_web::{App, HttpServer, middleware::Logger};
+use ams_shared::helper::ENV_VAR;
 use utoipa::OpenApi;
 use utoipa_actix_web::AppExt;
 use utoipa_swagger_ui::{Config, SwaggerUi};
@@ -28,6 +29,8 @@ pub async fn start_server() -> std::io::Result<()> {
             .allow_any_header()
             .allow_any_origin()
             .allow_any_method();
+
+        let static_path = ENV_VAR.get().unwrap().static_file_path.clone();
 
         App::new()
             .wrap(cors)
@@ -48,8 +51,7 @@ pub async fn start_server() -> std::io::Result<()> {
             .register_user_management_endpoints()
             .register_make_payment_page_endpoints()
             //  static file service
-            //  TODO: move static file path to environment variable
-            .service(Files::new("/", "./static").index_file("index.html"))
+            .service(Files::new("/", static_path).index_file("index.html"))
     })
     .bind(("127.0.0.1", 9090))?
     .run()

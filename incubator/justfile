@@ -1,6 +1,7 @@
-
-
-updateIncubator: 
+buildIncubator: 
+  rm -rf ./static
+  cd ../app && yarn build:browser
+  mv ../app/build/client static
   cd ../app && yarn tauri build --no-bundle
   cp ../app/src-tauri/target/release/ams .
   chmod +x ./ams

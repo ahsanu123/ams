@@ -20,6 +20,7 @@ pub mod models;
 pub mod singletons;
 
 const CONN_STRING_PATH: &str = "sqlite_connection_string";
+const STATIC_FILE_PATH: &str = "static_file_path";
 
 pub fn init_environment_variable() {
     let env_path = dotenvy::dotenv().unwrap_or_else(|_| {
@@ -37,9 +38,18 @@ pub fn init_environment_variable() {
         )
     });
 
+    let static_file_path = std::env::var(STATIC_FILE_PATH).unwrap_or_else(|_| {
+        panic!(
+            "{} is not found, in {}",
+            STATIC_FILE_PATH,
+            env_path.to_string_lossy()
+        )
+    });
+
     ENV_VAR
         .set(EnvironmentVariable {
             sqlite_connection_string,
+            static_file_path,
         })
         .unwrap();
 }

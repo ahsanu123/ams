@@ -1,0 +1,1 @@
+import{n as t}from"./chunk-K6CSEXPM-Bn6mf80d.js";import{T as e}from"./index-BGCzkhMS.js";import{f as l,g as r,h as o}from"./Scroller-vb5K4257.js";const d=(s,a,i)=>t.jsxs(l,{children:[t.jsx(e,{children:i}),t.jsx(r,{children:t.jsx(e,{textStyle:"lg",fontWeight:"bold",children:s})}),t.jsx(o,{children:t.jsx(e,{textStyle:"lg",fontWeight:"bold",children:a})})]});export{d};
