@@ -1,4 +1,0 @@
-pub mod m202509200832_create_foreign_key_taking_record;
-pub mod m202509200843_create_foreign_key_payment_history;
-pub mod m202509200903_create_foreign_key_production_record;
-pub mod m202509200909_create_foreign_key_money_history;

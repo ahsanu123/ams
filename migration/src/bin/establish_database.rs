@@ -2,9 +2,9 @@ use std::fs;
 use std::path::Path;
 
 use migration::sea_orm::Database;
-use migration::{MigratorTrait, MigratorWithoutSeed};
+use migration::{MainMigrator, MigratorTrait};
 
-#[async_std::main]
+#[tokio::main]
 async fn main() {
     let database_path = "./../app/src-tauri/ams.sqlite";
 
@@ -17,5 +17,5 @@ async fn main() {
 
     // TODO: think on how to migrate old data into new table
     // Migrator::down(&connection, None).await.unwrap();
-    MigratorWithoutSeed::up(&connection, None).await.unwrap();
+    MainMigrator::up(&connection, None).await.unwrap();
 }

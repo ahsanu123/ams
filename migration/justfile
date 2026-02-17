@@ -13,8 +13,7 @@ mage:
   cargo run --bin establish_database
   just delete-old-entity
   just gen-entity
-  cargo run --bin seed_database
-  just copy-to-api
+  # just copy-to-api
 
 delete-old-entity: 
   find ./../entity/ -type f \
@@ -43,3 +42,12 @@ copy-to-api:
 # binary list 
 bl: 
   cargo run --bin
+
+tr testName: 
+  cargo test {{testName}} -- --nocapture
+
+tl: 
+  cargo test -- --list
+
+tf testName: 
+  cargo test -- --list | rg -i {{testName}}
