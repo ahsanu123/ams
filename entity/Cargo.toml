@@ -11,6 +11,7 @@ sea-orm = { version = "2.0.0-rc.32", features = [
   "with-chrono"
 ] }
 serde = "1.0.228"
+tokio = { version = "1.49.0", features = ["macros", "rt", "rt-multi-thread"] }
 utoipa = {version = "5.4.0", features = [
   "chrono"
 ]}

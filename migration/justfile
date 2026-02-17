@@ -16,11 +16,14 @@ mage:
   # just copy-to-api
 
 delete-old-entity: 
-  find ./../entity/ -type f \
-    ! -name 'Cargo.toml' \
-    ! -name 'Cargo.lock' \
-    ! -name '.gitignore' \
-    -delete
+  - rm ../entity/*.rs
+
+# delete-old-entity: 
+#   find ./../entity/ -type f \
+#     ! -name 'Cargo.toml' \
+#     ! -name 'Cargo.lock' \
+#     ! -name '.gitignore' \
+#     -delete
 
 # will run migration up
 run: 
