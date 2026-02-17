@@ -29,7 +29,7 @@ impl MigrationTrait for Migration {
                 Table::create()
                     .table("retrieve_data")
                     .if_not_exists()
-                    .col(big_integer("retrieve_data_id"))
+                    .col(big_pk_auto("retrieve_data_id"))
                     .col(big_integer("customer_id"))
                     .col(big_integer("price_id"))
                     .col(integer("amount"))

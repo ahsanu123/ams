@@ -11,7 +11,7 @@ impl MigrationTrait for Migration {
                 Table::create()
                     .table("price")
                     .if_not_exists()
-                    .col(pk_auto("price_id"))
+                    .col(big_pk_auto("price_id"))
                     .col(date_time("date"))
                     .col(float("value"))
                     .to_owned(),

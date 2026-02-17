@@ -9,9 +9,9 @@
 
 # migrate and generate entity
 mage:
-  just delete-database-file
-  cargo run --bin establish_database
+  - just delete-database-file
   just delete-old-entity
+  cargo run --bin establish_database
   just gen-entity
   # just copy-to-api
 

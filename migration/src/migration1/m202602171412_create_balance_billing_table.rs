@@ -29,6 +29,7 @@ impl MigrationTrait for Migration {
                 Table::create()
                     .table("balance_billing")
                     .if_not_exists()
+                    .col(big_pk_auto("balance_billing_id"))
                     .col(big_integer("balance_id"))
                     .col(big_integer("billing_id"))
                     .foreign_key(balance_id_fk)

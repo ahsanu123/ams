@@ -11,7 +11,7 @@ impl MigrationTrait for Migration {
                 Table::create()
                     .table("data_record")
                     .if_not_exists()
-                    .col(pk_auto("data_record_id"))
+                    .col(big_pk_auto("data_record_id"))
                     .col(integer("key")) // map this to enum
                     .col(date_time("date"))
                     .col(string("json_value")) // deserialize this with serde
