@@ -1,7 +1,6 @@
+use crate::helper::ENV_VAR;
 use async_once_cell::OnceCell;
 use sea_orm::{ConnectOptions, Database, DatabaseConnection};
-
-use crate::helper::ENV_VAR;
 
 static MAX_CONNECTION: u32 = 100;
 static MIN_CONNECTION: u32 = 3;

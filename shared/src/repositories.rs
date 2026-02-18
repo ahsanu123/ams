@@ -1,9 +1,9 @@
-pub mod abstract_repository_trait;
-pub mod payment_history_repository;
+pub mod balance_repository;
+pub mod base_repository_trait;
+pub mod customer_repository;
+pub mod data_record_repository;
+pub mod generic_crud_repository;
 pub mod price_repositories;
-pub mod production_record_repository;
-pub mod soybean_price_repository;
-pub mod taking_record_repository;
-pub mod user_repository;
+pub mod retrieve_data_repository;
 
 pub(crate) mod database_connection;

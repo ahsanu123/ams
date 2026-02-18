@@ -2,8 +2,8 @@ use crate::models::make_payment_page_model::{
     DetailInformation, MakePaymentPageModel, TakingRecordWithPrice,
 };
 use crate::repositories::abstract_repository_trait::AbstractRepository;
+use crate::repositories::customer_repository::{AdditionalUserTableMethodTrait, UserRepository};
 use crate::repositories::database_connection::get_database_connection;
-use crate::repositories::user_repository::{AdditionalUserTableMethodTrait, UserRepository};
 use crate::utilities::format_as_idr::format_as_idr;
 use ams_entity::{
     money_history_table, payment_history_table, prelude::*, taking_record_table, user_table,
