@@ -1,4 +1,4 @@
-use chrono::{Month, Months, NaiveDateTime};
+use chrono::{Month, NaiveDateTime};
 
 use crate::{
     models::data_record::DefaultDataRecordType,
@@ -13,12 +13,14 @@ pub struct DataRecordRepository {}
 
 impl DataRecordRepository {
     pub fn get_by_date(
+        &mut self,
         date: NaiveDateTime,
     ) -> Result<Vec<DefaultDataRecordType>, DataRecordRepositoryErr> {
         todo!()
     }
 
     pub fn get_by_month(
+        &mut self,
         year: i32,
         month: Month,
     ) -> Result<Vec<DefaultDataRecordType>, DataRecordRepositoryErr> {

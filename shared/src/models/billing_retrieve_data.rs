@@ -1,11 +1,9 @@
-use crate::models::customer::Customer;
 use chrono::NaiveDateTime;
 
-pub struct Billing {
+pub struct BillingRetrieveData {
+    pub billing_retrieve_data_id: i64,
     pub billing_id: i64,
-    pub customer_id: i64,
-    pub customer: Customer,
-    pub date: NaiveDateTime,
+    pub retrieve_data_id: i64,
     pub from: NaiveDateTime,
     pub to: NaiveDateTime,
     pub bill: f64,

@@ -1,18 +1,34 @@
-use crate::repositories::database_connection::get_database_connection;
-use ams_entity::{prelude::*, user_table};
-use sea_orm::entity::*;
+use crate::{
+    models::customer::Customer,
+    repositories::base_repository_trait::{BaseRepository, BaseRepositoryErr},
+};
 
-pub trait AdditionalUserTableMethodTrait {
-    async fn get_all_active_user(&mut self) -> Vec<user_table::Model>;
+pub enum CustomerRepositoryErr {
+    FailToGetAllActive,
 }
 
-#[derive(Default)]
-pub struct UserRepository {}
+pub struct CustomerRepository;
 
-impl AdditionalUserTableMethodTrait for UserRepository {
-    async fn get_all_active_user(&mut self) -> Vec<user_table::Model> {
-        let conn = get_database_connection().await;
+impl CustomerRepository {
+    pub fn get_all_active(&mut self) -> Result<Vec<Customer>, CustomerRepositoryErr> {
+        todo!()
+    }
+}
 
-        UserTable::find().all(conn).await.unwrap()
+impl BaseRepository<Customer> for CustomerRepository {
+    async fn create(&mut self, model: Customer) -> Result<i64, BaseRepositoryErr> {
+        todo!()
+    }
+
+    async fn read(&mut self, id: i64) -> Result<Customer, BaseRepositoryErr> {
+        todo!()
+    }
+
+    async fn update(&mut self, model: Customer) -> Result<Customer, BaseRepositoryErr> {
+        todo!()
+    }
+
+    async fn delete(&mut self, id: i64) -> Result<i64, BaseRepositoryErr> {
+        todo!()
     }
 }
