@@ -23,6 +23,14 @@ pub enum Relation {
     #[sea_orm(has_many = "super::billing_retrieve_data::Entity")]
     BillingRetrieveData,
     #[sea_orm(
+        belongs_to = "super::customer::Entity",
+        from = "Column::CustomerId",
+        to = "super::customer::Column::CustomerId",
+        on_update = "Cascade",
+        on_delete = "Cascade"
+    )]
+    Customer,
+    #[sea_orm(
         belongs_to = "super::price::Entity",
         from = "Column::PriceId",
         to = "super::price::Column::PriceId",
@@ -35,6 +43,12 @@ pub enum Relation {
 impl Related<super::billing_retrieve_data::Entity> for Entity {
     fn to() -> RelationDef {
         Relation::BillingRetrieveData.def()
+    }
+}
+
+impl Related<super::customer::Entity> for Entity {
+    fn to() -> RelationDef {
+        Relation::Customer.def()
     }
 }
 

@@ -1,8 +1,33 @@
 use crate::repositories::database_connection::get_database_connection;
-use sea_orm::{
-    ActiveModelTrait, DbErr, EntityTrait, IntoActiveModel, PrimaryKeyTrait,
-    prelude::async_trait::async_trait,
-};
+use sea_orm::{DbErr, entity::*, prelude::async_trait::async_trait};
+
+#[async_trait]
+pub trait GenericCrudRepositoryWithRelation<T, R>
+where
+    T: ModelTrait,
+    <T as ModelTrait>::Entity: Related<R>,
+    R: EntityTrait,
+{
+    async fn find_related_one(&mut self, related: R) -> Result<R::Model, DbErr>;
+}
+
+#[async_trait]
+impl<T, R> GenericCrudRepositoryWithRelation<T, R> for T
+where
+    T: ModelTrait,
+    <T as ModelTrait>::Entity: Related<R>,
+    R: EntityTrait,
+{
+    async fn find_related_one(&mut self, related: R) -> Result<R::Model, DbErr> {
+        let conn = get_database_connection().await;
+        let result = self.find_related(related).one(conn).await?;
+
+        match result {
+            Some(model) => Ok(model),
+            None => Err(DbErr::Custom("cant find related".into())),
+        }
+    }
+}
 
 #[async_trait]
 pub trait GenericCrudRepository<T>

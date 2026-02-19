@@ -20,7 +20,7 @@ impl BaseRepository<Customer> for CustomerRepository {
         todo!()
     }
 
-    async fn read(&mut self, id: i64) -> Result<Customer, BaseRepositoryErr> {
+    async fn read(&mut self, id: i64) -> Result<Option<Customer>, BaseRepositoryErr> {
         todo!()
     }
 
@@ -28,7 +28,7 @@ impl BaseRepository<Customer> for CustomerRepository {
         todo!()
     }
 
-    async fn delete(&mut self, id: i64) -> Result<i64, BaseRepositoryErr> {
+    async fn delete(&mut self, id: i64) -> Result<u64, BaseRepositoryErr> {
         todo!()
     }
 }

@@ -33,7 +33,7 @@ impl BaseRepository<DefaultDataRecordType> for DataRecordRepository {
         todo!()
     }
 
-    async fn read(&mut self, id: i64) -> Result<DefaultDataRecordType, BaseRepositoryErr> {
+    async fn read(&mut self, id: i64) -> Result<Option<DefaultDataRecordType>, BaseRepositoryErr> {
         todo!()
     }
 
@@ -44,7 +44,7 @@ impl BaseRepository<DefaultDataRecordType> for DataRecordRepository {
         todo!()
     }
 
-    async fn delete(&mut self, id: i64) -> Result<i64, BaseRepositoryErr> {
+    async fn delete(&mut self, id: i64) -> Result<u64, BaseRepositoryErr> {
         todo!()
     }
 }

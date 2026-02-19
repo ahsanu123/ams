@@ -20,7 +20,7 @@ impl BaseRepository<Billing> for BillingRepository {
         todo!()
     }
 
-    async fn read(&mut self, id: i64) -> Result<Billing, BaseRepositoryErr> {
+    async fn read(&mut self, id: i64) -> Result<Option<Billing>, BaseRepositoryErr> {
         todo!()
     }
 
@@ -28,7 +28,7 @@ impl BaseRepository<Billing> for BillingRepository {
         todo!()
     }
 
-    async fn delete(&mut self, id: i64) -> Result<i64, BaseRepositoryErr> {
+    async fn delete(&mut self, id: i64) -> Result<u64, BaseRepositoryErr> {
         todo!()
     }
 }

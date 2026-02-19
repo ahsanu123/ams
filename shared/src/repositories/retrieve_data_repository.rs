@@ -1,9 +1,14 @@
-use chrono::{Month, NaiveDateTime};
-
 use crate::{
-    models::retrieve_data::RetrieveData,
-    repositories::base_repository_trait::{BaseRepository, BaseRepositoryErr},
+    models::{retrieve_data::RetrieveData, to_active_without_id_trait::ToActiveModel},
+    repositories::{
+        base_repository_trait::{BaseRepository, BaseRepositoryErr},
+        database_connection::get_database_connection,
+        generic_crud_repository::{GenericCrudRepository as _, GenericCrudRepositoryWithRelation},
+    },
 };
+use ams_entity::{customer, price};
+use chrono::{Month, NaiveDateTime};
+use sea_orm::{ModelTrait, Related};
 
 pub enum RetrieveDataRepositoryErr {
     FailToGetByCustomerId,
@@ -56,19 +61,81 @@ impl RetrieveDataRepository {
 
 impl BaseRepository<RetrieveData> for RetrieveDataRepository {
     async fn create(&mut self, model: RetrieveData) -> Result<i64, BaseRepositoryErr> {
-        todo!()
+        let active_model = model.to_active_without_id();
+
+        let result = ams_entity::prelude::RetrieveData.create(active_model).await;
+
+        match result {
+            Ok(created_model) => Ok(created_model.retrieve_data_id),
+            Err(_) => Err(BaseRepositoryErr::FailToCreate),
+        }
     }
 
-    async fn read(&mut self, id: i64) -> Result<RetrieveData, BaseRepositoryErr> {
-        todo!()
+    async fn read(&mut self, id: i64) -> Result<Option<RetrieveData>, BaseRepositoryErr> {
+        match ams_entity::prelude::RetrieveData.get_by_id(id).await {
+            Ok(model) => {
+                let mut model = model.ok_or(BaseRepositoryErr::FailToRead)?;
+
+                let price = model
+                    .find_related_one(price::Entity)
+                    .await
+                    .map_err(|_| BaseRepositoryErr::FailToGetRelated)?;
+
+                let customer = model
+                    .find_related_one(customer::Entity)
+                    .await
+                    .map_err(|_| BaseRepositoryErr::FailToGetRelated)?;
+
+                let retrieve_data =
+                    RetrieveData::with_price_and_customer(model, price.into(), customer.into());
+
+                Ok(Some(retrieve_data))
+            }
+            Err(_) => Err(BaseRepositoryErr::FailToCreate),
+        }
     }
 
     async fn update(&mut self, model: RetrieveData) -> Result<RetrieveData, BaseRepositoryErr> {
-        todo!()
+        let active_model = model.to_active_with_id();
+        let update_result = ams_entity::prelude::RetrieveData
+            .update_by_model(active_model)
+            .await;
+
+        match update_result {
+            Ok(mut model) => {
+                let price = model
+                    .find_related_one(price::Entity)
+                    .await
+                    .map_err(|_| BaseRepositoryErr::FailToGetRelated)?;
+
+                let customer = model
+                    .find_related_one(customer::Entity)
+                    .await
+                    .map_err(|_| BaseRepositoryErr::FailToGetRelated)?;
+
+                let retrieve_data =
+                    RetrieveData::with_price_and_customer(model, price.into(), customer.into());
+
+                Ok(retrieve_data)
+            }
+            Err(_) => Err(BaseRepositoryErr::FailToUpdate),
+        }
     }
 
-    async fn delete(&mut self, id: i64) -> Result<i64, BaseRepositoryErr> {
-        todo!()
+    async fn delete(&mut self, id: i64) -> Result<u64, BaseRepositoryErr> {
+        match ams_entity::prelude::RetrieveData
+            .delete_by_model_id(id)
+            .await
+        {
+            Ok(deleted_count) => {
+                if deleted_count > 0 {
+                    return Ok(deleted_count);
+                }
+
+                Err(BaseRepositoryErr::FailToDelete)
+            }
+            Err(_) => Err(BaseRepositoryErr::FailToDelete),
+        }
     }
 }
 
