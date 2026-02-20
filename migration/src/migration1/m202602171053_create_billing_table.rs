@@ -9,7 +9,7 @@ impl MigrationTrait for Migration {
         let customer_id_fk = &mut ForeignKey::create()
             .from_tbl("billing")
             .from_col("customer_id")
-            .to_tbl("customers")
+            .to_tbl("customer")
             .to_col("customer_id")
             .on_update(ForeignKeyAction::Cascade)
             .on_delete(ForeignKeyAction::Cascade)

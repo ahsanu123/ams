@@ -21,6 +21,14 @@ pub enum Relation {
     BalanceBilling,
     #[sea_orm(has_many = "super::billing_retrieve_data::Entity")]
     BillingRetrieveData,
+    #[sea_orm(
+        belongs_to = "super::customer::Entity",
+        from = "Column::CustomerId",
+        to = "super::customer::Column::CustomerId",
+        on_update = "Cascade",
+        on_delete = "Cascade"
+    )]
+    Customer,
 }
 
 impl Related<super::balance_billing::Entity> for Entity {
@@ -32,6 +40,12 @@ impl Related<super::balance_billing::Entity> for Entity {
 impl Related<super::billing_retrieve_data::Entity> for Entity {
     fn to() -> RelationDef {
         Relation::BillingRetrieveData.def()
+    }
+}
+
+impl Related<super::customer::Entity> for Entity {
+    fn to() -> RelationDef {
+        Relation::Customer.def()
     }
 }
 
