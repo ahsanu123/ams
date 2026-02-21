@@ -3,7 +3,7 @@ use sea_orm::ActiveValue::{NotSet, Set};
 
 use crate::models::to_active_without_id_trait::ToActiveModel;
 
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub struct Customer {
     pub customer_id: i64,
     pub customer_name: String,

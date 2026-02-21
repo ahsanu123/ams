@@ -8,11 +8,12 @@ use crate::{
         database_connection::get_database_connection,
         generic_crud_repository::GenericCrudRepository,
     },
+    sqls::billing::get_by_customer_id_query_result,
 };
 use ams_entity::billing as billing_db;
-use ams_entity::billing_retrieve_data::Model as BillingRetrieveDataModel;
 use ams_entity::prelude::Billing as BillingDb;
 use ams_entity::prelude::BillingRetrieveData as BillingRetrieveDataDb;
+use ams_entity::prelude::Customer as CustomerDb;
 use ams_entity::prelude::RetrieveData as RetrieveDataDb;
 use ams_entity::retrieve_data as retrieve_data_db;
 use ams_entity::retrieve_data::Model as RetrieveDataModel;
@@ -20,11 +21,14 @@ use ams_entity::{billing::Model as BillingModel, price};
 use ams_entity::{billing_retrieve_data as billing_retrieve_data_db, customer};
 use chrono::NaiveDateTime;
 use sea_orm::{
-    ColumnTrait, DatabaseBackend, EntityTrait, ExprTrait, JoinType, ModelTrait, Order, QueryFilter,
-    QueryOrder, QuerySelect, RelationTrait, Statement, prelude::Expr, sea_query::IntoCondition,
-    sqlx::types::uuid::Version,
+    ColumnTrait, DatabaseBackend, EntityTrait, ExprTrait, FromQueryResult, JoinType, ModelTrait,
+    Order, QueryFilter, QueryOrder, QuerySelect, RelationTrait, Statement, prelude::Expr,
+    sea_query::IntoCondition, sqlx::types::uuid::Version,
 };
 
+const GET_BY_CUSTOMER_ID_SP: &str = include_str!("../sqls/billing/get_by_customer_id.sql");
+
+#[derive(Debug)]
 pub enum BillingRepositoryErr {
     FailToGeyByCustomerId,
     FailToConvertWithOtherData,
@@ -98,6 +102,38 @@ impl BillingRepository {
             bill,
             amount,
         })
+    }
+
+    pub async fn get_by_customer_id_with_sp(
+        &mut self,
+        customer_id: i64,
+    ) -> Result<Vec<Billing>, BillingRepositoryErr> {
+        let conn = get_database_connection().await;
+
+        let customer: Customer = CustomerDb
+            .get_by_id(customer_id)
+            .await
+            .map_err(|_| BillingRepositoryErr::FailToGeyByCustomerId)?
+            .ok_or(BillingRepositoryErr::FailToGeyByCustomerId)?
+            .into();
+
+        let stmt = Statement::from_sql_and_values(
+            DatabaseBackend::Sqlite,
+            GET_BY_CUSTOMER_ID_SP,
+            [customer_id.into(), customer_id.into()],
+        );
+
+        let results = get_by_customer_id_query_result::QueryResult::find_by_statement(stmt)
+            .all(conn)
+            .await
+            .map_err(|_| BillingRepositoryErr::FailToGeyByCustomerId)?;
+
+        let result = results
+            .iter()
+            .map(|result| Billing::from_query_result(*result, customer.clone()))
+            .collect::<Vec<Billing>>();
+
+        Ok(result)
     }
     pub async fn get_by_customer_id(
         &mut self,
@@ -225,6 +261,8 @@ impl BaseRepository<Billing> for BillingRepository {
 #[cfg(test)]
 mod test_billing_repository {
 
+    use crate::init_environment_variable;
+
     use super::*;
     use sea_orm::QueryTrait;
 
@@ -237,5 +275,16 @@ mod test_billing_repository {
             .build(sea_orm::DatabaseBackend::Sqlite)
             .to_string();
         println!("{}", billing_query);
+    }
+
+    #[tokio::test]
+    async fn test_get_by_customer_id_with_statement_sp() {
+        init_environment_variable();
+        let result = BillingRepository
+            .get_by_customer_id_with_sp(1)
+            .await
+            .expect("failt to query from statement with stored procedure");
+
+        println!("{:#?}", result);
     }
 }
