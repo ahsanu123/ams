@@ -1,6 +1,6 @@
 use crate::{
     models::{customer::Customer, to_active_without_id_trait::ToActiveModel},
-    sqls::billing::{self, get_by_customer_id_query_result, query_result::GetQueryResult},
+    sqls::billing::{self, query_result::GetQueryResult},
 };
 use chrono::NaiveDateTime;
 use sea_orm::ActiveValue::*;
@@ -18,8 +18,18 @@ pub struct Billing {
     pub amount: i64,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct BillingCreate {
+    pub customer_id: i64,
+    pub date: NaiveDateTime,
+
+    pub from: NaiveDateTime,
+    pub to: NaiveDateTime,
+}
+
+#[derive(Debug, Clone)]
+pub struct BillingUpdate {
+    pub billing_id: i64,
     pub customer_id: i64,
     pub date: NaiveDateTime,
 
@@ -34,7 +44,7 @@ impl Billing {
             customer_id: query_result.customer_id,
             date: query_result.date,
 
-            customer: customer,
+            customer,
 
             from: query_result.from,
             to: query_result.to,

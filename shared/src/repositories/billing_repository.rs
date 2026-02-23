@@ -1,28 +1,16 @@
 use crate::{
     models::{
-        billing::{Billing, BillingCreate},
+        billing::{Billing, BillingCreate, BillingUpdate},
         customer::Customer,
-        to_active_without_id_trait::ToActiveModel,
     },
     repositories::{
-        base_repository_trait::{BaseRepository, BaseRepository2, BaseRepositoryErr},
-        database_connection::get_database_connection,
+        base_repository_trait::{BaseRepository2, BaseRepositoryErr},
         generic_crud_repository::GenericCrudRepository,
     },
-    sqls::billing::{
-        create_billing, get_by_billing_id_query_result, get_by_customer_id_query_result,
-    },
+    sqls::billing::{create_billing, get_by_billing_id, get_by_customer_id, update_by_billing},
 };
-use ams_entity::billing as billing_db;
 use ams_entity::prelude::Billing as BillingDb;
-use ams_entity::prelude::BillingRetrieveData as BillingRetrieveDataDb;
 use ams_entity::prelude::Customer as CustomerDb;
-use ams_entity::prelude::RetrieveData as RetrieveDataDb;
-use ams_entity::retrieve_data as retrieve_data_db;
-use ams_entity::{billing::Model as BillingModel, price};
-use ams_entity::{billing_retrieve_data as billing_retrieve_data_db, customer};
-use chrono::NaiveDateTime;
-use sea_orm::{ColumnTrait, EntityTrait, ModelTrait, Order, QueryFilter, QueryOrder};
 
 #[derive(Debug)]
 pub enum BillingRepositoryErr {
@@ -44,7 +32,7 @@ impl BillingRepository {
             .ok_or(BillingRepositoryErr::FailToGeyByCustomerId)?
             .into();
 
-        let results = get_by_customer_id_query_result::query(customer_id)
+        let results = get_by_customer_id::query(customer_id)
             .await
             .map_err(|_| BillingRepositoryErr::FailToGeyByCustomerId)?;
 
@@ -60,6 +48,7 @@ impl BillingRepository {
 impl BaseRepository2 for BillingRepository {
     type CreateType = BillingCreate;
     type ReturnType = Billing;
+    type UpdateType = BillingUpdate;
 
     async fn create(&mut self, model: Self::CreateType) -> Result<i64, BaseRepositoryErr> {
         let query_result = create_billing::query(model.into())
@@ -70,7 +59,7 @@ impl BaseRepository2 for BillingRepository {
     }
 
     async fn read(&mut self, id: i64) -> Result<Option<Self::ReturnType>, BaseRepositoryErr> {
-        let query_result = get_by_billing_id_query_result::query(id)
+        let query_result = get_by_billing_id::query(id)
             .await
             .map_err(|_| BaseRepositoryErr::FailToRead)?
             .ok_or(BaseRepositoryErr::FailToRead)?;
@@ -89,15 +78,20 @@ impl BaseRepository2 for BillingRepository {
 
     async fn update(
         &mut self,
-        model: Self::ReturnType,
+        model: Self::UpdateType,
     ) -> Result<Self::ReturnType, BaseRepositoryErr> {
-        let active_model = model.to_active_with_id();
-        let update_result = BillingDb.update_by_model(active_model).await;
+        let query_result = update_by_billing::query(model.clone())
+            .await
+            .map_err(|_| BaseRepositoryErr::FailToUpdate)?;
 
-        match update_result {
-            Ok(model) => todo!(),
-            Err(_) => Err(BaseRepositoryErr::FailToUpdate),
+        if query_result == 0 {
+            return Err(BaseRepositoryErr::FailToUpdate);
         }
+
+        self.read(model.billing_id)
+            .await
+            .map_err(|_| BaseRepositoryErr::FailToUpdate)?
+            .ok_or(BaseRepositoryErr::FailToUpdate)
     }
 
     async fn delete(&mut self, id: i64) -> Result<u64, BaseRepositoryErr> {
@@ -117,25 +111,12 @@ impl BaseRepository2 for BillingRepository {
 #[cfg(test)]
 mod test_billing_repository {
 
-    use crate::init_environment_variable;
-
     use super::*;
+    use crate::init_environment_variable;
     use chrono::{Local, NaiveDate};
-    use sea_orm::QueryTrait;
-
-    #[test]
-    fn test_get_by_customer_id() {
-        let billing_query = BillingRetrieveDataDb::find()
-            .find_also_related(BillingDb)
-            .find_also_related(RetrieveDataDb)
-            .filter(billing_db::Column::CustomerId.eq(1))
-            .build(sea_orm::DatabaseBackend::Sqlite)
-            .to_string();
-        println!("{}", billing_query);
-    }
 
     #[tokio::test]
-    async fn test_get_by_customer_id_with_statement_sp() {
+    async fn test_get_by_customer_id() {
         init_environment_variable();
         let result = BillingRepository
             .get_by_customer_id(1)
@@ -164,6 +145,40 @@ mod test_billing_repository {
             .create(billing)
             .await
             .expect("fail to insert");
+
+        assert!(result > 0);
+        println!("{:#?}", result);
+    }
+
+    #[tokio::test]
+    async fn test_update_billing_sp() {
+        init_environment_variable();
+        let billing = BillingUpdate {
+            customer_id: 3,
+            date: Local::now().naive_local(),
+            from: NaiveDate::from_ymd_opt(2026, 2, 20)
+                .unwrap()
+                .and_hms_opt(1, 0, 0)
+                .unwrap(),
+            to: NaiveDate::from_ymd_opt(2026, 2, 22)
+                .unwrap()
+                .and_hms_opt(23, 0, 0)
+                .unwrap(),
+            billing_id: 16,
+        };
+        let result = BillingRepository
+            .update(billing.clone())
+            .await
+            .expect("fail to update");
+
+        println!("{:#?}", result);
+        println!("{:#?}", billing.date);
+    }
+
+    #[tokio::test]
+    async fn test_delete_billing_sp() {
+        init_environment_variable();
+        let result = BillingRepository.delete(16).await.expect("fail to delete");
 
         println!("{:#?}", result);
     }

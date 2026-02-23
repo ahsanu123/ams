@@ -1,4 +1,5 @@
 pub mod create_billing;
-pub mod get_by_billing_id_query_result;
-pub mod get_by_customer_id_query_result;
+pub mod get_by_billing_id;
+pub mod get_by_customer_id;
 pub mod query_result;
+pub mod update_by_billing;
