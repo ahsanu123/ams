@@ -6,16 +6,16 @@ use crate::{
     sqls::billing::query_result::GetQueryResult,
 };
 
-const GET_BY_CUSTOMER_ID_SP: &str = include_str!("./get_by_customer_id.sql");
+const GET_BY_BILLING_ID_SP: &str = include_str!("./get_by_billing_id.sql");
 
-pub async fn query(customer_id: i64) -> Result<Vec<GetQueryResult>, DbErr> {
+pub async fn query(billing_id: i64) -> Result<Option<GetQueryResult>, DbErr> {
     let conn = get_database_connection().await;
 
     let stmt = Statement::from_sql_and_values(
         DatabaseBackend::Sqlite,
-        GET_BY_CUSTOMER_ID_SP,
-        [customer_id.into(), customer_id.into()],
+        GET_BY_BILLING_ID_SP,
+        [billing_id.into()],
     );
 
-    GetQueryResult::find_by_statement(stmt).all(conn).await
+    GetQueryResult::find_by_statement(stmt).one(conn).await
 }

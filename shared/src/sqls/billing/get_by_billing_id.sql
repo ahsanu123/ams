@@ -10,12 +10,10 @@ SELECT
     SUM(rd.amount * p.value) AS "bill"
 
 FROM billing_retrieve_data brd
-JOIN billing b ON b.billing_id = brd.billing_id
-JOIN retrieve_data rd ON brd.retrieve_data_id = rd.retrieve_data_id
-JOIN price p ON p.price_id = rd.price_id
+    JOIN billing b ON b.billing_id = brd.billing_id
+    JOIN retrieve_data rd ON brd.retrieve_data_id = rd.retrieve_data_id
+    JOIN price p ON p.price_id = rd.price_id
 WHERE
-    b.customer_id = ?   -- customer_id
-    AND
-    rd.customer_id = ? -- customer_id
+    b.billing_id= ?   -- customer_id
 ORDER BY
     rd.date ASC;
