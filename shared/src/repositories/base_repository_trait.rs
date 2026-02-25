@@ -14,7 +14,7 @@ pub trait BaseRepository<T> {
     async fn delete(&mut self, id: i64) -> Result<u64, BaseRepositoryErr>;
 }
 
-pub trait BaseRepository2 {
+pub trait BaseRepositoryWithCRUType {
     type CreateType;
     type ReturnType;
     type UpdateType;

@@ -4,7 +4,7 @@ use crate::{
         customer::Customer,
     },
     repositories::{
-        base_repository_trait::{BaseRepository2, BaseRepositoryErr},
+        base_repository_trait::{BaseRepositoryErr, BaseRepositoryWithCRUType},
         generic_crud_repository::GenericCrudRepository,
     },
     sqls::billing::{create_billing, get_by_billing_id, get_by_customer_id, update_by_billing},
@@ -45,7 +45,7 @@ impl BillingRepository {
     }
 }
 
-impl BaseRepository2 for BillingRepository {
+impl BaseRepositoryWithCRUType for BillingRepository {
     type CreateType = BillingCreate;
     type ReturnType = Billing;
     type UpdateType = BillingUpdate;
