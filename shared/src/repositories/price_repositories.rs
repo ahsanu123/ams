@@ -29,6 +29,23 @@ impl PriceRepository {
 
         Ok(data.into())
     }
+
+    pub async fn get_all(&mut self) -> Result<Vec<Price>, PriceRepositoryErr> {
+        let conn = get_database_connection().await;
+
+        let data = PriceDb::find()
+            .order_by(price_db::Column::Date, Order::Desc)
+            .all(conn)
+            .await
+            .map_err(|_| PriceRepositoryErr::FailToGetLatest)?;
+
+        let prices = data
+            .iter()
+            .map(|data| data.clone().into())
+            .collect::<Vec<Price>>();
+
+        Ok(prices)
+    }
 }
 
 impl BaseRepository<Price> for PriceRepository {

@@ -1,4 +1,4 @@
-use chrono::NaiveDateTime;
+use chrono::{Local, NaiveDateTime};
 use sea_orm::ActiveValue::{NotSet, Set};
 
 use crate::models::to_active_without_id_trait::ToActiveModel;
@@ -7,6 +7,16 @@ pub struct Price {
     pub price_id: i64,
     pub date: NaiveDateTime,
     pub value: f32,
+}
+
+impl Price {
+    pub fn new(new_price: f32) -> Self {
+        Self {
+            price_id: 0,
+            date: Local::now().naive_local(),
+            value: new_price,
+        }
+    }
 }
 
 impl From<ams_entity::price::Model> for Price {

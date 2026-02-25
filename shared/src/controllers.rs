@@ -8,3 +8,4 @@
 
 pub mod customer_controller;
 pub mod data_record_controller;
+pub mod price_controller;
