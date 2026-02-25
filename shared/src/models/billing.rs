@@ -5,7 +5,7 @@ use crate::{
 use chrono::NaiveDateTime;
 use sea_orm::ActiveValue::*;
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Billing {
     pub billing_id: i64,
     pub customer_id: i64,

@@ -7,9 +7,12 @@ use crate::{
     },
 };
 
+use ams_entity::balance as balance_db;
 use ams_entity::prelude::Balance as BalanceDb;
 use ams_entity::prelude::Customer as CustomerDb;
-use sea_orm::{ActiveModelTrait, ModelTrait, TransactionTrait};
+use sea_orm::{
+    ActiveModelTrait, ColumnTrait, EntityTrait, ModelTrait, QueryFilter, TransactionTrait,
+};
 
 pub enum BalanceRepositoryErr {
     FailToGetByCustomerId,
@@ -19,8 +22,31 @@ pub enum BalanceRepositoryErr {
 pub struct BalanceRepository;
 
 impl BalanceRepository {
-    pub fn get_by_customer_id(&mut self, id: i64) -> Result<Vec<Balance>, BalanceRepositoryErr> {
-        todo!()
+    pub async fn get_by_customer_id(
+        &mut self,
+        customer_id: i64,
+    ) -> Result<Vec<Balance>, BalanceRepositoryErr> {
+        let conn = get_database_connection().await;
+
+        let balance_models = BalanceDb::find()
+            .filter(balance_db::Column::CustomerId.eq(customer_id))
+            .find_also_related(CustomerDb)
+            .all(conn)
+            .await
+            .map_err(|_| BalanceRepositoryErr::FailToGetByCustomerId)?;
+
+        let mut balances = Vec::<Balance>::new();
+
+        for bm in balance_models {
+            let customer: Customer =
+                bm.1.ok_or(BalanceRepositoryErr::FailToGetByCustomerId)?
+                    .into();
+            let balance = Balance::with_customer(bm.0, customer);
+
+            balances.push(balance);
+        }
+
+        Ok(balances)
     }
 
     pub async fn update_many(&mut self, models: Vec<Balance>) -> Result<i64, BalanceRepositoryErr> {

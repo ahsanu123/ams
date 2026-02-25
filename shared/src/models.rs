@@ -1,4 +1,5 @@
 pub mod balance;
+pub mod balance_billing;
 pub mod billing;
 pub mod billing_retrieve_data;
 pub mod customer;
