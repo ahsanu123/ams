@@ -19,7 +19,7 @@ pub enum DataRecordRepositoryErr {
     FailToGetByMonth,
 }
 
-pub struct DataRecordRepository {}
+pub struct DataRecordRepository;
 
 impl DataRecordRepository {
     pub async fn get_by_date(
