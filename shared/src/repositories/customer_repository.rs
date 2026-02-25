@@ -12,6 +12,7 @@ use ams_entity::prelude::Customer as CustomerDb;
 use sea_orm::{ColumnTrait, EntityTrait, QueryFilter};
 
 pub enum CustomerRepositoryErr {
+    FailToGetAll,
     FailToGetAllActive,
 }
 
@@ -26,6 +27,22 @@ impl CustomerRepository {
             .all(conn)
             .await
             .map_err(|_| CustomerRepositoryErr::FailToGetAllActive)?;
+
+        let data = data
+            .iter()
+            .map(|customer| customer.into())
+            .collect::<Vec<Customer>>();
+
+        Ok(data)
+    }
+
+    pub async fn get_all(&mut self) -> Result<Vec<Customer>, CustomerRepositoryErr> {
+        let conn = get_database_connection().await;
+
+        let data = CustomerDb::find()
+            .all(conn)
+            .await
+            .map_err(|_| CustomerRepositoryErr::FailToGetAll)?;
 
         let data = data
             .iter()

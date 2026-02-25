@@ -1,4 +1,6 @@
-use std::sync::{LazyLock, Mutex};
+use std::sync::LazyLock;
+
+use tokio::sync::Mutex;
 
 use crate::repositories::{
     balance_billing_repository::BalanceBillingRepository, balance_repository::BalanceRepository,

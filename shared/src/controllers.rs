@@ -5,3 +5,6 @@
 // pub mod production_record_command;
 // pub mod taking_record_command;
 // pub mod user_management_command;
+
+pub mod customer_controller;
+pub mod data_record_controller;
