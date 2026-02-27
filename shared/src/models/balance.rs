@@ -1,10 +1,16 @@
 use crate::models::{customer::Customer, to_active_without_id_trait::ToActiveModel};
 use chrono::NaiveDateTime;
 use sea_orm::ActiveValue::{NotSet, Set};
+use serde::{Deserialize, Serialize};
+use ts_rs::TS;
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Copy, Debug, Serialize, Deserialize, Clone, TS)]
+#[ts(export)]
+#[ts(type = "number")]
 pub enum TransactionType {
+    #[ts(type = "number")]
     TopUp,
+    #[ts(type = "number")]
     Pay,
 }
 
@@ -27,11 +33,13 @@ impl From<TransactionType> for i64 {
     }
 }
 
-#[derive(Clone)]
+#[derive(Debug, Serialize, Deserialize, Clone, TS)]
+#[ts(export)]
 pub struct Balance {
     pub balance_id: i64,
     pub customer_id: i64,
     pub value: i64,
+    #[ts(type = "Date")]
     pub date: NaiveDateTime,
     pub transaction_type: TransactionType,
     pub customer: Customer,

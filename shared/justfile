@@ -6,3 +6,7 @@ tl:
 
 tf testName: 
   cargo test -- --list | rg -i {{testName}}
+
+# export binding
+eb: 
+  cargo test export_bindings

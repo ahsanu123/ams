@@ -4,26 +4,38 @@ use crate::{
 };
 use chrono::NaiveDateTime;
 use sea_orm::ActiveValue::*;
+use serde::{Deserialize, Serialize};
+use ts_rs::TS;
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Default, Serialize, Deserialize, Clone, TS)]
+#[ts(export)]
 pub struct Billing {
     pub billing_id: i64,
     pub customer_id: i64,
+
+    #[ts(type = "Date")]
     pub date: NaiveDateTime,
 
+    #[ts(type = "Date")]
     pub customer: Customer,
+    #[ts(type = "Date")]
     pub from: NaiveDateTime,
+    #[ts(type = "Date")]
     pub to: NaiveDateTime,
     pub bill: f64,
     pub amount: i64,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Default, Serialize, Deserialize, Clone, TS)]
+#[ts(export)]
 pub struct BillingCreate {
     pub customer_id: i64,
+    #[ts(type = "Date")]
     pub date: NaiveDateTime,
 
+    #[ts(type = "Date")]
     pub from: NaiveDateTime,
+    #[ts(type = "Date")]
     pub to: NaiveDateTime,
 }
 

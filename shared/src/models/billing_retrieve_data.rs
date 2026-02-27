@@ -1,13 +1,19 @@
 use chrono::NaiveDateTime;
 use sea_orm::ActiveValue::{NotSet, Set};
+use serde::{Deserialize, Serialize};
+use ts_rs::TS;
 
 use crate::models::to_active_without_id_trait::ToActiveModel;
 
+#[derive(Debug, Default, Serialize, Deserialize, Clone, TS)]
+#[ts(export)]
 pub struct BillingRetrieveData {
     pub billing_retrieve_data_id: i64,
     pub billing_id: i64,
     pub retrieve_data_id: i64,
+    #[ts(type = "Date")]
     pub from: NaiveDateTime,
+    #[ts(type = "Date")]
     pub to: NaiveDateTime,
     pub bill: f64,
     pub amount: i64,

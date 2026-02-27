@@ -1,12 +1,17 @@
 use crate::models::{customer::Customer, price::Price, to_active_without_id_trait::ToActiveModel};
 use chrono::NaiveDateTime;
 use sea_orm::ActiveValue::{NotSet, Set};
+use serde::{Deserialize, Serialize};
+use ts_rs::TS;
 
+#[derive(Serialize, Deserialize, Clone, TS)]
+#[ts(export)]
 pub struct RetrieveData {
     pub retrieve_data_id: i64,
     pub customer_id: i64,
     pub price_id: i64,
     pub amount: i64,
+    #[ts(type = "Date")]
     pub date: NaiveDateTime,
     pub is_paid: bool,
     pub customer: Customer,
@@ -20,6 +25,7 @@ pub struct RetrieveDataCreateOrUpdate {
     pub customer_id: i64,
     pub price_id: i64,
     pub amount: i64,
+    #[ts(type = "Date")]
     pub date: NaiveDateTime,
     pub is_paid: bool,
 }

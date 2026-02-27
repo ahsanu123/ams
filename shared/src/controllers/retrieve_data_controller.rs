@@ -1,15 +1,19 @@
 use chrono::Month;
 use serde::{Deserialize, Serialize};
+use ts_rs::TS;
 
 use crate::{
     models::retrieve_data::{RetrieveData, RetrieveDataCreateOrUpdate},
     repositories::{RETRIEVE_DATA_REPO, base_repository_trait::BaseRepository},
 };
 
-#[derive(Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone, TS)]
+#[ts(export)]
 pub struct RetrieveDataGetAllProps {
     customer_id: Option<i64>,
+    #[ts(type = "number", optional)]
     start_month: Option<Month>,
+    #[ts(type = "number", optional)]
     end_month: Option<Month>,
     year: Option<i32>,
 }

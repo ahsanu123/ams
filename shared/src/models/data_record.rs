@@ -9,6 +9,7 @@ mod soy_dosage_record;
 use produced_dreg_record::ProducedDregRecord;
 use production_record::ProductionRecord;
 use soy_dosage_record::SoyDosageCountRecord;
+use ts_rs::TS;
 
 use crate::models::to_active_without_id_trait::ToActiveModel;
 
@@ -19,15 +20,20 @@ pub enum RetrieveDataType {
     ProducedDreg,
 }
 
+#[derive(Serialize, Deserialize, Clone, TS)]
+#[ts(export)]
 pub enum DataRecordValueType {
     Production(ProductionRecord),
     SoyDosageCount(SoyDosageCountRecord),
     ProducedDreg(ProducedDregRecord),
 }
 
+#[derive(Serialize, Deserialize, Clone, TS)]
+#[ts(export)]
 pub struct DataRecord<KEY> {
     pub data_record_id: i64,
     pub key: KEY,
+    #[ts(type = "Date")]
     pub date: NaiveDateTime,
     pub value: DataRecordValueType,
 }

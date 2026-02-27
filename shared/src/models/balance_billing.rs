@@ -5,7 +5,11 @@ use crate::models::{
 use ams_entity::balance::Model as BalanceModel;
 use ams_entity::balance_billing::Model as BalanceBillingModel;
 use sea_orm::ActiveValue::{NotSet, Set};
+use serde::{Deserialize, Serialize};
+use ts_rs::TS;
 
+#[derive(Debug, Serialize, Deserialize, Clone, TS)]
+#[ts(export)]
 pub struct BalanceBilling {
     pub balance_billing_id: i64,
     pub balance_id: i64,
