@@ -9,3 +9,4 @@
 pub mod customer_controller;
 pub mod data_record_controller;
 pub mod price_controller;
+pub mod retrieve_data_controller;

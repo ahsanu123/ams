@@ -1,8 +1,5 @@
 use crate::{
-    models::{
-        data_record::{DataRecord, DefaultDataRecordType},
-        to_active_without_id_trait::ToActiveModel,
-    },
+    models::{data_record::DefaultDataRecordType, to_active_without_id_trait::ToActiveModel},
     repositories::{
         base_repository_trait::{BaseRepository, BaseRepositoryErr},
         database_connection::get_database_connection,

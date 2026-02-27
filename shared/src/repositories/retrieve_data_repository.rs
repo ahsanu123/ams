@@ -1,5 +1,8 @@
 use crate::{
-    models::{retrieve_data::RetrieveData, to_active_without_id_trait::ToActiveModel},
+    models::{
+        retrieve_data::{RetrieveData, RetrieveDataCreateOrUpdate},
+        to_active_without_id_trait::ToActiveModel,
+    },
     repositories::{
         base_repository_trait::{BaseRepository, BaseRepositoryErr},
         database_connection::get_database_connection,
@@ -181,6 +184,48 @@ impl RetrieveDataRepository {
         let retrieves_data = self.map_retrieve_data_db_to_final_model(data).await?;
 
         Ok(retrieves_data)
+    }
+
+    pub async fn create(
+        &mut self,
+        model: RetrieveDataCreateOrUpdate,
+    ) -> Result<i64, BaseRepositoryErr> {
+        let active_model = model.to_active_without_id();
+
+        let result = RetrieveDataDb.create(active_model).await;
+
+        match result {
+            Ok(created_model) => Ok(created_model.retrieve_data_id),
+            Err(_) => Err(BaseRepositoryErr::FailToCreate),
+        }
+    }
+
+    pub async fn update(
+        &mut self,
+        model: RetrieveDataCreateOrUpdate,
+    ) -> Result<RetrieveData, BaseRepositoryErr> {
+        let active_model = model.to_active_with_id();
+        let update_result = RetrieveDataDb.update_by_model(active_model).await;
+
+        match update_result {
+            Ok(mut model) => {
+                let price = model
+                    .find_related_one(price::Entity)
+                    .await
+                    .map_err(|_| BaseRepositoryErr::FailToGetRelated)?;
+
+                let customer = model
+                    .find_related_one(customer::Entity)
+                    .await
+                    .map_err(|_| BaseRepositoryErr::FailToGetRelated)?;
+
+                let retrieve_data =
+                    RetrieveData::with_price_and_customer(model, price.into(), customer.into());
+
+                Ok(retrieve_data)
+            }
+            Err(_) => Err(BaseRepositoryErr::FailToUpdate),
+        }
     }
 }
 

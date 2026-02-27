@@ -13,6 +13,17 @@ pub struct RetrieveData {
     pub price: Price,
 }
 
+#[derive(Serialize, Deserialize, Clone, TS)]
+#[ts(export)]
+pub struct RetrieveDataCreateOrUpdate {
+    pub retrieve_data_id: i64,
+    pub customer_id: i64,
+    pub price_id: i64,
+    pub amount: i64,
+    pub date: NaiveDateTime,
+    pub is_paid: bool,
+}
+
 impl RetrieveData {
     pub fn with_price_and_customer(
         model: ams_entity::retrieve_data::Model,
@@ -33,6 +44,30 @@ impl RetrieveData {
 }
 
 impl ToActiveModel<ams_entity::retrieve_data::ActiveModel> for RetrieveData {
+    fn to_active_without_id(&self) -> ams_entity::retrieve_data::ActiveModel {
+        ams_entity::retrieve_data::ActiveModel {
+            retrieve_data_id: NotSet,
+            customer_id: Set(self.customer_id),
+            price_id: Set(self.price_id),
+            amount: Set(self.amount),
+            date: Set(self.date),
+            is_paid: Set(self.is_paid),
+        }
+    }
+
+    fn to_active_with_id(&self) -> ams_entity::retrieve_data::ActiveModel {
+        ams_entity::retrieve_data::ActiveModel {
+            retrieve_data_id: Set(self.retrieve_data_id),
+            customer_id: Set(self.customer_id),
+            price_id: Set(self.price_id),
+            amount: Set(self.amount),
+            date: Set(self.date),
+            is_paid: Set(self.is_paid),
+        }
+    }
+}
+
+impl ToActiveModel<ams_entity::retrieve_data::ActiveModel> for RetrieveDataCreateOrUpdate {
     fn to_active_without_id(&self) -> ams_entity::retrieve_data::ActiveModel {
         ams_entity::retrieve_data::ActiveModel {
             retrieve_data_id: NotSet,

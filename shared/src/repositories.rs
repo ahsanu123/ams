@@ -7,7 +7,7 @@ use crate::repositories::{
     billing_repository::BillingRepository,
     billing_retrieve_data_repository::BillingRetrieveDataRepository,
     customer_repository::CustomerRepository, data_record_repository::DataRecordRepository,
-    price_repositories::PriceRepository,
+    price_repositories::PriceRepository, retrieve_data_repository::RetrieveDataRepository,
 };
 
 pub mod balance_billing_repository;
@@ -50,5 +50,5 @@ pub static DATA_RECORD_REPO: LazyLock<Mutex<DataRecordRepository>> =
 pub static PRICE_REPO: LazyLock<Mutex<PriceRepository>> =
     LazyLock::new(|| Mutex::new(PriceRepository));
 
-pub static RETRIEVE_DATA_REPO: LazyLock<Mutex<BillingRetrieveDataRepository>> =
-    LazyLock::new(|| Mutex::new(BillingRetrieveDataRepository));
+pub static RETRIEVE_DATA_REPO: LazyLock<Mutex<RetrieveDataRepository>> =
+    LazyLock::new(|| Mutex::new(RetrieveDataRepository));
