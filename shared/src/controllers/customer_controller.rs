@@ -1,9 +1,8 @@
-use chrono::Local;
-
 use crate::{
     models::customer::Customer,
     repositories::{CUSTOMER_REPO, base_repository_trait::BaseRepository},
 };
+use chrono::Local;
 
 pub trait CustomerControllerTrait {
     async fn create_new_customer(&mut self, customer_name: String) -> i64;

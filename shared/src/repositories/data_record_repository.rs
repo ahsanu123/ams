@@ -69,6 +69,36 @@ impl DataRecordRepository {
 
         Ok(data)
     }
+
+    pub async fn get_by_year(
+        &mut self,
+        year: i32,
+    ) -> Result<Vec<DefaultDataRecordType>, DataRecordRepositoryErr> {
+        let conn = get_database_connection().await;
+
+        let start_year = NaiveDate::from_ymd_opt(year, 1, 1)
+            .unwrap()
+            .and_hms_opt(1, 0, 0)
+            .unwrap();
+
+        let end_year = NaiveDate::from_ymd_opt(year + 1, 1, 1)
+            .unwrap()
+            .and_hms_opt(1, 0, 0)
+            .unwrap();
+
+        let data = DataRecordDb::find()
+            .filter(data_record_db::Column::Date.between(start_year, end_year))
+            .all(conn)
+            .await
+            .map_err(|_| DataRecordRepositoryErr::FailToGetByMonth)?;
+
+        let data = data
+            .iter()
+            .map(|record| record.into())
+            .collect::<Vec<DefaultDataRecordType>>();
+
+        Ok(data)
+    }
 }
 
 impl BaseRepository<DefaultDataRecordType> for DataRecordRepository {

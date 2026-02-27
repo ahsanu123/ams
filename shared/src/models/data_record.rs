@@ -1,5 +1,6 @@
 use ams_entity::data_record;
 use chrono::NaiveDateTime;
+use sea_orm::ActiveValue::{NotSet, Set};
 use serde::{Deserialize, Serialize};
 
 mod produced_dreg_record;
@@ -13,7 +14,9 @@ use ts_rs::TS;
 
 use crate::models::to_active_without_id_trait::ToActiveModel;
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Clone, TS)]
+#[ts(export)]
+#[ts(type = "number")]
 pub enum RetrieveDataType {
     Production,
     SoyDosageCount,
@@ -47,6 +50,16 @@ impl From<i64> for RetrieveDataType {
             1 => RetrieveDataType::SoyDosageCount,
             2 => RetrieveDataType::ProducedDreg,
             val => panic!("cant find coresponding RetrieveDataType for {}", val),
+        }
+    }
+}
+
+impl From<RetrieveDataType> for i64 {
+    fn from(value: RetrieveDataType) -> Self {
+        match value {
+            RetrieveDataType::Production => 0,
+            RetrieveDataType::SoyDosageCount => 1,
+            RetrieveDataType::ProducedDreg => 2,
         }
     }
 }
@@ -107,10 +120,24 @@ impl From<data_record::Model> for DataRecord<RetrieveDataType> {
 
 impl ToActiveModel<ams_entity::data_record::ActiveModel> for DefaultDataRecordType {
     fn to_active_without_id(&self) -> ams_entity::data_record::ActiveModel {
-        todo!()
+        let json_value = serde_json::to_string(&self.value).unwrap_or_default();
+
+        ams_entity::data_record::ActiveModel {
+            data_record_id: NotSet,
+            key: Set(self.key.clone().into()),
+            date: Set(self.date),
+            json_value: Set(json_value),
+        }
     }
 
     fn to_active_with_id(&self) -> ams_entity::data_record::ActiveModel {
-        todo!()
+        let json_value = serde_json::to_string(&self.value).unwrap_or_default();
+
+        ams_entity::data_record::ActiveModel {
+            data_record_id: Set(self.data_record_id),
+            key: Set(self.key.clone().into()),
+            date: Set(self.date),
+            json_value: Set(json_value),
+        }
     }
 }
