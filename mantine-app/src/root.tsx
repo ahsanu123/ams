@@ -7,9 +7,11 @@ import {
   isRouteErrorResponse,
 } from "react-router";
 import type { Route } from "./+types/root";
-import "@mantine/core/styles.css";
 import { MantineProvider } from "@mantine/core";
 import { theme } from "./theme";
+import "@mantine/core/styles.css";
+import '@mantine/charts/styles.css';
+import '@mantine/dates/styles.css';
 // import type { Route } from "./+types/root";
 // import asmLogo from './svg/ams-icon.svg'
 // import { ChakraProvider, createSystem, defaultConfig } from "@chakra-ui/react";
