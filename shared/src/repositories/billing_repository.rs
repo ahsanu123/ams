@@ -1,16 +1,22 @@
 use crate::{
     models::{
-        billing::{Billing, BillingCreate, BillingUpdate},
+        billing::{Billing, BillingCreate, BillingUpdate, BillingWithRetrieveData},
         customer::Customer,
+        retrieve_data::RetrieveData,
     },
     repositories::{
         base_repository_trait::{BaseRepositoryErr, BaseRepositoryWithCRUType},
+        database_connection::get_database_connection,
         generic_crud_repository::GenericCrudRepository,
     },
     sqls::billing::{create_billing, get_by_billing_id, get_by_customer_id, update_by_billing},
 };
+use ams_entity::billing_retrieve_data as billing_retrieve_data_db;
 use ams_entity::prelude::Billing as BillingDb;
 use ams_entity::prelude::Customer as CustomerDb;
+use ams_entity::prelude::RetrieveData as RetrieveDataDb;
+use ams_entity::retrieve_data as retrieve_data_db;
+use sea_orm::{ColumnTrait, EntityTrait, JoinType, QueryFilter, QuerySelect, RelationTrait};
 
 #[derive(Debug)]
 pub enum BillingRepositoryErr {
@@ -36,12 +42,56 @@ impl BillingRepository {
             .await
             .map_err(|_| BillingRepositoryErr::FailToGeyByCustomerId)?;
 
-        let result = results
+        let results = results
             .iter()
             .map(|result| Billing::from_query_result(*result, customer.clone()))
             .collect::<Vec<Billing>>();
 
-        Ok(result)
+        Ok(results)
+    }
+
+    pub async fn get_with_retrieve_data_by_customer_id(
+        &mut self,
+        customer_id: i64,
+    ) -> Result<Vec<BillingWithRetrieveData>, BillingRepositoryErr> {
+        let conn = get_database_connection().await;
+
+        let customer: Customer = CustomerDb
+            .get_by_id(customer_id)
+            .await
+            .map_err(|_| BillingRepositoryErr::FailToGeyByCustomerId)?
+            .ok_or(BillingRepositoryErr::FailToGeyByCustomerId)?
+            .into();
+
+        let results = get_by_customer_id::query(customer_id)
+            .await
+            .map_err(|_| BillingRepositoryErr::FailToGeyByCustomerId)?;
+
+        let billing_ids = results
+            .iter()
+            .map(|data| data.billing_id)
+            .collect::<Vec<i64>>();
+
+        let rds = RetrieveDataDb::find()
+            .join(
+                JoinType::Join,
+                retrieve_data_db::Relation::BillingRetrieveData.def(),
+            )
+            .filter(billing_retrieve_data_db::Column::BillingId.is_in(billing_ids))
+            .all(conn)
+            .await
+            .map_err(|_| BillingRepositoryErr::FailToGeyByCustomerId)?;
+        // .iter()
+        // .map(|data| data.into())
+        // .collect::<Vec<RetrieveData>>();
+
+        let results = results
+            .iter()
+            .map(|result| Billing::from_query_result(*result, customer.clone()))
+            .collect::<Vec<Billing>>();
+
+        // Ok(results)
+        todo!()
     }
 }
 

@@ -1,5 +1,7 @@
 use crate::{
-    models::{customer::Customer, to_active_without_id_trait::ToActiveModel},
+    models::{
+        customer::Customer, retrieve_data::RetrieveData, to_active_without_id_trait::ToActiveModel,
+    },
     sqls::billing::{self, query_result::GetQueryResult},
 };
 use chrono::NaiveDateTime;
@@ -28,6 +30,27 @@ pub struct Billing {
 
 #[derive(Debug, Default, Serialize, Deserialize, Clone, TS)]
 #[ts(export)]
+pub struct BillingWithRetrieveData {
+    pub billing_id: i64,
+    pub customer_id: i64,
+
+    #[ts(type = "Date")]
+    pub date: NaiveDateTime,
+
+    #[ts(type = "Date")]
+    pub customer: Customer,
+    #[ts(type = "Date")]
+    pub from: NaiveDateTime,
+    #[ts(type = "Date")]
+    pub to: NaiveDateTime,
+    pub bill: f64,
+    pub amount: i64,
+
+    pub retrieves_data: Vec<RetrieveData>,
+}
+
+#[derive(Debug, Default, Serialize, Deserialize, Clone, TS)]
+#[ts(export)]
 pub struct BillingCreate {
     pub customer_id: i64,
     #[ts(type = "Date")]
@@ -39,13 +62,17 @@ pub struct BillingCreate {
     pub to: NaiveDateTime,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Default, Serialize, Deserialize, Clone, TS)]
+#[ts(export)]
 pub struct BillingUpdate {
     pub billing_id: i64,
     pub customer_id: i64,
+    #[ts(type = "Date")]
     pub date: NaiveDateTime,
 
+    #[ts(type = "Date")]
     pub from: NaiveDateTime,
+    #[ts(type = "Date")]
     pub to: NaiveDateTime,
 }
 

@@ -6,6 +6,8 @@
 // pub mod taking_record_command;
 // pub mod user_management_command;
 
+pub mod balance_controller;
+pub mod billing_controller;
 pub mod customer_controller;
 pub mod data_record_controller;
 pub mod price_controller;

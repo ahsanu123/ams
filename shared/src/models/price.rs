@@ -5,7 +5,7 @@ use ts_rs::TS;
 
 use crate::models::to_active_without_id_trait::ToActiveModel;
 
-#[derive(Serialize, Deserialize, Clone, TS)]
+#[derive(Debug, Serialize, Deserialize, Clone, TS)]
 #[ts(export)]
 pub struct Price {
     pub price_id: i64,
