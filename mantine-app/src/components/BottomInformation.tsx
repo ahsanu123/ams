@@ -1,14 +1,14 @@
-import { ActionIcon, Center, Flex, Group, Image, Title } from "@mantine/core"
-import { ReactNode } from "react"
+import { ActionIcon, Flex, Group, Image, Title } from "@mantine/core"
 import { MdAdminPanelSettings } from "react-icons/md";
 import { IoStatsChart } from "react-icons/io5";
 import amsLogo from "../svg/ams-icon.svg";
+import { SideBarComponentType, useSidebarStore } from "@/global-stores/right-sidebar-store";
 
 interface BottomInformation {
-  child?: ReactNode
 }
 
-export default function BottomInformation(props: BottomInformation) {
+export default function BottomInformation(_props: BottomInformation) {
+  const setDisplayedComponentType = useSidebarStore(store => store.setDisplayedComponent);
   return (
     <Flex
       p={"2px 10px"}
@@ -28,6 +28,7 @@ export default function BottomInformation(props: BottomInformation) {
         <ActionIcon
           size={"60px"}
           variant="filled"
+          onClick={() => setDisplayedComponentType(SideBarComponentType.Statistics)}
         >
           <IoStatsChart size={"60px"} />
         </ActionIcon>
@@ -35,6 +36,7 @@ export default function BottomInformation(props: BottomInformation) {
         <ActionIcon
           size={"60px"}
           variant="filled"
+          onClick={() => setDisplayedComponentType(SideBarComponentType.AdminLogin)}
         >
           <MdAdminPanelSettings size={"60px"} />
         </ActionIcon>

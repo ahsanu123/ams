@@ -1,0 +1,40 @@
+.virtual-keyboard-container {
+  input {
+    width: 100%;
+    font-size: 2em;
+    border: 1px solid gray;
+  }
+
+  b,
+  .stripe {
+    display: block;
+    height: 100px;
+    width: 100%;
+  }
+
+  .stripe {
+    color: white;
+    background: repeating-linear-gradient(45deg, #b75b9b, #bc607c 10px, #b3580e 10px, #d79009 20px);
+  }
+
+  .virtual-keyboard {
+    display: grid;
+    grid-template-columns: repeat(8, 1fr);
+    gap: 10px;
+
+    button {
+      padding: 30px 0px;
+      font-size: 1.2em;
+    }
+
+    .cmd-button {
+      background-color: #37635a;
+    }
+
+    .cmd-button:hover {
+      background-color: gray;
+    }
+
+  }
+
+}

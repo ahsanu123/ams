@@ -1,12 +1,4 @@
-use crate::endpoints::ApiDoc;
-use crate::endpoints::{
-    customer_endpoints::CustomerServiceExtensionTrait,
-    dreg_price_endpoint::DregsPriceServiceExtensionTrait,
-    make_payment_page_endpoint::MakePaymentPageServiceExtensionTrait,
-    payment_history_endpoint::PaymentServiceExtensionTrait,
-    taking_record_endpoint::TakingRecordServiceExtensionTrait,
-    user_management_enpoint::UserManagementServiceExtensionTrait,
-};
+use crate::controllers::ApiDoc;
 use actix_cors::Cors;
 use actix_files::Files;
 use actix_web::{App, HttpServer, middleware::Logger};
@@ -15,7 +7,7 @@ use utoipa::OpenApi;
 use utoipa_actix_web::AppExt;
 use utoipa_swagger_ui::{Config, SwaggerUi};
 
-pub mod endpoints;
+pub mod controllers;
 
 pub fn start_server_blocking() -> std::io::Result<()> {
     actix_web::rt::System::new().block_on(async { start_server().await })
@@ -44,12 +36,12 @@ pub async fn start_server() -> std::io::Result<()> {
             })
             .into_app()
             // register all endpoint here to be able to accessed
-            .register_customer_endpoints()
-            .register_dregs_price_endpoints()
-            .register_payment_endpoints()
-            .register_taking_record_endpoints()
-            .register_user_management_endpoints()
-            .register_make_payment_page_endpoints()
+            // .register_customer_endpoints()
+            // .register_dregs_price_endpoints()
+            // .register_payment_endpoints()
+            // .register_taking_record_endpoints()
+            // .register_user_management_endpoints()
+            // .register_make_payment_page_endpoints()
             //  static file service
             .service(Files::new("/", static_path).index_file("index.html"))
     })

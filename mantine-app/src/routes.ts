@@ -28,7 +28,7 @@ export enum AdminRoutes {
 
 export default [
   layout("./layouts/MainLayout.tsx", [
-    index("./pages/MainPage.tsx", {
+    index("./pages/main-pages/MainPage.tsx", {
       id: AppRoutes.Root
     }),
   ]),

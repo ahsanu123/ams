@@ -1,6 +1,6 @@
 use crate::{
     models::{
-        billing::{Billing, BillingCreate, BillingUpdate, BillingWithRetrieveData},
+        billing::{Billing, BillingCreate, BillingInfo, BillingUpdate, BillingWithRetrieveData},
         customer::Customer,
         retrieve_data::RetrieveData,
     },
@@ -16,17 +16,59 @@ use ams_entity::prelude::Billing as BillingDb;
 use ams_entity::prelude::Customer as CustomerDb;
 use ams_entity::prelude::RetrieveData as RetrieveDataDb;
 use ams_entity::retrieve_data as retrieve_data_db;
+use chrono::NaiveDateTime;
 use sea_orm::{ColumnTrait, EntityTrait, JoinType, QueryFilter, QuerySelect, RelationTrait};
 
 #[derive(Debug)]
 pub enum BillingRepositoryErr {
-    FailToGeyByCustomerId,
+    FailToGetByCustomerId,
     FailToConvertWithOtherData,
+    FailToGetInfoByMonth,
+    FailToGetInfoByYear,
+    FailToGetInfoByCustomerIdAndMonth,
+    FailToGetInfoByCustomerIdAndYear,
 }
 
 pub struct BillingRepository;
 
 impl BillingRepository {
+    pub async fn get_info_by_month(
+        &mut self,
+        month: NaiveDateTime,
+    ) -> Result<Vec<BillingInfo>, BillingRepositoryErr> {
+        todo!()
+    }
+
+    pub async fn get_info_by_year(
+        &mut self,
+        year: i32,
+    ) -> Result<Vec<BillingInfo>, BillingRepositoryErr> {
+        todo!()
+    }
+
+    pub async fn get_info_by_customer_id_and_year(
+        &mut self,
+        customer_id: i64,
+        year: i32,
+    ) -> Result<Vec<BillingInfo>, BillingRepositoryErr> {
+        todo!()
+    }
+
+    pub async fn get_info_by_customer_id_and_month(
+        &mut self,
+        customer_id: i64,
+        month: NaiveDateTime,
+    ) -> Result<Vec<BillingInfo>, BillingRepositoryErr> {
+        todo!()
+    }
+
+    pub async fn get_info_by_customer_id(
+        &mut self,
+        customer_id: i64,
+    ) -> Result<Vec<BillingInfo>, BillingRepositoryErr> {
+        todo!()
+    }
+
     pub async fn get_by_customer_id(
         &mut self,
         customer_id: i64,
@@ -34,13 +76,13 @@ impl BillingRepository {
         let customer: Customer = CustomerDb
             .get_by_id(customer_id)
             .await
-            .map_err(|_| BillingRepositoryErr::FailToGeyByCustomerId)?
-            .ok_or(BillingRepositoryErr::FailToGeyByCustomerId)?
+            .map_err(|_| BillingRepositoryErr::FailToGetByCustomerId)?
+            .ok_or(BillingRepositoryErr::FailToGetByCustomerId)?
             .into();
 
         let results = get_by_customer_id::query(customer_id)
             .await
-            .map_err(|_| BillingRepositoryErr::FailToGeyByCustomerId)?;
+            .map_err(|_| BillingRepositoryErr::FailToGetByCustomerId)?;
 
         let results = results
             .iter()
@@ -59,13 +101,13 @@ impl BillingRepository {
         let customer: Customer = CustomerDb
             .get_by_id(customer_id)
             .await
-            .map_err(|_| BillingRepositoryErr::FailToGeyByCustomerId)?
-            .ok_or(BillingRepositoryErr::FailToGeyByCustomerId)?
+            .map_err(|_| BillingRepositoryErr::FailToGetByCustomerId)?
+            .ok_or(BillingRepositoryErr::FailToGetByCustomerId)?
             .into();
 
         let results = get_by_customer_id::query(customer_id)
             .await
-            .map_err(|_| BillingRepositoryErr::FailToGeyByCustomerId)?;
+            .map_err(|_| BillingRepositoryErr::FailToGetByCustomerId)?;
 
         let billing_ids = results
             .iter()
@@ -80,7 +122,7 @@ impl BillingRepository {
             .filter(billing_retrieve_data_db::Column::BillingId.is_in(billing_ids))
             .all(conn)
             .await
-            .map_err(|_| BillingRepositoryErr::FailToGeyByCustomerId)?;
+            .map_err(|_| BillingRepositoryErr::FailToGetByCustomerId)?;
         // .iter()
         // .map(|data| data.into())
         // .collect::<Vec<RetrieveData>>();

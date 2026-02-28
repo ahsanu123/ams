@@ -1,9 +1,7 @@
 import { Customer } from "@/bindings/Customer";
 import { RetrieveData } from "@/bindings/RetrieveData";
-import BottomInformation from "@/components/BottomInformation";
 import Calendar from "@/components/Calendar";
-import RightSideBar from "@/components/RightSideBar";
-import { Flex, Stack } from "@mantine/core";
+import { Button } from "@mantine/core";
 import { useState } from "react";
 
 export default function AdminPage() {
@@ -22,7 +20,7 @@ export default function AdminPage() {
       customer_id: 0,
       price_id: 1,
       amount: 12,
-      date: new Date(2026, 5, 2),
+      date: new Date(2026, 2, 2),
       is_paid: true,
       customer: {
         customer_id: 0,
@@ -40,12 +38,15 @@ export default function AdminPage() {
     }
   ]
 
+  const rtm = () => <Button>Click Me</Button>
+
   return (
     <Calendar
       date={month}
       onNextMonth={(date) => setMonth(date)}
       onPrevMonth={(date) => setMonth(date)}
       onDateClick={(date) => console.log("onDateClick", date)}
+      rightTopMenu={rtm}
       customer={customer}
       retrievesData={retrievesData}
     />

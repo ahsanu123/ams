@@ -65,13 +65,13 @@ export const months: [number, Month][] = Object.entries(
   }
 ).map((month) => [Number(month[0]), month[1]])
 
-interface ICalendarDateObject {
+export interface ICalendarDateObject {
   date: Date,
   day: Day,
   retrieveData?: RetrieveData
 }
 
-interface ICalendarObject {
+export interface ICalendarObject {
   year: number,
   month: Month,
   monthStr: string,
