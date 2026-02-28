@@ -1,7 +1,9 @@
 import { Customer } from "@/bindings/Customer";
 import { RetrieveData } from "@/bindings/RetrieveData";
 import { generateCalendarObjectWithRetrieveData } from "@/utilities/generate-calendar-object";
+import { useLayoutStore } from "@/utilities/layout-store";
 import { Text, Avatar, Button, Center, Flex, Grid, Group, Stack, Title } from "@mantine/core";
+import { useViewportSize } from "@mantine/hooks";
 import { addMonths, getDate, subMonths } from "date-fns";
 import { useMemo } from "react";
 import { FaRegCircleCheck } from "react-icons/fa6";
@@ -26,12 +28,20 @@ export default function Calendar(props: CalendarProps) {
     onDateClick
   } = props;
 
+  const { width, height } = useViewportSize();
+  const allLayoutState = useLayoutStore(store => store.getAll);
+  const isLayoutStateReady = useLayoutStore(store => store.isReady);
+
   const calendarObjs = useMemo(() => generateCalendarObjectWithRetrieveData(retrievesData, date), [date, retrievesData]);
   const calendarCellHeight = useMemo(() => {
+    const { mainHeight } = allLayoutState();
+
     const dateLength = calendarObjs.dates.length;
-    if (dateLength <= 28) return "19vh";
-    return calendarObjs.dates.length > 35 ? "12vh" : "15vh"
-  }, [calendarObjs.dates])
+    if (dateLength <= 28) return `${Math.round(mainHeight / 5.5)}px`;
+    return calendarObjs.dates.length > 35 ? `${Math.round(mainHeight / 9)}px` : `${Math.round(mainHeight / 7)}px`
+  }, [calendarObjs.dates, width, height, isLayoutStateReady])
+
+  if (!isLayoutStateReady) return null;
 
   return (
     <Stack style={{ padding: '15px 20px' }}>
