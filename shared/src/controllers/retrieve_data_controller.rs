@@ -1,9 +1,11 @@
 use crate::{
     models::retrieve_data::{
-        retrieve_data_create_or_update::RetrieveDataCreateOrUpdate,
+        retrieve_data_create_or_update::{
+            RetrieveDataCreate, RetrieveDataCreateOrUpdate, RetrieveDataCreateWithDate,
+        },
         retrieve_data_with_customer_and_price::RetrieveDataWithCustomerAndPrice,
     },
-    repositories::{RETRIEVE_DATA_REPO, base_repository_trait::BaseRepository},
+    repositories::{PRICE_REPO, RETRIEVE_DATA_REPO, base_repository_trait::BaseRepository},
 };
 use chrono::Month;
 use serde::{Deserialize, Serialize};
@@ -20,36 +22,89 @@ pub struct RetrieveDataGetAllProps {
     year: Option<i32>,
 }
 
+#[derive(Debug, Serialize, Deserialize, Clone)]
+pub enum RetrieveDataControllerErr {
+    FailToCreate,
+}
+
 pub trait RetrieveDataControllerTrait {
-    async fn create_record(&mut self, data: RetrieveDataCreateOrUpdate) -> i64;
+    async fn create(&mut self, data: RetrieveDataCreate) -> Result<i64, RetrieveDataControllerErr>;
+
+    async fn delete(&mut self, retrieve_data_id: i64) -> Result<u64, RetrieveDataControllerErr>;
+
+    async fn create_wd(
+        &mut self,
+        data: RetrieveDataCreateWithDate,
+    ) -> Result<i64, RetrieveDataControllerErr>;
+
     async fn get_all(
         &mut self,
         props: RetrieveDataGetAllProps,
-    ) -> Vec<RetrieveDataWithCustomerAndPrice>;
+    ) -> Result<Vec<RetrieveDataWithCustomerAndPrice>, RetrieveDataControllerErr>;
+
     async fn update(
         &mut self,
         data: RetrieveDataCreateOrUpdate,
-    ) -> Option<RetrieveDataWithCustomerAndPrice>;
-    async fn delete(&mut self, retrieve_data_id: i64) -> u64;
+    ) -> Result<Option<RetrieveDataWithCustomerAndPrice>, RetrieveDataControllerErr>;
 }
 
 pub struct RetrieveDataController;
 
 impl RetrieveDataControllerTrait for RetrieveDataController {
-    async fn create_record(&mut self, data: RetrieveDataCreateOrUpdate) -> i64 {
-        RETRIEVE_DATA_REPO
+    async fn create(&mut self, data: RetrieveDataCreate) -> Result<i64, RetrieveDataControllerErr> {
+        let latest_price = PRICE_REPO
+            .lock()
+            .await
+            .get_latest()
+            .await
+            .map_err(|_| RetrieveDataControllerErr::FailToCreate)?;
+
+        let data =
+            RetrieveDataCreateOrUpdate::create_ca(data.customer_id, data.amount, latest_price);
+
+        let created_id = RETRIEVE_DATA_REPO
             .lock()
             .await
             .create(data)
             .await
-            .unwrap_or_default()
+            .map_err(|_| RetrieveDataControllerErr::FailToCreate)?;
+
+        Ok(created_id)
+    }
+
+    async fn create_wd(
+        &mut self,
+        data: RetrieveDataCreateWithDate,
+    ) -> Result<i64, RetrieveDataControllerErr> {
+        let latest_price = PRICE_REPO
+            .lock()
+            .await
+            .get_latest()
+            .await
+            .map_err(|_| RetrieveDataControllerErr::FailToCreate)?;
+
+        let data = RetrieveDataCreateOrUpdate::create_cawd(
+            data.customer_id,
+            data.amount,
+            latest_price,
+            data.date,
+        );
+
+        let created_id = RETRIEVE_DATA_REPO
+            .lock()
+            .await
+            .create(data)
+            .await
+            .map_err(|_| RetrieveDataControllerErr::FailToCreate)?;
+
+        Ok(created_id)
     }
 
     async fn get_all(
         &mut self,
         props: RetrieveDataGetAllProps,
-    ) -> Vec<RetrieveDataWithCustomerAndPrice> {
-        match props {
+    ) -> Result<Vec<RetrieveDataWithCustomerAndPrice>, RetrieveDataControllerErr> {
+        let result = match props {
             RetrieveDataGetAllProps {
                 customer_id: Some(customer_id),
                 start_month: None,
@@ -111,22 +166,30 @@ impl RetrieveDataControllerTrait for RetrieveDataController {
                 .unwrap_or_default(),
 
             _ => Vec::<RetrieveDataWithCustomerAndPrice>::new(),
-        }
+        };
+
+        Ok(result)
     }
 
     async fn update(
         &mut self,
         data: RetrieveDataCreateOrUpdate,
-    ) -> Option<RetrieveDataWithCustomerAndPrice> {
-        RETRIEVE_DATA_REPO.lock().await.update(data).await.ok()
+    ) -> Result<Option<RetrieveDataWithCustomerAndPrice>, RetrieveDataControllerErr> {
+        todo!()
+        // RETRIEVE_DATA_REPO
+        //     .lock()
+        //     .await
+        //     .update(data)
+        //     .await
+        //     .map_err(|_| RetrieveDataControllerErr::FailToCreate)
     }
 
-    async fn delete(&mut self, retrieve_data_id: i64) -> u64 {
+    async fn delete(&mut self, retrieve_data_id: i64) -> Result<u64, RetrieveDataControllerErr> {
         RETRIEVE_DATA_REPO
             .lock()
             .await
             .delete(retrieve_data_id)
             .await
-            .unwrap_or_default()
+            .map_err(|_| RetrieveDataControllerErr::FailToCreate)
     }
 }

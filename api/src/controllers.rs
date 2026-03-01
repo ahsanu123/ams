@@ -5,12 +5,19 @@
 // pub mod taking_record_endpoint;
 // pub mod user_management_enpoint;
 
+pub mod retrieve_data_controller;
+
 use utoipa::OpenApi;
 
 // register all endpoint here to be shown in swagger-ui
 #[derive(OpenApi)]
 #[openapi(
     paths(
+        // retrieve data
+        crate::controllers::retrieve_data_controller::create,
+        crate::controllers::retrieve_data_controller::create_with_date,
+        // crate::endpoints::taking_record_endpoint::add_new_taking_record_by_date,
+        //
         // customer_endpoints
         // crate::endpoints::customer_endpoints::add_money,
         // crate::endpoints::customer_endpoints::get_all_user_money_history,

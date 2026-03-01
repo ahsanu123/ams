@@ -12,6 +12,10 @@ SELECT
     c.created_date,
     c.updated_date,
 
+    p.price_id,
+    p.date AS price_date,
+    p.value,
+
     SUM(rd.amount * p.value) AS bill,
     SUM(rd.amount) AS total_amount,
 
@@ -27,6 +31,8 @@ WHERE
     rd.date < date(?) -- end_year
     AND 
     rd.customer_id = ? -- customer_id
+GROUP BY
+    rd.customer_id
 ORDER BY
     rd.date
 
