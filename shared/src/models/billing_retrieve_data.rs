@@ -3,11 +3,11 @@ use sea_orm::ActiveValue::{NotSet, Set};
 use serde::{Deserialize, Serialize};
 use ts_rs::TS;
 
-use crate::models::to_active_without_id_trait::ToActiveModel;
+use crate::models::to_active_model_trait::ToActiveModel;
 
 #[derive(Debug, Default, Serialize, Deserialize, Clone, TS)]
 #[ts(export)]
-pub struct BillingRetrieveData {
+pub struct BillingRetrieveDataWithBillAndAmount {
     pub billing_retrieve_data_id: i64,
     pub billing_id: i64,
     pub retrieve_data_id: i64,
@@ -19,7 +19,7 @@ pub struct BillingRetrieveData {
     pub amount: i64,
 }
 
-impl BillingRetrieveData {
+impl BillingRetrieveDataWithBillAndAmount {
     pub fn with_other_data(
         model: Self,
         from: NaiveDateTime,
@@ -39,7 +39,9 @@ impl BillingRetrieveData {
     }
 }
 
-impl ToActiveModel<ams_entity::billing_retrieve_data::ActiveModel> for BillingRetrieveData {
+impl ToActiveModel<ams_entity::billing_retrieve_data::ActiveModel>
+    for BillingRetrieveDataWithBillAndAmount
+{
     fn to_active_without_id(&self) -> ams_entity::billing_retrieve_data::ActiveModel {
         ams_entity::billing_retrieve_data::ActiveModel {
             billing_retrieve_data_id: NotSet,

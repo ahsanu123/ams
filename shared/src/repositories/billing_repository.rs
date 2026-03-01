@@ -1,8 +1,10 @@
 use crate::{
     models::{
-        billing::{Billing, BillingCreate, BillingInfo, BillingUpdate, BillingWithRetrieveData},
+        billing::{
+            Billing, BillingCreate, BillingUpdate, BillingWithRetrieveData,
+            billing_info::BillingInfo,
+        },
         customer::Customer,
-        retrieve_data::RetrieveData,
     },
     repositories::{
         base_repository_trait::{BaseRepositoryErr, BaseRepositoryWithCRUType},
@@ -14,10 +16,14 @@ use crate::{
 use ams_entity::billing_retrieve_data as billing_retrieve_data_db;
 use ams_entity::prelude::Billing as BillingDb;
 use ams_entity::prelude::Customer as CustomerDb;
+use ams_entity::prelude::Price as PriceDb;
 use ams_entity::prelude::RetrieveData as RetrieveDataDb;
 use ams_entity::retrieve_data as retrieve_data_db;
 use chrono::NaiveDateTime;
-use sea_orm::{ColumnTrait, EntityTrait, JoinType, QueryFilter, QuerySelect, RelationTrait};
+use sea_orm::{
+    ColumnTrait, EntityTrait, ExprTrait, JoinType, QueryFilter, QuerySelect, RelationTrait,
+    prelude::Expr,
+};
 
 #[derive(Debug)]
 pub enum BillingRepositoryErr {
@@ -36,6 +42,21 @@ impl BillingRepository {
         &mut self,
         month: NaiveDateTime,
     ) -> Result<Vec<BillingInfo>, BillingRepositoryErr> {
+        let conn = get_database_connection().await;
+
+        let query = RetrieveDataDb::find()
+            .select_only()
+            .find_also_related(CustomerDb)
+            .find_also_related(PriceDb)
+            .expr_as(
+                Expr::col(retrieve_data_db::Column::Amount).sum(),
+                "total_amount",
+            )
+            .join(JoinType::Join, retrieve_data_db::Relation::Customer.def())
+            .join(JoinType::Join, retrieve_data_db::Relation::Price.def())
+            // .filter(retrieve_data_db::Column::Date.between(a, b))
+            .all(conn)
+            .await;
         todo!()
     }
 

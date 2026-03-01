@@ -1,5 +1,7 @@
 use crate::{
-    models::{balance::Balance, customer::Customer, to_active_without_id_trait::ToActiveModel},
+    models::{
+        balance::BalanceWithCustomer, customer::Customer, to_active_model_trait::ToActiveModel,
+    },
     repositories::{
         base_repository_trait::{BaseRepository, BaseRepositoryErr},
         database_connection::get_database_connection,
@@ -25,7 +27,7 @@ impl BalanceRepository {
     pub async fn get_by_customer_id(
         &mut self,
         customer_id: i64,
-    ) -> Result<Vec<Balance>, BalanceRepositoryErr> {
+    ) -> Result<Vec<BalanceWithCustomer>, BalanceRepositoryErr> {
         let conn = get_database_connection().await;
 
         let balance_models = BalanceDb::find()
@@ -35,13 +37,13 @@ impl BalanceRepository {
             .await
             .map_err(|_| BalanceRepositoryErr::FailToGetByCustomerId)?;
 
-        let mut balances = Vec::<Balance>::new();
+        let mut balances = Vec::<BalanceWithCustomer>::new();
 
         for bm in balance_models {
             let customer: Customer =
                 bm.1.ok_or(BalanceRepositoryErr::FailToGetByCustomerId)?
                     .into();
-            let balance = Balance::with_customer(bm.0, customer);
+            let balance = BalanceWithCustomer::with_customer(bm.0, customer);
 
             balances.push(balance);
         }
@@ -49,7 +51,10 @@ impl BalanceRepository {
         Ok(balances)
     }
 
-    pub async fn update_many(&mut self, models: Vec<Balance>) -> Result<i64, BalanceRepositoryErr> {
+    pub async fn update_many(
+        &mut self,
+        models: Vec<BalanceWithCustomer>,
+    ) -> Result<i64, BalanceRepositoryErr> {
         let conn = get_database_connection().await;
 
         let mut updated_count: i64 = 0;
@@ -79,8 +84,8 @@ impl BalanceRepository {
     }
 }
 
-impl BaseRepository<Balance> for BalanceRepository {
-    async fn create(&mut self, model: Balance) -> Result<i64, BaseRepositoryErr> {
+impl BaseRepository<BalanceWithCustomer> for BalanceRepository {
+    async fn create(&mut self, model: BalanceWithCustomer) -> Result<i64, BaseRepositoryErr> {
         let active_model = model.to_active_without_id();
         let result = BalanceDb.create(active_model).await;
 
@@ -90,7 +95,7 @@ impl BaseRepository<Balance> for BalanceRepository {
         }
     }
 
-    async fn read(&mut self, id: i64) -> Result<Option<Balance>, BaseRepositoryErr> {
+    async fn read(&mut self, id: i64) -> Result<Option<BalanceWithCustomer>, BaseRepositoryErr> {
         let conn = get_database_connection().await;
         match BalanceDb.get_by_id(id).await {
             Ok(model) => {
@@ -103,13 +108,16 @@ impl BaseRepository<Balance> for BalanceRepository {
                     .ok_or(BaseRepositoryErr::FailToRead)?
                     .into();
 
-                Ok(Some(Balance::with_customer(model, customer)))
+                Ok(Some(BalanceWithCustomer::with_customer(model, customer)))
             }
             Err(_) => Err(BaseRepositoryErr::FailToCreate),
         }
     }
 
-    async fn update(&mut self, model: Balance) -> Result<Balance, BaseRepositoryErr> {
+    async fn update(
+        &mut self,
+        model: BalanceWithCustomer,
+    ) -> Result<BalanceWithCustomer, BaseRepositoryErr> {
         let conn = get_database_connection().await;
 
         let active_model = model.to_active_with_id();
@@ -125,7 +133,7 @@ impl BaseRepository<Balance> for BalanceRepository {
                     .ok_or(BaseRepositoryErr::FailToRead)?
                     .into();
 
-                Ok(Balance::with_customer(model, customer))
+                Ok(BalanceWithCustomer::with_customer(model, customer))
             }
             Err(_) => Err(BaseRepositoryErr::FailToUpdate),
         }

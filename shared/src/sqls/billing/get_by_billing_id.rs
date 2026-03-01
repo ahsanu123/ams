@@ -1,4 +1,3 @@
-use chrono::NaiveDateTime;
 use sea_orm::{DatabaseBackend, DbErr, FromQueryResult, Statement};
 
 use crate::{

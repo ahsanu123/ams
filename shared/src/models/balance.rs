@@ -1,4 +1,4 @@
-use crate::models::{customer::Customer, to_active_without_id_trait::ToActiveModel};
+use crate::models::{customer::Customer, to_active_model_trait::ToActiveModel};
 use chrono::NaiveDateTime;
 use sea_orm::ActiveValue::{NotSet, Set};
 use serde::{Deserialize, Serialize};
@@ -35,7 +35,7 @@ impl From<TransactionType> for i64 {
 
 #[derive(Debug, Serialize, Deserialize, Clone, TS)]
 #[ts(export)]
-pub struct Balance {
+pub struct BalanceWithCustomer {
     pub balance_id: i64,
     pub customer_id: i64,
     pub value: i64,
@@ -45,7 +45,7 @@ pub struct Balance {
     pub customer: Customer,
 }
 
-impl Balance {
+impl BalanceWithCustomer {
     pub fn with_customer(model: ams_entity::balance::Model, customer: Customer) -> Self {
         Self {
             balance_id: model.balance_id,
@@ -59,7 +59,7 @@ impl Balance {
     }
 }
 
-impl ToActiveModel<ams_entity::balance::ActiveModel> for Balance {
+impl ToActiveModel<ams_entity::balance::ActiveModel> for BalanceWithCustomer {
     fn to_active_without_id(&self) -> ams_entity::balance::ActiveModel {
         ams_entity::balance::ActiveModel {
             balance_id: NotSet,

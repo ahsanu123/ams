@@ -1,5 +1,8 @@
 use crate::{
-    models::retrieve_data::{RetrieveData, RetrieveDataCreateOrUpdate},
+    models::retrieve_data::{
+        retrieve_data_create_or_update::RetrieveDataCreateOrUpdate,
+        retrieve_data_with_customer_and_price::RetrieveDataWithCustomerAndPrice,
+    },
     repositories::{RETRIEVE_DATA_REPO, base_repository_trait::BaseRepository},
 };
 use chrono::Month;
@@ -19,8 +22,14 @@ pub struct RetrieveDataGetAllProps {
 
 pub trait RetrieveDataControllerTrait {
     async fn create_record(&mut self, data: RetrieveDataCreateOrUpdate) -> i64;
-    async fn get_all(&mut self, props: RetrieveDataGetAllProps) -> Vec<RetrieveData>;
-    async fn update(&mut self, data: RetrieveDataCreateOrUpdate) -> Option<RetrieveData>;
+    async fn get_all(
+        &mut self,
+        props: RetrieveDataGetAllProps,
+    ) -> Vec<RetrieveDataWithCustomerAndPrice>;
+    async fn update(
+        &mut self,
+        data: RetrieveDataCreateOrUpdate,
+    ) -> Option<RetrieveDataWithCustomerAndPrice>;
     async fn delete(&mut self, retrieve_data_id: i64) -> u64;
 }
 
@@ -36,7 +45,10 @@ impl RetrieveDataControllerTrait for RetrieveDataController {
             .unwrap_or_default()
     }
 
-    async fn get_all(&mut self, props: RetrieveDataGetAllProps) -> Vec<RetrieveData> {
+    async fn get_all(
+        &mut self,
+        props: RetrieveDataGetAllProps,
+    ) -> Vec<RetrieveDataWithCustomerAndPrice> {
         match props {
             RetrieveDataGetAllProps {
                 customer_id: Some(customer_id),
@@ -98,11 +110,14 @@ impl RetrieveDataControllerTrait for RetrieveDataController {
                 .await
                 .unwrap_or_default(),
 
-            _ => Vec::<RetrieveData>::new(),
+            _ => Vec::<RetrieveDataWithCustomerAndPrice>::new(),
         }
     }
 
-    async fn update(&mut self, data: RetrieveDataCreateOrUpdate) -> Option<RetrieveData> {
+    async fn update(
+        &mut self,
+        data: RetrieveDataCreateOrUpdate,
+    ) -> Option<RetrieveDataWithCustomerAndPrice> {
         RETRIEVE_DATA_REPO.lock().await.update(data).await.ok()
     }
 

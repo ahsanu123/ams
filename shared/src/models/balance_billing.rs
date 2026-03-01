@@ -1,6 +1,6 @@
 use crate::models::{
-    balance::Balance, billing::Billing, customer::Customer,
-    to_active_without_id_trait::ToActiveModel,
+    balance::BalanceWithCustomer, billing::Billing, customer::Customer,
+    to_active_model_trait::ToActiveModel,
 };
 use ams_entity::balance::Model as BalanceModel;
 use ams_entity::balance_billing::Model as BalanceBillingModel;
@@ -15,14 +15,14 @@ pub struct BalanceBilling {
     pub balance_id: i64,
     pub billing_id: i64,
 
-    pub balance: Balance,
+    pub balance: BalanceWithCustomer,
     pub billing: Billing,
 }
 
 impl BalanceBilling {
     pub fn with_balance_and_billing(
         model: BalanceBillingModel,
-        balance: Balance,
+        balance: BalanceWithCustomer,
         billing: Billing,
     ) -> Self {
         Self {
@@ -38,7 +38,7 @@ impl BalanceBilling {
         balance: BalanceModel,
         billing: Billing,
     ) -> Self {
-        let balance = Balance::with_customer(balance, billing.clone().customer);
+        let balance = BalanceWithCustomer::with_customer(balance, billing.clone().customer);
 
         Self {
             balance_billing_id: model.balance_billing_id,

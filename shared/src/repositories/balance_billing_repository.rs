@@ -1,7 +1,7 @@
 use crate::{
     models::{
-        balance::Balance, balance_billing::BalanceBilling, billing::Billing, customer::Customer,
-        to_active_without_id_trait::ToActiveModel,
+        balance::BalanceWithCustomer, balance_billing::BalanceBilling, billing::Billing,
+        customer::Customer, to_active_model_trait::ToActiveModel,
     },
     repositories::{
         base_repository_trait::{BaseRepository, BaseRepositoryErr, BaseRepositoryWithCRUType},
@@ -68,7 +68,7 @@ impl BalanceBillingRepository {
             let balance_model =
                 bb.2.ok_or(BalanceBillingRepositoryErr::FailToGetByCustomerId)?;
 
-            let balance = Balance::with_customer(balance_model, customer.clone());
+            let balance = BalanceWithCustomer::with_customer(balance_model, customer.clone());
 
             let billing_query_res = billing_by_customer_id_res
                 .iter()
@@ -133,7 +133,7 @@ impl BalanceBillingRepository {
             let balance_model =
                 bb.2.ok_or(BalanceBillingRepositoryErr::FailToGetByCustomerId)?;
 
-            let balance = Balance::with_customer(balance_model, customer.clone());
+            let balance = BalanceWithCustomer::with_customer(balance_model, customer.clone());
 
             let billing_query_res = billing_by_year_and_customer_res
                 .iter()
@@ -194,7 +194,7 @@ impl BalanceBillingRepository {
             let balance_model =
                 bb.2.ok_or(BalanceBillingRepositoryErr::FailToGetByCustomerId)?;
 
-            let balance = Balance::with_customer(balance_model, customer.clone());
+            let balance = BalanceWithCustomer::with_customer(balance_model, customer.clone());
 
             let billing_query_res = billing_by_year_res
                 .iter()

@@ -1,7 +1,10 @@
 use crate::{
     models::{
-        retrieve_data::{RetrieveData, RetrieveDataCreateOrUpdate},
-        to_active_without_id_trait::ToActiveModel,
+        retrieve_data::{
+            retrieve_data_create_or_update::RetrieveDataCreateOrUpdate,
+            retrieve_data_with_customer_and_price::RetrieveDataWithCustomerAndPrice,
+        },
+        to_active_model_trait::ToActiveModel,
     },
     repositories::{
         base_repository_trait::{BaseRepository, BaseRepositoryErr},
@@ -34,8 +37,8 @@ impl RetrieveDataRepository {
     async fn map_retrieve_data_db_to_final_model(
         &mut self,
         models: Vec<(RetrieveDataModel, Option<PriceModel>, Option<CustomerModel>)>,
-    ) -> Result<Vec<RetrieveData>, RetrieveDataRepositoryErr> {
-        let mut retrieves_data = Vec::<RetrieveData>::new();
+    ) -> Result<Vec<RetrieveDataWithCustomerAndPrice>, RetrieveDataRepositoryErr> {
+        let mut retrieves_data = Vec::<RetrieveDataWithCustomerAndPrice>::new();
 
         for (model, price, customer) in models {
             let price = price.ok_or(RetrieveDataRepositoryErr::FailToGetRelated(
@@ -46,8 +49,11 @@ impl RetrieveDataRepository {
                 "cant find customer".into(),
             ))?;
 
-            let retrieve_data =
-                RetrieveData::with_price_and_customer(model, price.into(), customer.into());
+            let retrieve_data = RetrieveDataWithCustomerAndPrice::with_price_and_customer(
+                model,
+                price.into(),
+                customer.into(),
+            );
 
             retrieves_data.push(retrieve_data);
         }
@@ -58,7 +64,7 @@ impl RetrieveDataRepository {
     pub async fn get_by_customer_id(
         &mut self,
         customer_id: i64,
-    ) -> Result<Vec<RetrieveData>, RetrieveDataRepositoryErr> {
+    ) -> Result<Vec<RetrieveDataWithCustomerAndPrice>, RetrieveDataRepositoryErr> {
         let conn = get_database_connection().await;
 
         let data = RetrieveDataDb::find()
@@ -79,7 +85,7 @@ impl RetrieveDataRepository {
         year: i32,
         from: Month,
         to: Month,
-    ) -> Result<Vec<RetrieveData>, RetrieveDataRepositoryErr> {
+    ) -> Result<Vec<RetrieveDataWithCustomerAndPrice>, RetrieveDataRepositoryErr> {
         let conn = get_database_connection().await;
 
         let from_month = NaiveDate::from_ymd_opt(year, from.number_from_month(), 1)
@@ -105,7 +111,7 @@ impl RetrieveDataRepository {
     pub async fn get_by_year(
         &mut self,
         year: i32,
-    ) -> Result<Vec<RetrieveData>, RetrieveDataRepositoryErr> {
+    ) -> Result<Vec<RetrieveDataWithCustomerAndPrice>, RetrieveDataRepositoryErr> {
         let conn = get_database_connection().await;
 
         let current_year = NaiveDate::from_ymd_opt(year, 1, 1)
@@ -134,7 +140,7 @@ impl RetrieveDataRepository {
         year: i32,
         from: Month,
         to: Month,
-    ) -> Result<Vec<RetrieveData>, RetrieveDataRepositoryErr> {
+    ) -> Result<Vec<RetrieveDataWithCustomerAndPrice>, RetrieveDataRepositoryErr> {
         let conn = get_database_connection().await;
 
         let from_month = NaiveDate::from_ymd_opt(year, from.number_from_month(), 1)
@@ -162,7 +168,7 @@ impl RetrieveDataRepository {
         &mut self,
         customer_id: i64,
         year: i32,
-    ) -> Result<Vec<RetrieveData>, RetrieveDataRepositoryErr> {
+    ) -> Result<Vec<RetrieveDataWithCustomerAndPrice>, RetrieveDataRepositoryErr> {
         let conn = get_database_connection().await;
 
         let current_year = NaiveDate::from_ymd_opt(year, 1, 1)
@@ -203,7 +209,7 @@ impl RetrieveDataRepository {
     pub async fn update(
         &mut self,
         model: RetrieveDataCreateOrUpdate,
-    ) -> Result<RetrieveData, BaseRepositoryErr> {
+    ) -> Result<RetrieveDataWithCustomerAndPrice, BaseRepositoryErr> {
         let active_model = model.to_active_with_id();
         let update_result = RetrieveDataDb.update_by_model(active_model).await;
 
@@ -219,8 +225,11 @@ impl RetrieveDataRepository {
                     .await
                     .map_err(|_| BaseRepositoryErr::FailToGetRelated)?;
 
-                let retrieve_data =
-                    RetrieveData::with_price_and_customer(model, price.into(), customer.into());
+                let retrieve_data = RetrieveDataWithCustomerAndPrice::with_price_and_customer(
+                    model,
+                    price.into(),
+                    customer.into(),
+                );
 
                 Ok(retrieve_data)
             }
@@ -229,8 +238,11 @@ impl RetrieveDataRepository {
     }
 }
 
-impl BaseRepository<RetrieveData> for RetrieveDataRepository {
-    async fn create(&mut self, model: RetrieveData) -> Result<i64, BaseRepositoryErr> {
+impl BaseRepository<RetrieveDataWithCustomerAndPrice> for RetrieveDataRepository {
+    async fn create(
+        &mut self,
+        model: RetrieveDataWithCustomerAndPrice,
+    ) -> Result<i64, BaseRepositoryErr> {
         let active_model = model.to_active_without_id();
 
         let result = RetrieveDataDb.create(active_model).await;
@@ -241,7 +253,10 @@ impl BaseRepository<RetrieveData> for RetrieveDataRepository {
         }
     }
 
-    async fn read(&mut self, id: i64) -> Result<Option<RetrieveData>, BaseRepositoryErr> {
+    async fn read(
+        &mut self,
+        id: i64,
+    ) -> Result<Option<RetrieveDataWithCustomerAndPrice>, BaseRepositoryErr> {
         match RetrieveDataDb.get_by_id(id).await {
             Ok(model) => {
                 let mut model = model.ok_or(BaseRepositoryErr::FailToRead)?;
@@ -256,8 +271,11 @@ impl BaseRepository<RetrieveData> for RetrieveDataRepository {
                     .await
                     .map_err(|_| BaseRepositoryErr::FailToGetRelated)?;
 
-                let retrieve_data =
-                    RetrieveData::with_price_and_customer(model, price.into(), customer.into());
+                let retrieve_data = RetrieveDataWithCustomerAndPrice::with_price_and_customer(
+                    model,
+                    price.into(),
+                    customer.into(),
+                );
 
                 Ok(Some(retrieve_data))
             }
@@ -265,7 +283,10 @@ impl BaseRepository<RetrieveData> for RetrieveDataRepository {
         }
     }
 
-    async fn update(&mut self, model: RetrieveData) -> Result<RetrieveData, BaseRepositoryErr> {
+    async fn update(
+        &mut self,
+        model: RetrieveDataWithCustomerAndPrice,
+    ) -> Result<RetrieveDataWithCustomerAndPrice, BaseRepositoryErr> {
         let active_model = model.to_active_with_id();
         let update_result = RetrieveDataDb.update_by_model(active_model).await;
 
@@ -281,8 +302,11 @@ impl BaseRepository<RetrieveData> for RetrieveDataRepository {
                     .await
                     .map_err(|_| BaseRepositoryErr::FailToGetRelated)?;
 
-                let retrieve_data =
-                    RetrieveData::with_price_and_customer(model, price.into(), customer.into());
+                let retrieve_data = RetrieveDataWithCustomerAndPrice::with_price_and_customer(
+                    model,
+                    price.into(),
+                    customer.into(),
+                );
 
                 Ok(retrieve_data)
             }

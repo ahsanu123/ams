@@ -1,6 +1,8 @@
 use crate::{
     models::{
-        customer::Customer, retrieve_data::RetrieveData, to_active_without_id_trait::ToActiveModel,
+        customer::Customer,
+        retrieve_data::retrieve_data_with_customer_and_price::RetrieveDataWithCustomerAndPrice,
+        to_active_model_trait::ToActiveModel,
     },
     sqls::billing::{self, query_result::GetQueryResult},
 };
@@ -8,6 +10,9 @@ use chrono::NaiveDateTime;
 use sea_orm::ActiveValue::*;
 use serde::{Deserialize, Serialize};
 use ts_rs::TS;
+
+pub mod billing_info;
+pub mod billing_with_retrieve_data;
 
 #[derive(Debug, Default, Serialize, Deserialize, Clone, TS)]
 #[ts(export)]
@@ -18,31 +23,11 @@ pub struct Billing {
     #[ts(type = "Date")]
     pub date: NaiveDateTime,
 
-    #[ts(type = "Date")]
     pub customer: Customer,
     #[ts(type = "Date")]
     pub from: NaiveDateTime,
     #[ts(type = "Date")]
     pub to: NaiveDateTime,
-    pub bill: f64,
-    pub amount: i64,
-}
-
-#[derive(Debug, Default, Serialize, Deserialize, Clone, TS)]
-#[ts(export)]
-pub struct BillingInfo {
-    pub customer_id: i64,
-
-    #[ts(type = "Date")]
-    pub date: NaiveDateTime,
-
-    #[ts(type = "Date")]
-    pub customer: Customer,
-    #[ts(type = "Date")]
-    pub from: NaiveDateTime,
-    #[ts(type = "Date")]
-    pub to: NaiveDateTime,
-
     pub bill: f64,
     pub amount: i64,
 }
@@ -56,7 +41,6 @@ pub struct BillingWithRetrieveData {
     #[ts(type = "Date")]
     pub date: NaiveDateTime,
 
-    #[ts(type = "Date")]
     pub customer: Customer,
     #[ts(type = "Date")]
     pub from: NaiveDateTime,
@@ -65,7 +49,7 @@ pub struct BillingWithRetrieveData {
     pub bill: f64,
     pub amount: i64,
 
-    pub retrieves_data: Vec<RetrieveData>,
+    pub retrieves_data: Vec<RetrieveDataWithCustomerAndPrice>,
 }
 
 #[derive(Debug, Default, Serialize, Deserialize, Clone, TS)]

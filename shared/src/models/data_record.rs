@@ -12,7 +12,7 @@ use production_record::ProductionRecord;
 use soy_dosage_record::SoyDosageCountRecord;
 use ts_rs::TS;
 
-use crate::models::to_active_without_id_trait::ToActiveModel;
+use crate::models::to_active_model_trait::ToActiveModel;
 
 #[derive(Serialize, Deserialize, Clone, TS)]
 #[ts(export)]

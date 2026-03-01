@@ -1,5 +1,5 @@
 use crate::{
-    models::{price::Price, to_active_without_id_trait::ToActiveModel},
+    models::{price::Price, to_active_model_trait::ToActiveModel},
     repositories::{
         base_repository_trait::{BaseRepository, BaseRepositoryErr},
         database_connection::get_database_connection,

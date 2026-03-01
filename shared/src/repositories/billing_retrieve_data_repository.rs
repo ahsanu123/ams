@@ -1,6 +1,7 @@
 use crate::{
     models::{
-        billing_retrieve_data::BillingRetrieveData, to_active_without_id_trait::ToActiveModel,
+        billing_retrieve_data::BillingRetrieveDataWithBillAndAmount,
+        to_active_model_trait::ToActiveModel,
     },
     repositories::{
         base_repository_trait::{BaseRepository, BaseRepositoryErr},
@@ -27,7 +28,7 @@ impl BillingRetrieveDataRepository {
     async fn with_other_data(
         &mut self,
         model: BillingRetrieveDataModel,
-    ) -> Result<BillingRetrieveData, BillingRetrieveDataRepositoryErr> {
+    ) -> Result<BillingRetrieveDataWithBillAndAmount, BillingRetrieveDataRepositoryErr> {
         let conn = get_database_connection().await;
 
         let billing_retrieve_data = BillingRetrieveDataDb::find()
@@ -75,7 +76,7 @@ impl BillingRetrieveDataRepository {
             .map(|(data, _)| data.amount)
             .sum::<i64>();
 
-        Ok(BillingRetrieveData {
+        Ok(BillingRetrieveDataWithBillAndAmount {
             billing_retrieve_data_id: model.billing_retrieve_data_id,
             billing_id: model.billing_id,
             retrieve_data_id: model.retrieve_data_id,
@@ -89,7 +90,7 @@ impl BillingRetrieveDataRepository {
     pub async fn get_by_billing_id(
         &mut self,
         billing_id: i64,
-    ) -> Result<BillingRetrieveData, BillingRetrieveDataRepositoryErr> {
+    ) -> Result<BillingRetrieveDataWithBillAndAmount, BillingRetrieveDataRepositoryErr> {
         let conn = get_database_connection().await;
 
         let billing_retrieve_datas = BillingRetrieveDataDb::find()
@@ -141,7 +142,7 @@ impl BillingRetrieveDataRepository {
             .map(|(data, _)| data.amount)
             .sum::<i64>();
 
-        Ok(BillingRetrieveData {
+        Ok(BillingRetrieveDataWithBillAndAmount {
             billing_retrieve_data_id: first_billing_retrieve_data.billing_retrieve_data_id,
             billing_id: first_billing_retrieve_data.billing_id,
             retrieve_data_id: first_billing_retrieve_data.retrieve_data_id,
@@ -153,8 +154,11 @@ impl BillingRetrieveDataRepository {
     }
 }
 
-impl BaseRepository<BillingRetrieveData> for BillingRetrieveDataRepository {
-    async fn create(&mut self, model: BillingRetrieveData) -> Result<i64, BaseRepositoryErr> {
+impl BaseRepository<BillingRetrieveDataWithBillAndAmount> for BillingRetrieveDataRepository {
+    async fn create(
+        &mut self,
+        model: BillingRetrieveDataWithBillAndAmount,
+    ) -> Result<i64, BaseRepositoryErr> {
         let active_model = model.to_active_without_id();
         let result = BillingRetrieveDataDb.create(active_model).await;
 
@@ -164,7 +168,10 @@ impl BaseRepository<BillingRetrieveData> for BillingRetrieveDataRepository {
         }
     }
 
-    async fn read(&mut self, id: i64) -> Result<Option<BillingRetrieveData>, BaseRepositoryErr> {
+    async fn read(
+        &mut self,
+        id: i64,
+    ) -> Result<Option<BillingRetrieveDataWithBillAndAmount>, BaseRepositoryErr> {
         match BillingRetrieveDataDb.get_by_id(id).await {
             Ok(model) => {
                 let model = model.ok_or(BaseRepositoryErr::FailToRead)?;
@@ -182,8 +189,8 @@ impl BaseRepository<BillingRetrieveData> for BillingRetrieveDataRepository {
 
     async fn update(
         &mut self,
-        model: BillingRetrieveData,
-    ) -> Result<BillingRetrieveData, BaseRepositoryErr> {
+        model: BillingRetrieveDataWithBillAndAmount,
+    ) -> Result<BillingRetrieveDataWithBillAndAmount, BaseRepositoryErr> {
         let active_model = model.to_active_with_id();
         let update_result = BillingRetrieveDataDb.update_by_model(active_model).await;
 

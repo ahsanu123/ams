@@ -1,5 +1,3 @@
-use crate::models::to_active_without_id_trait::ToActiveModel;
-
 #[derive(Debug)]
 pub enum BaseRepositoryErr {
     FailToCreate,
