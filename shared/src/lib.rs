@@ -1,5 +1,6 @@
 pub(crate) mod controllers;
 pub(crate) mod repositories;
+pub(crate) mod shared_fn;
 pub(crate) mod sqls;
 pub(crate) mod utilities;
 

@@ -1,8 +1,8 @@
 use crate::{
     models::{
         billing::{
-            Billing, BillingCreate, BillingUpdate, BillingWithRetrieveData,
-            billing_info::BillingInfo,
+            Billing, BillingCreate, BillingUpdate, billing_info::BillingInfo,
+            billing_with_retrieve_data::BillingWithRetrieveData,
         },
         customer::Customer,
     },

@@ -34,26 +34,6 @@ pub struct Billing {
 
 #[derive(Debug, Default, Serialize, Deserialize, Clone, TS)]
 #[ts(export)]
-pub struct BillingWithRetrieveData {
-    pub billing_id: i64,
-    pub customer_id: i64,
-
-    #[ts(type = "Date")]
-    pub date: NaiveDateTime,
-
-    pub customer: Customer,
-    #[ts(type = "Date")]
-    pub from: NaiveDateTime,
-    #[ts(type = "Date")]
-    pub to: NaiveDateTime,
-    pub bill: f64,
-    pub amount: i64,
-
-    pub retrieves_data: Vec<RetrieveDataWithCustomerAndPrice>,
-}
-
-#[derive(Debug, Default, Serialize, Deserialize, Clone, TS)]
-#[ts(export)]
 pub struct BillingCreate {
     pub customer_id: i64,
     #[ts(type = "Date")]

@@ -1,9 +1,8 @@
+use crate::models::to_active_model_trait::ToActiveModel;
 use chrono::NaiveDateTime;
 use sea_orm::ActiveValue::{NotSet, Set};
 use serde::{Deserialize, Serialize};
 use ts_rs::TS;
-
-use crate::models::to_active_model_trait::ToActiveModel;
 
 #[derive(Debug, Default, Serialize, Deserialize, Clone, TS)]
 #[ts(export)]

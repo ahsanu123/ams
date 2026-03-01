@@ -1,7 +1,9 @@
 use chrono::NaiveDateTime;
 
 use crate::{
-    models::billing::{Billing, BillingCreate, BillingUpdate, BillingWithRetrieveData},
+    models::billing::{
+        Billing, BillingCreate, BillingUpdate, billing_with_retrieve_data::BillingWithRetrieveData,
+    },
     repositories::{BILLING_REPO, base_repository_trait::BaseRepositoryWithCRUType},
 };
 
