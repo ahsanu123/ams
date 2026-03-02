@@ -12,11 +12,22 @@ use utoipa::OpenApi;
 // register all endpoint here to be shown in swagger-ui
 #[derive(OpenApi)]
 #[openapi(
+    info(
+        title = "AMS API",
+        description = "🥔 AMS - Ampas Management System.",
+        version = "0.0.1",
+        contact(
+            name = "Ahsanu Amala",
+            url = "ahsanu.is-a.dev",
+        )
+    ),
     paths(
         // retrieve data
         crate::controllers::retrieve_data_controller::create,
         crate::controllers::retrieve_data_controller::create_with_date,
-        // crate::endpoints::taking_record_endpoint::add_new_taking_record_by_date,
+        crate::controllers::retrieve_data_controller::update,
+        crate::controllers::retrieve_data_controller::get_all,
+        crate::controllers::retrieve_data_controller::delete,
         //
         // customer_endpoints
         // crate::endpoints::customer_endpoints::add_money,

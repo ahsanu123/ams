@@ -1,5 +1,3 @@
-use std::i64;
-
 use crate::models::{price::Price, to_active_model_trait::ToActiveModel};
 use chrono::{Local, NaiveDateTime};
 use sea_orm::ActiveValue::{NotSet, Set};
@@ -7,7 +5,7 @@ use serde::{Deserialize, Serialize};
 use ts_rs::TS;
 use utoipa::ToSchema;
 
-#[derive(Serialize, Deserialize, Clone, TS)]
+#[derive(Serialize, Deserialize, Clone, ToSchema, TS)]
 #[ts(export)]
 pub struct RetrieveDataCreateOrUpdate {
     pub retrieve_data_id: i64,

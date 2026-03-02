@@ -10,15 +10,24 @@ use crate::{
 use chrono::Month;
 use serde::{Deserialize, Serialize};
 use ts_rs::TS;
+use utoipa::{IntoParams, ToSchema};
 
-#[derive(Debug, Serialize, Deserialize, Clone, TS)]
+#[derive(Debug, Serialize, Deserialize, ToSchema, IntoParams, Clone, TS)]
+#[into_params(parameter_in = Query)]
 #[ts(export)]
 pub struct RetrieveDataGetAllProps {
     customer_id: Option<i64>,
+
     #[ts(type = "number", optional)]
+    #[schema(value_type = i32)]
+    #[param(value_type = i32, required = false)]
     start_month: Option<Month>,
+
     #[ts(type = "number", optional)]
+    #[schema(value_type = i32)]
+    #[param(value_type = i32, required = false)]
     end_month: Option<Month>,
+
     year: Option<i32>,
 }
 
@@ -175,13 +184,13 @@ impl RetrieveDataControllerTrait for RetrieveDataController {
         &mut self,
         data: RetrieveDataCreateOrUpdate,
     ) -> Result<Option<RetrieveDataWithCustomerAndPrice>, RetrieveDataControllerErr> {
-        todo!()
-        // RETRIEVE_DATA_REPO
-        //     .lock()
-        //     .await
-        //     .update(data)
-        //     .await
-        //     .map_err(|_| RetrieveDataControllerErr::FailToCreate)
+        RETRIEVE_DATA_REPO
+            .lock()
+            .await
+            .update(data)
+            .await
+            .map(Some)
+            .map_err(|_| RetrieveDataControllerErr::FailToCreate)
     }
 
     async fn delete(&mut self, retrieve_data_id: i64) -> Result<u64, RetrieveDataControllerErr> {
