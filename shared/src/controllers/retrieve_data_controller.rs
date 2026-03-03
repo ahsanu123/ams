@@ -37,24 +37,30 @@ pub enum RetrieveDataControllerErr {
 }
 
 pub trait RetrieveDataControllerTrait {
-    async fn create(&mut self, data: RetrieveDataCreate) -> Result<i64, RetrieveDataControllerErr>;
+    fn create(
+        &mut self,
+        data: RetrieveDataCreate,
+    ) -> impl Future<Output = Result<i64, RetrieveDataControllerErr>>;
 
-    async fn delete(&mut self, retrieve_data_id: i64) -> Result<u64, RetrieveDataControllerErr>;
+    fn delete(
+        &mut self,
+        retrieve_data_id: i64,
+    ) -> impl Future<Output = Result<u64, RetrieveDataControllerErr>>;
 
-    async fn create_wd(
+    fn create_wd(
         &mut self,
         data: RetrieveDataCreateWithDate,
-    ) -> Result<i64, RetrieveDataControllerErr>;
+    ) -> impl Future<Output = Result<i64, RetrieveDataControllerErr>>;
 
-    async fn get_all(
+    fn get_all(
         &mut self,
         props: RetrieveDataGetAllProps,
-    ) -> Result<Vec<RetrieveDataWithCustomerAndPrice>, RetrieveDataControllerErr>;
+    ) -> impl Future<Output = Result<Vec<RetrieveDataWithCustomerAndPrice>, RetrieveDataControllerErr>>;
 
-    async fn update(
+    fn update(
         &mut self,
         data: RetrieveDataCreateOrUpdate,
-    ) -> Result<Option<RetrieveDataWithCustomerAndPrice>, RetrieveDataControllerErr>;
+    ) -> impl Future<Output = Result<Option<RetrieveDataWithCustomerAndPrice>, RetrieveDataControllerErr>>;
 }
 
 pub struct RetrieveDataController;

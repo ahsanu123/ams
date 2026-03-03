@@ -5,6 +5,7 @@
 // pub mod taking_record_endpoint;
 // pub mod user_management_enpoint;
 
+pub mod customer_management_controller;
 pub mod retrieve_data_controller;
 
 use utoipa::OpenApi;
@@ -22,14 +23,19 @@ use utoipa::OpenApi;
         )
     ),
     paths(
-        // retrieve data
+        // retrieve data controller
         crate::controllers::retrieve_data_controller::create,
         crate::controllers::retrieve_data_controller::create_with_date,
         crate::controllers::retrieve_data_controller::update,
         crate::controllers::retrieve_data_controller::get_all,
         crate::controllers::retrieve_data_controller::delete,
         //
-        // customer_endpoints
+        // customer management controller
+        crate::controllers::customer_management_controller::create,
+        crate::controllers::customer_management_controller::update,
+        crate::controllers::customer_management_controller::get_all,
+        crate::controllers::customer_management_controller::get_by_id,
+        crate::controllers::customer_management_controller::delete,
         // crate::endpoints::customer_endpoints::add_money,
         // crate::endpoints::customer_endpoints::get_all_user_money_history,
         // crate::endpoints::customer_endpoints::delete_customer,

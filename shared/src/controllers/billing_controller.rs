@@ -14,9 +14,14 @@ pub struct BillingGetAllProps {
     year: Option<i32>,
 }
 pub trait BillingControllerTrait {
-    async fn get_all(&mut self, props: BillingGetAllProps) -> Vec<BillingWithRetrieveData>;
-    async fn create(&mut self, data: BillingCreate) -> i64;
-    async fn update(&mut self, data: BillingUpdate) -> Billing;
+    fn get_all(
+        &mut self,
+        props: BillingGetAllProps,
+    ) -> impl Future<Output = Vec<BillingWithRetrieveData>>;
+
+    fn create(&mut self, data: BillingCreate) -> impl Future<Output = i64>;
+
+    fn update(&mut self, data: BillingUpdate) -> impl Future<Output = Billing>;
 }
 
 pub struct BillingController;

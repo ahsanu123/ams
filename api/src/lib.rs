@@ -1,4 +1,7 @@
-use crate::controllers::{ApiDoc, retrieve_data_controller::TakingRecordServiceExtensionTrait};
+use crate::controllers::{
+    ApiDoc, customer_management_controller::CustomerManagementServiceExtensionTrait,
+    retrieve_data_controller::RetrieveDataServiceExtensionTrait,
+};
 use actix_cors::Cors;
 use actix_files::Files;
 use actix_web::{App, HttpServer, middleware::Logger};
@@ -35,7 +38,8 @@ pub async fn start_server() -> std::io::Result<()> {
                     .config(Config::default().try_it_out_enabled(true))
             })
             .into_app()
-            .register_retrieve_data_endpoints()
+            .register_retrieve_data_controller()
+            .register_customer_controller()
             // register all endpoint here to be able to accessed
             // .register_customer_endpoints()
             // .register_dregs_price_endpoints()

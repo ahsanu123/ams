@@ -4,9 +4,9 @@ use crate::{
 };
 
 pub trait PriceControllerTrait {
-    async fn get_latest_dreg_price(&mut self) -> Option<Price>;
-    async fn update_dreg_price(&mut self, new_price: f32) -> i64;
-    async fn get_all_dreg_price(&mut self) -> Vec<Price>;
+    fn get_latest_dreg_price(&mut self) -> impl Future<Output = Option<Price>>;
+    fn update_dreg_price(&mut self, new_price: f32) -> impl Future<Output = i64>;
+    fn get_all_dreg_price(&mut self) -> impl Future<Output = Vec<Price>>;
 }
 
 pub struct PriceController;

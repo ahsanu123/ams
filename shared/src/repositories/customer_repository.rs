@@ -1,7 +1,10 @@
 use crate::{
-    models::{customer::Customer, to_active_model_trait::ToActiveModel},
+    models::{
+        customer::{Customer, CustomerUpdate},
+        to_active_model_trait::ToActiveModel,
+    },
     repositories::{
-        base_repository_trait::{BaseRepository, BaseRepositoryErr},
+        base_repository_trait::{BaseRepositoryErr, BaseRepositoryWithCRUType},
         database_connection::get_database_connection,
         generic_crud_repository::GenericCrudRepository,
     },
@@ -19,11 +22,29 @@ pub enum CustomerRepositoryErr {
 pub struct CustomerRepository;
 
 impl CustomerRepository {
-    pub async fn get_all_active(&mut self) -> Result<Vec<Customer>, CustomerRepositoryErr> {
+    pub async fn check_if_customer_name_exist(
+        &mut self,
+        customer_name: String,
+    ) -> Result<bool, CustomerRepositoryErr> {
+        let conn = get_database_connection().await;
+
+        let maybe_customer = CustomerDb::find()
+            .filter(customer_db::Column::CustomerName.eq(customer_name))
+            .one(conn)
+            .await
+            .map_err(|_| CustomerRepositoryErr::FailToGetAllActive)?;
+
+        Ok(maybe_customer.is_some())
+    }
+
+    pub async fn get_is_active(
+        &mut self,
+        is_active: bool,
+    ) -> Result<Vec<Customer>, CustomerRepositoryErr> {
         let conn = get_database_connection().await;
 
         let data = CustomerDb::find()
-            .filter(customer_db::Column::IsActive.eq(true))
+            .filter(customer_db::Column::IsActive.eq(is_active))
             .all(conn)
             .await
             .map_err(|_| CustomerRepositoryErr::FailToGetAllActive)?;
@@ -53,7 +74,11 @@ impl CustomerRepository {
     }
 }
 
-impl BaseRepository<Customer> for CustomerRepository {
+impl BaseRepositoryWithCRUType for CustomerRepository {
+    type CreateType = Customer;
+    type ReturnType = Customer;
+    type UpdateType = CustomerUpdate;
+
     async fn create(&mut self, model: Customer) -> Result<i64, BaseRepositoryErr> {
         let active_model = model.to_active_without_id();
         let result = CustomerDb.create(active_model).await;
@@ -74,7 +99,7 @@ impl BaseRepository<Customer> for CustomerRepository {
         }
     }
 
-    async fn update(&mut self, model: Customer) -> Result<Customer, BaseRepositoryErr> {
+    async fn update(&mut self, model: CustomerUpdate) -> Result<Customer, BaseRepositoryErr> {
         let active_model = model.to_active_with_id();
         let update_result = CustomerDb.update_by_model(active_model).await;
 

@@ -1,21 +1,32 @@
-use chrono::NaiveDateTime;
+use chrono::{Local, NaiveDateTime};
 use sea_orm::ActiveValue::{NotSet, Set};
 use serde::{Deserialize, Serialize};
 use ts_rs::TS;
+use utoipa::{IntoParams, ToSchema};
 
 use crate::models::to_active_model_trait::ToActiveModel;
 
-#[derive(Debug, Default, Serialize, Deserialize, Clone, TS)]
+#[derive(Debug, Default, Serialize, Deserialize, Clone, TS, ToSchema)]
 #[ts(export)]
 pub struct Customer {
     pub customer_id: i64,
     pub customer_name: String,
     pub is_active: bool,
     pub is_admin: bool,
+
     #[ts(type = "Date")]
     pub created_date: NaiveDateTime,
     #[ts(type = "Date")]
     pub updated_date: NaiveDateTime,
+}
+
+#[derive(Debug, Default, Serialize, Deserialize, Clone, TS, ToSchema)]
+#[ts(export)]
+pub struct CustomerUpdate {
+    pub customer_id: i64,
+    pub customer_name: String,
+    pub is_active: bool,
+    pub is_admin: bool,
 }
 
 impl From<&ams_entity::customer::Model> for Customer {
@@ -64,6 +75,30 @@ impl ToActiveModel<ams_entity::customer::ActiveModel> for Customer {
             is_admin: Set(self.is_admin),
             created_date: Set(self.created_date),
             updated_date: Set(self.updated_date),
+        }
+    }
+}
+
+impl ToActiveModel<ams_entity::customer::ActiveModel> for CustomerUpdate {
+    fn to_active_without_id(&self) -> ams_entity::customer::ActiveModel {
+        ams_entity::customer::ActiveModel {
+            customer_id: NotSet,
+            customer_name: Set(self.customer_name.clone()),
+            is_active: Set(self.is_active),
+            is_admin: Set(self.is_admin),
+            created_date: NotSet,
+            updated_date: Set(Local::now().naive_local()),
+        }
+    }
+
+    fn to_active_with_id(&self) -> ams_entity::customer::ActiveModel {
+        ams_entity::customer::ActiveModel {
+            customer_id: Set(self.customer_id),
+            customer_name: Set(self.customer_name.clone()),
+            is_active: Set(self.is_active),
+            is_admin: Set(self.is_admin),
+            created_date: NotSet,
+            updated_date: Set(Local::now().naive_local()),
         }
     }
 }

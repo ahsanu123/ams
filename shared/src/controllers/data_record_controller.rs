@@ -19,8 +19,12 @@ pub struct DataRecordGetAllProps {
 }
 
 pub trait DataRecordControllerTrait {
-    async fn get_all(&mut self, props: DataRecordGetAllProps) -> Vec<DefaultDataRecordType>;
-    async fn create(&mut self, data: DefaultDataRecordType) -> i64;
+    fn get_all(
+        &mut self,
+        props: DataRecordGetAllProps,
+    ) -> impl Future<Output = Vec<DefaultDataRecordType>>;
+
+    fn create(&mut self, data: DefaultDataRecordType) -> impl Future<Output = i64>;
 }
 
 pub struct DataRecordController;

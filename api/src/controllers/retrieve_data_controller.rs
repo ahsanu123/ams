@@ -18,15 +18,15 @@ use ams_shared::{
 
 static TAG_NAME: &str = "Retrieve Data Controller";
 
-pub trait TakingRecordServiceExtensionTrait {
-    fn register_retrieve_data_endpoints(self) -> Self;
+pub trait RetrieveDataServiceExtensionTrait {
+    fn register_retrieve_data_controller(self) -> Self;
 }
 
-impl<T> TakingRecordServiceExtensionTrait for App<T>
+impl<T> RetrieveDataServiceExtensionTrait for App<T>
 where
     T: ServiceFactory<ServiceRequest, Config = (), Error = actix_web::Error, InitError = ()>,
 {
-    fn register_retrieve_data_endpoints(self) -> Self {
+    fn register_retrieve_data_controller(self) -> Self {
         self.service(create)
             .service(create_with_date)
             .service(update)
