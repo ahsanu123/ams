@@ -1,9 +1,11 @@
 use crate::{
     models::{
-        balance::BalanceWithCustomer, customer::Customer, to_active_model_trait::ToActiveModel,
+        balance::{BalanceCreateOrUpdate, BalanceWithCustomer},
+        customer::Customer,
+        to_active_model_trait::ToActiveModel,
     },
     repositories::{
-        base_repository_trait::{BaseRepository, BaseRepositoryErr},
+        base_repository_trait::{BaseRepository, BaseRepositoryErr, BaseRepositoryWithCRUType},
         database_connection::get_database_connection,
         generic_crud_repository::GenericCrudRepository,
     },
@@ -13,7 +15,8 @@ use ams_entity::balance as balance_db;
 use ams_entity::prelude::Balance as BalanceDb;
 use ams_entity::prelude::Customer as CustomerDb;
 use sea_orm::{
-    ActiveModelTrait, ColumnTrait, EntityTrait, ModelTrait, QueryFilter, TransactionTrait,
+    ActiveModelTrait, ColumnTrait, EntityTrait, ModelTrait, Order, QueryFilter, QueryOrder,
+    TransactionTrait,
 };
 
 pub enum BalanceRepositoryErr {
@@ -24,6 +27,28 @@ pub enum BalanceRepositoryErr {
 pub struct BalanceRepository;
 
 impl BalanceRepository {
+    pub async fn get_latest_by_customer_id(
+        &mut self,
+        customer_id: i64,
+    ) -> Result<BalanceWithCustomer, BalanceRepositoryErr> {
+        let conn = get_database_connection().await;
+
+        let (balance_model, may_customer) = BalanceDb::find()
+            .filter(balance_db::Column::CustomerId.eq(customer_id))
+            .find_also_related(CustomerDb)
+            .order_by(balance_db::Column::Date, Order::Desc)
+            .one(conn)
+            .await
+            .map_err(|_| BalanceRepositoryErr::FailToGetByCustomerId)?
+            .ok_or(BalanceRepositoryErr::FailToGetByCustomerId)?;
+
+        let customer: Customer = may_customer
+            .ok_or(BalanceRepositoryErr::FailToGetByCustomerId)?
+            .into();
+
+        Ok(BalanceWithCustomer::with_customer(balance_model, customer))
+    }
+
     pub async fn get_by_customer_id(
         &mut self,
         customer_id: i64,
@@ -33,6 +58,7 @@ impl BalanceRepository {
         let balance_models = BalanceDb::find()
             .filter(balance_db::Column::CustomerId.eq(customer_id))
             .find_also_related(CustomerDb)
+            .order_by(balance_db::Column::Date, Order::Desc)
             .all(conn)
             .await
             .map_err(|_| BalanceRepositoryErr::FailToGetByCustomerId)?;
@@ -84,8 +110,12 @@ impl BalanceRepository {
     }
 }
 
-impl BaseRepository<BalanceWithCustomer> for BalanceRepository {
-    async fn create(&mut self, model: BalanceWithCustomer) -> Result<i64, BaseRepositoryErr> {
+impl BaseRepositoryWithCRUType for BalanceRepository {
+    type CreateType = BalanceCreateOrUpdate;
+    type ReturnType = BalanceWithCustomer;
+    type UpdateType = BalanceCreateOrUpdate;
+
+    async fn create(&mut self, model: BalanceCreateOrUpdate) -> Result<i64, BaseRepositoryErr> {
         let active_model = model.to_active_without_id();
         let result = BalanceDb.create(active_model).await;
 
@@ -116,7 +146,7 @@ impl BaseRepository<BalanceWithCustomer> for BalanceRepository {
 
     async fn update(
         &mut self,
-        model: BalanceWithCustomer,
+        model: BalanceCreateOrUpdate,
     ) -> Result<BalanceWithCustomer, BaseRepositoryErr> {
         let conn = get_database_connection().await;
 

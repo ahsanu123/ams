@@ -11,7 +11,8 @@ use std::sync::LazyLock;
 use tokio::sync::Mutex;
 
 use crate::controllers::{
-    customer_controller::CustomerController, retrieve_data_controller::RetrieveDataController,
+    balance_controller::BalanceController, customer_controller::CustomerController,
+    retrieve_data_controller::RetrieveDataController,
 };
 
 pub mod balance_controller;
@@ -26,3 +27,6 @@ pub static RETRIEVE_DATA_CONTROLLER: LazyLock<Mutex<RetrieveDataController>> =
 
 pub static CUSTOMER_CONTROLLER: LazyLock<Mutex<CustomerController>> =
     LazyLock::new(|| Mutex::new(CustomerController));
+
+pub static BALANCE_CONTROLLER: LazyLock<Mutex<BalanceController>> =
+    LazyLock::new(|| Mutex::new(BalanceController));

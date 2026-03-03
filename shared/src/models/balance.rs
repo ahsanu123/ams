@@ -1,10 +1,11 @@
 use crate::models::{customer::Customer, to_active_model_trait::ToActiveModel};
-use chrono::NaiveDateTime;
+use chrono::{Local, NaiveDateTime};
 use sea_orm::ActiveValue::{NotSet, Set};
 use serde::{Deserialize, Serialize};
 use ts_rs::TS;
+use utoipa::ToSchema;
 
-#[derive(Copy, Debug, Serialize, Deserialize, Clone, TS)]
+#[derive(Copy, PartialEq, Eq, Debug, Serialize, Deserialize, Clone, TS, ToSchema)]
 #[ts(export)]
 #[ts(type = "number")]
 pub enum TransactionType {
@@ -33,12 +34,73 @@ impl From<TransactionType> for i64 {
     }
 }
 
+#[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone, TS, ToSchema)]
+#[ts(export)]
+pub struct BalanceCreateOrUpdateWithoutChangedValue {
+    pub balance_id: i64,
+    pub customer_id: i64,
+    pub value: i64,
+    #[ts(type = "Date")]
+    pub date: NaiveDateTime,
+    pub transaction_type: TransactionType,
+}
+
+#[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone, TS, ToSchema)]
+#[ts(export)]
+pub struct BalanceCreateOrUpdate {
+    pub balance_id: i64,
+    pub customer_id: i64,
+    pub value: i64,
+    pub changed_value: i64,
+    #[ts(type = "Date")]
+    pub date: NaiveDateTime,
+    pub transaction_type: TransactionType,
+}
+
+impl BalanceCreateOrUpdateWithoutChangedValue {
+    pub fn with_changed_value(&mut self, changed_value: i64) -> BalanceCreateOrUpdate {
+        BalanceCreateOrUpdate {
+            balance_id: self.balance_id,
+            customer_id: self.customer_id,
+            value: self.value,
+            changed_value,
+            date: self.date,
+            transaction_type: self.transaction_type,
+        }
+    }
+}
+
+impl ToActiveModel<ams_entity::balance::ActiveModel> for BalanceCreateOrUpdate {
+    fn to_active_without_id(&self) -> ams_entity::balance::ActiveModel {
+        ams_entity::balance::ActiveModel {
+            balance_id: NotSet,
+            customer_id: Set(self.customer_id),
+            value: Set(self.value),
+            date: Set(Local::now().naive_local()),
+            transaction_type: Set(self.transaction_type.into()),
+            changed_value: Set(self.changed_value),
+        }
+    }
+
+    fn to_active_with_id(&self) -> ams_entity::balance::ActiveModel {
+        ams_entity::balance::ActiveModel {
+            balance_id: Set(self.balance_id),
+            customer_id: Set(self.customer_id),
+            value: Set(self.value),
+            date: Set(self.date),
+            transaction_type: Set(self.transaction_type.into()),
+            changed_value: Set(self.changed_value),
+        }
+    }
+}
+
 #[derive(Debug, Serialize, Deserialize, Clone, TS)]
 #[ts(export)]
 pub struct BalanceWithCustomer {
     pub balance_id: i64,
     pub customer_id: i64,
     pub value: i64,
+    pub changed_value: i64,
     #[ts(type = "Date")]
     pub date: NaiveDateTime,
     pub transaction_type: TransactionType,
@@ -51,6 +113,7 @@ impl BalanceWithCustomer {
             balance_id: model.balance_id,
             customer_id: model.customer_id,
             value: model.value,
+            changed_value: model.changed_value,
             date: model.date,
             transaction_type: model.transaction_type.into(),
 
@@ -67,6 +130,7 @@ impl ToActiveModel<ams_entity::balance::ActiveModel> for BalanceWithCustomer {
             value: Set(self.value),
             date: Set(self.date),
             transaction_type: Set(self.transaction_type.into()),
+            changed_value: Set(self.changed_value),
         }
     }
 
@@ -77,6 +141,7 @@ impl ToActiveModel<ams_entity::balance::ActiveModel> for BalanceWithCustomer {
             value: Set(self.value),
             date: Set(self.date),
             transaction_type: Set(self.transaction_type.into()),
+            changed_value: Set(self.changed_value),
         }
     }
 }

@@ -23,6 +23,7 @@ impl MigrationTrait for Migration {
                     .col(big_pk_auto("balance_id"))
                     .col(big_integer("customer_id"))
                     .col(big_integer("value"))
+                    .col(big_integer("changed_value"))
                     .col(date_time("date").not_null())
                     .col(integer("transaction_type")) // map this to enum
                     .foreign_key(customer_id_fk)

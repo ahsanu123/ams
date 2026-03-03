@@ -13,6 +13,7 @@ pub struct Model {
     pub balance_id: i64,
     pub customer_id: i64,
     pub value: i64,
+    pub changed_value: i64,
     pub date: DateTime,
     pub transaction_type: i64,
 }

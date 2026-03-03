@@ -1,4 +1,5 @@
 use crate::controllers::{
+    balance_controller::BalanceServiceExtensionTrait,
     customer_management_controller::CustomerManagementServiceExtensionTrait,
     modified_security_schemes, retrieve_data_controller::RetrieveDataServiceExtensionTrait,
 };
@@ -40,6 +41,7 @@ pub async fn start_server() -> std::io::Result<()> {
             .into_app()
             .register_retrieve_data_controller()
             .register_customer_controller()
+            .register_balance_controller()
             // register all endpoint here to be able to accessed
             // .register_customer_endpoints()
             // .register_dregs_price_endpoints()
