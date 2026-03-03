@@ -1,16 +1,16 @@
 use crate::controllers::{
-    ApiDoc, customer_management_controller::CustomerManagementServiceExtensionTrait,
-    retrieve_data_controller::RetrieveDataServiceExtensionTrait,
+    customer_management_controller::CustomerManagementServiceExtensionTrait,
+    modified_security_schemes, retrieve_data_controller::RetrieveDataServiceExtensionTrait,
 };
 use actix_cors::Cors;
 use actix_files::Files;
 use actix_web::{App, HttpServer, middleware::Logger};
 use ams_shared::helper::ENV_VAR;
-use utoipa::OpenApi;
 use utoipa_actix_web::AppExt;
 use utoipa_swagger_ui::{Config, SwaggerUi};
 
 pub mod controllers;
+pub mod extractors;
 
 pub fn start_server_blocking() -> std::io::Result<()> {
     actix_web::rt::System::new().block_on(async { start_server().await })
@@ -31,7 +31,7 @@ pub async fn start_server() -> std::io::Result<()> {
             .wrap(cors)
             .wrap(Logger::new("%a %{User-Agent}i"))
             .into_utoipa_app()
-            .openapi(ApiDoc::openapi())
+            .openapi(modified_security_schemes())
             .openapi_service(|api| {
                 SwaggerUi::new("/swagger-ui/{_:.*}")
                     .url("/api/openapi.json", api)

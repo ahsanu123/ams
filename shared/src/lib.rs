@@ -21,6 +21,7 @@ use crate::helper::environment_variable::EnvironmentVariable;
 pub mod helper;
 pub mod models;
 pub mod page_models;
+pub use utilities::passkey_calculator;
 
 const CONN_STRING_PATH: &str = "sqlite_connection_string";
 const STATIC_FILE_PATH: &str = "static_file_path";

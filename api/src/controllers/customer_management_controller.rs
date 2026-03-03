@@ -15,6 +15,8 @@ use ams_shared::{
     models::customer::CustomerUpdate,
 };
 
+use crate::extractors::calculated_passkey_extractor::PassKey;
+
 static TAG_NAME: &str = "Customer Management Controller";
 
 pub trait CustomerManagementServiceExtensionTrait {
@@ -47,7 +49,7 @@ where
     ),
 )]
 #[post("/customer/create/{customer_name}")]
-pub async fn create(customer_name: Path<String>) -> impl Responder {
+pub async fn create(_passkey: PassKey, customer_name: Path<String>) -> impl Responder {
     let result = CUSTOMER_CONTROLLER
         .lock()
         .await
@@ -74,7 +76,7 @@ pub async fn create(customer_name: Path<String>) -> impl Responder {
     )
 )]
 #[post("/customer/update")]
-pub async fn update(request: Json<CustomerUpdate>) -> impl Responder {
+pub async fn update(_passkey: PassKey, request: Json<CustomerUpdate>) -> impl Responder {
     let result = CUSTOMER_CONTROLLER.lock().await.update(request.0).await;
 
     match result {
@@ -94,7 +96,7 @@ pub async fn update(request: Json<CustomerUpdate>) -> impl Responder {
     params(CustomerGetAllProp)
 )]
 #[get("/customer/get_all")]
-pub async fn get_all(query: Query<CustomerGetAllProp>) -> impl Responder {
+pub async fn get_all(_passkey: PassKey, query: Query<CustomerGetAllProp>) -> impl Responder {
     let result = CUSTOMER_CONTROLLER.lock().await.get_all(query.0).await;
 
     match result {
@@ -116,7 +118,7 @@ pub async fn get_all(query: Query<CustomerGetAllProp>) -> impl Responder {
     )
 )]
 #[get("/customer/{customer_id}")]
-pub async fn get_by_id(customer_id: Path<i64>) -> impl Responder {
+pub async fn get_by_id(_passkey: PassKey, customer_id: Path<i64>) -> impl Responder {
     let result = CUSTOMER_CONTROLLER
         .lock()
         .await
@@ -142,7 +144,7 @@ pub async fn get_by_id(customer_id: Path<i64>) -> impl Responder {
     )
 )]
 #[delete("/customer/{customer_id}")]
-pub async fn delete(customer_id: Path<i64>) -> impl Responder {
+pub async fn delete(_passkey: PassKey, customer_id: Path<i64>) -> impl Responder {
     let result = CUSTOMER_CONTROLLER.lock().await.delete(*customer_id).await;
 
     match result {

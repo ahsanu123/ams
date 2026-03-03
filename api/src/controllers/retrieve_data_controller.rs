@@ -16,6 +16,8 @@ use ams_shared::{
     },
 };
 
+use crate::extractors::calculated_passkey_extractor::PassKey;
+
 static TAG_NAME: &str = "Retrieve Data Controller";
 
 pub trait RetrieveDataServiceExtensionTrait {
@@ -49,7 +51,7 @@ where
     )
 )]
 #[post("/retrieve-data/create")]
-pub async fn create(request: Json<RetrieveDataCreate>) -> impl Responder {
+pub async fn create(_passkey: PassKey, request: Json<RetrieveDataCreate>) -> impl Responder {
     let result = RETRIEVE_DATA_CONTROLLER
         .lock()
         .await
@@ -76,7 +78,10 @@ pub async fn create(request: Json<RetrieveDataCreate>) -> impl Responder {
     )
 )]
 #[post("/retrieve-data/create-with-date")]
-pub async fn create_with_date(request: Json<RetrieveDataCreateWithDate>) -> impl Responder {
+pub async fn create_with_date(
+    _passkey: PassKey,
+    request: Json<RetrieveDataCreateWithDate>,
+) -> impl Responder {
     let result = RETRIEVE_DATA_CONTROLLER
         .lock()
         .await
@@ -103,7 +108,10 @@ pub async fn create_with_date(request: Json<RetrieveDataCreateWithDate>) -> impl
     )
 )]
 #[post("/retrieve-data/update")]
-pub async fn update(request: Json<RetrieveDataCreateOrUpdate>) -> impl Responder {
+pub async fn update(
+    _passkey: PassKey,
+    request: Json<RetrieveDataCreateOrUpdate>,
+) -> impl Responder {
     let result = RETRIEVE_DATA_CONTROLLER
         .lock()
         .await
@@ -127,7 +135,7 @@ pub async fn update(request: Json<RetrieveDataCreateOrUpdate>) -> impl Responder
     params(RetrieveDataGetAllProps)
 )]
 #[get("/retrieve-data/get-all")]
-pub async fn get_all(request: Query<RetrieveDataGetAllProps>) -> impl Responder {
+pub async fn get_all(_passkey: PassKey, request: Query<RetrieveDataGetAllProps>) -> impl Responder {
     let result = RETRIEVE_DATA_CONTROLLER
         .lock()
         .await
@@ -153,7 +161,7 @@ pub async fn get_all(request: Query<RetrieveDataGetAllProps>) -> impl Responder 
     ),
 )]
 #[delete("/retrieve-data/delete/{retrieve_data_id}")]
-pub async fn delete(retrieve_data_id: Path<i64>) -> impl Responder {
+pub async fn delete(_passkey: PassKey, retrieve_data_id: Path<i64>) -> impl Responder {
     let result = RETRIEVE_DATA_CONTROLLER
         .lock()
         .await

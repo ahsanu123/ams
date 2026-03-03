@@ -8,7 +8,14 @@
 pub mod customer_management_controller;
 pub mod retrieve_data_controller;
 
-use utoipa::OpenApi;
+use utoipa::{
+    OpenApi,
+    openapi::{
+        SecurityRequirement,
+        security::{ApiKey, ApiKeyValue, SecurityScheme},
+    },
+};
+// use utoipa::openapi::OpenApi;
 
 // register all endpoint here to be shown in swagger-ui
 #[derive(OpenApi)]
@@ -80,7 +87,36 @@ use utoipa::OpenApi;
         // crate::endpoints::make_payment_page_endpoint::payment_page_make_payment
     ),
     components(
-        schemas()
+        schemas(),
+    ),
+    security(
+        ("passkey_auth" = [])
     )
 )]
 pub struct ApiDoc;
+
+pub fn modified_security_schemes() -> utoipa::openapi::OpenApi {
+    let mut doc = ApiDoc::openapi();
+    let components = doc.components.get_or_insert(Default::default());
+
+    components.security_schemes.insert(
+        "passkey_auth".to_string(),
+        SecurityScheme::ApiKey(ApiKey::Header(ApiKeyValue::new("passkey"))),
+    );
+
+    components.security_schemes.insert(
+        "dev_auth".to_string(),
+        SecurityScheme::ApiKey(ApiKey::Header(ApiKeyValue::new("dev"))),
+    );
+
+    let requirements: Vec<SecurityRequirement> = [
+        // NOTE: not sure what "global" mean
+        // SecurityRequirement::new("passkey_auth", Vec::<String>::new()),
+        SecurityRequirement::new("dev_auth", Vec::<String>::new()),
+    ]
+    .to_vec();
+
+    doc.security = Some(requirements);
+
+    doc
+}
