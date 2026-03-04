@@ -36,7 +36,18 @@ const GET_BILLING_INFO_BY_DATE: &str = include_str!("./get_billing_info_by_date.
 pub async fn query(
     start_date: NaiveDateTime,
     end_date: NaiveDateTime,
-) -> Result<Vec<(RetrieveData, Customer, Price)>, DbErr> {
+) -> Result<
+    Vec<(
+        RetrieveData,
+        Customer,
+        Price,
+        f64,
+        i64,
+        NaiveDateTime,
+        NaiveDateTime,
+    )>,
+    DbErr,
+> {
     let conn = get_database_connection().await;
 
     let stmt = Statement::from_sql_and_values(
@@ -47,7 +58,15 @@ pub async fn query(
 
     let query_results = GetQueryResult::find_by_statement(stmt).all(conn).await?;
 
-    let rd_cs_pr: Vec<(RetrieveData, Customer, Price)> = query_results
+    let rd_cs_pr: Vec<(
+        RetrieveData,
+        Customer,
+        Price,
+        f64,
+        i64,
+        NaiveDateTime,
+        NaiveDateTime,
+    )> = query_results
         .iter()
         .map(|qr| {
             let retrieve_data = RetrieveData {
@@ -72,7 +91,15 @@ pub async fn query(
                 value: qr.value,
             };
 
-            (retrieve_data, customer, price)
+            (
+                retrieve_data,
+                customer,
+                price,
+                qr.bill,
+                qr.total_amount,
+                qr.from,
+                qr.to,
+            )
         })
         .collect();
 

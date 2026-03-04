@@ -6,6 +6,7 @@
 // pub mod user_management_enpoint;
 
 pub mod balance_controller;
+pub mod billing_controller;
 pub mod customer_management_controller;
 pub mod retrieve_data_controller;
 
@@ -49,6 +50,9 @@ use utoipa::{
         crate::controllers::balance_controller::get_latest_by_customer_id,
         crate::controllers::balance_controller::add_balance,
         crate::controllers::balance_controller::get_all,
+
+        // billing controller
+        crate::controllers::billing_controller::get_all,
         // crate::endpoints::customer_endpoints::add_money,
         // crate::endpoints::customer_endpoints::get_all_user_money_history,
         // crate::endpoints::customer_endpoints::delete_customer,

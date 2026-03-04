@@ -1,3 +1,5 @@
+use std::collections::HashMap;
+
 use crate::{
     models::{
         billing::{
@@ -5,13 +7,20 @@ use crate::{
             billing_with_retrieve_data::BillingWithRetrieveData,
         },
         customer::Customer,
+        price::Price,
+        retrieve_data::{
+            RetrieveData, retrieve_data_with_customer_and_price::RetrieveDataWithCustomerAndPrice,
+        },
     },
     repositories::{
         base_repository_trait::{BaseRepositoryErr, BaseRepositoryWithCRUType},
         database_connection::get_database_connection,
         generic_crud_repository::GenericCrudRepository,
     },
-    sqls::billing::{create_billing, get_by_billing_id, get_by_customer_id, update_by_billing},
+    sqls::billing::{
+        create_billing, get_billing_info_by_date, get_by_billing_id, get_by_customer_id,
+        update_by_billing,
+    },
 };
 use ams_entity::billing_retrieve_data as billing_retrieve_data_db;
 use ams_entity::prelude::Billing as BillingDb;
@@ -19,7 +28,8 @@ use ams_entity::prelude::Customer as CustomerDb;
 use ams_entity::prelude::Price as PriceDb;
 use ams_entity::prelude::RetrieveData as RetrieveDataDb;
 use ams_entity::retrieve_data as retrieve_data_db;
-use chrono::NaiveDateTime;
+use chrono::{NaiveDate, NaiveDateTime};
+use itertools::Itertools;
 use sea_orm::{
     ColumnTrait, EntityTrait, ExprTrait, JoinType, QueryFilter, QuerySelect, RelationTrait,
     prelude::Expr,
@@ -64,7 +74,72 @@ impl BillingRepository {
         &mut self,
         year: i32,
     ) -> Result<Vec<BillingInfo>, BillingRepositoryErr> {
-        todo!()
+        let start_year = NaiveDate::from_ymd_opt(year, 1, 1)
+            .ok_or(BillingRepositoryErr::FailToGetInfoByYear)?
+            .and_hms_opt(1, 0, 0)
+            .ok_or(BillingRepositoryErr::FailToGetInfoByYear)?;
+
+        let end_year = NaiveDate::from_ymd_opt(year + 1, 1, 1)
+            .ok_or(BillingRepositoryErr::FailToGetInfoByYear)?
+            .and_hms_opt(1, 0, 0)
+            .ok_or(BillingRepositoryErr::FailToGetInfoByYear)?;
+
+        let infos = get_billing_info_by_date::query(start_year, end_year)
+            .await
+            .map_err(|_| BillingRepositoryErr::FailToGetInfoByYear)?;
+
+        // retrieve_data,
+        // customer,
+        // price,
+        // qr.bill,
+        // qr.total_amount,
+        // qr.from,
+        // qr.to,
+        let grouped_billing_infos: HashMap<
+            i64,
+            Vec<(
+                RetrieveData,
+                Customer,
+                Price,
+                f64,
+                i64,
+                NaiveDateTime,
+                NaiveDateTime,
+            )>,
+        > = infos
+            .into_iter()
+            .into_grouping_map_by(|info| info.1.customer_id)
+            .collect();
+
+        let mut billing_infos: Vec<BillingInfo> = Vec::<BillingInfo>::new();
+
+        for (_, grouped) in grouped_billing_infos {
+            if grouped.is_empty() {
+                continue;
+            }
+
+            let info = grouped
+                .first()
+                .ok_or(BillingRepositoryErr::FailToGetInfoByYear)?;
+            let retrieves_data_with_customer: Vec<RetrieveDataWithCustomerAndPrice> = grouped
+                .iter()
+                .map(|info| {
+                    info.0
+                        .clone()
+                        .with_customer_and_price(info.2.clone(), info.1.clone())
+                })
+                .collect();
+
+            billing_infos.push(BillingInfo {
+                from: info.5,
+                to: info.6,
+                retrieve_data: retrieves_data_with_customer.clone(),
+                bill: info.3,
+                amount: info.4,
+            });
+        }
+
+        Ok(billing_infos)
     }
 
     pub async fn get_info_by_customer_id_and_year(

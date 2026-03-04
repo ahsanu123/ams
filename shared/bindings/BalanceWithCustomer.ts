@@ -2,4 +2,4 @@
 import type { Customer } from "./Customer";
 import type { TransactionType } from "./TransactionType";
 
-export type BalanceWithCustomer = { balance_id: number, customer_id: number, value: number, date: Date, transaction_type: TransactionType, customer: Customer, };
+export type BalanceWithCustomer = { balance_id: number, customer_id: number, value: number, changed_value: number, date: Date, transaction_type: TransactionType, customer: Customer, };

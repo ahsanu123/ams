@@ -1,6 +1,6 @@
 use crate::{
     models::{
-        balance::{BalanceCreateOrUpdate, BalanceWithCustomer},
+        balance::{self, BalanceCreateOrUpdate, BalanceWithCustomer},
         customer::Customer,
         to_active_model_trait::ToActiveModel,
     },
@@ -14,6 +14,7 @@ use crate::{
 use ams_entity::balance as balance_db;
 use ams_entity::prelude::Balance as BalanceDb;
 use ams_entity::prelude::Customer as CustomerDb;
+use chrono::{Datelike, NaiveDate, NaiveDateTime};
 use sea_orm::{
     ActiveModelTrait, ColumnTrait, EntityTrait, ModelTrait, Order, QueryFilter, QueryOrder,
     TransactionTrait,
@@ -21,6 +22,7 @@ use sea_orm::{
 
 pub enum BalanceRepositoryErr {
     FailToGetByCustomerId,
+    FailToGetByCustomerIdAndYear,
     FailToUpdateMany,
 }
 
@@ -68,6 +70,116 @@ impl BalanceRepository {
         for bm in balance_models {
             let customer: Customer =
                 bm.1.ok_or(BalanceRepositoryErr::FailToGetByCustomerId)?
+                    .into();
+            let balance = BalanceWithCustomer::with_customer(bm.0, customer);
+
+            balances.push(balance);
+        }
+
+        Ok(balances)
+    }
+
+    pub async fn get_by_year(
+        &mut self,
+        year: i32,
+    ) -> Result<Vec<BalanceWithCustomer>, BalanceRepositoryErr> {
+        let conn = get_database_connection().await;
+
+        let start_year = NaiveDate::from_ymd_opt(year, 1, 1)
+            .ok_or(BalanceRepositoryErr::FailToGetByCustomerIdAndYear)?;
+
+        let end_year = start_year
+            .with_year(year + 1)
+            .ok_or(BalanceRepositoryErr::FailToGetByCustomerIdAndYear)?;
+
+        let balance_models = BalanceDb::find()
+            .filter(balance_db::Column::Date.between(start_year, end_year))
+            .find_also_related(CustomerDb)
+            .order_by(balance_db::Column::Date, Order::Desc)
+            .all(conn)
+            .await
+            .map_err(|_| BalanceRepositoryErr::FailToGetByCustomerIdAndYear)?;
+
+        let mut balances = Vec::<BalanceWithCustomer>::new();
+
+        for bm in balance_models {
+            let customer: Customer =
+                bm.1.ok_or(BalanceRepositoryErr::FailToGetByCustomerIdAndYear)?
+                    .into();
+            let balance = BalanceWithCustomer::with_customer(bm.0, customer);
+
+            balances.push(balance);
+        }
+
+        Ok(balances)
+    }
+
+    pub async fn get_by_customer_id_and_year(
+        &mut self,
+        customer_id: i64,
+        year: i32,
+    ) -> Result<Vec<BalanceWithCustomer>, BalanceRepositoryErr> {
+        let conn = get_database_connection().await;
+
+        let start_year = NaiveDate::from_ymd_opt(year, 1, 1)
+            .ok_or(BalanceRepositoryErr::FailToGetByCustomerIdAndYear)?;
+
+        let end_year = start_year
+            .with_year(year + 1)
+            .ok_or(BalanceRepositoryErr::FailToGetByCustomerIdAndYear)?;
+
+        let balance_models = BalanceDb::find()
+            .filter(balance_db::Column::CustomerId.eq(customer_id))
+            .filter(balance_db::Column::Date.between(start_year, end_year))
+            .find_also_related(CustomerDb)
+            .order_by(balance_db::Column::Date, Order::Desc)
+            .all(conn)
+            .await
+            .map_err(|_| BalanceRepositoryErr::FailToGetByCustomerIdAndYear)?;
+
+        let mut balances = Vec::<BalanceWithCustomer>::new();
+
+        for bm in balance_models {
+            let customer: Customer =
+                bm.1.ok_or(BalanceRepositoryErr::FailToGetByCustomerIdAndYear)?
+                    .into();
+            let balance = BalanceWithCustomer::with_customer(bm.0, customer);
+
+            balances.push(balance);
+        }
+
+        Ok(balances)
+    }
+
+    pub async fn get_by_customer_id_and_month_range(
+        &mut self,
+        customer_id: i64,
+        start_month: NaiveDateTime,
+        end_month: NaiveDateTime,
+        year: i32,
+    ) -> Result<Vec<BalanceWithCustomer>, BalanceRepositoryErr> {
+        let conn = get_database_connection().await;
+
+        let from = NaiveDate::from_ymd_opt(year, start_month.month(), 1)
+            .ok_or(BalanceRepositoryErr::FailToGetByCustomerIdAndYear)?;
+
+        let to = NaiveDate::from_ymd_opt(year, end_month.month(), 1)
+            .ok_or(BalanceRepositoryErr::FailToGetByCustomerIdAndYear)?;
+
+        let balance_models = BalanceDb::find()
+            .filter(balance_db::Column::CustomerId.eq(customer_id))
+            .filter(balance_db::Column::Date.between(from, to))
+            .find_also_related(CustomerDb)
+            .order_by(balance_db::Column::Date, Order::Desc)
+            .all(conn)
+            .await
+            .map_err(|_| BalanceRepositoryErr::FailToGetByCustomerIdAndYear)?;
+
+        let mut balances = Vec::<BalanceWithCustomer>::new();
+
+        for bm in balance_models {
+            let customer: Customer =
+                bm.1.ok_or(BalanceRepositoryErr::FailToGetByCustomerIdAndYear)?
                     .into();
             let balance = BalanceWithCustomer::with_customer(bm.0, customer);
 

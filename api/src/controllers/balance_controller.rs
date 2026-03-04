@@ -9,16 +9,10 @@ use actix_web::{
 use crate::extractors::calculated_passkey_extractor::PassKey;
 use ams_shared::{
     controllers::{
-        BALANCE_CONTROLLER, RETRIEVE_DATA_CONTROLLER,
+        BALANCE_CONTROLLER,
         balance_controller::{BalanceControllerTrait, BalanceGetAllProps},
-        retrieve_data_controller::{RetrieveDataControllerTrait, RetrieveDataGetAllProps},
     },
-    models::{
-        balance::{BalanceCreateOrUpdate, BalanceCreateOrUpdateWithoutChangedValue},
-        retrieve_data::retrieve_data_create_or_update::{
-            RetrieveDataCreate, RetrieveDataCreateOrUpdate, RetrieveDataCreateWithDate,
-        },
-    },
+    models::balance::BalanceCreateOrUpdateWithoutChangedValue,
 };
 
 static TAG_NAME: &str = "Balance Controller";

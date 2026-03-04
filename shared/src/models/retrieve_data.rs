@@ -1,7 +1,11 @@
 pub mod retrieve_data_create_or_update;
 pub mod retrieve_data_with_customer_and_price;
 
-use crate::models::to_active_model_trait::ToActiveModel;
+use crate::models::{
+    customer::Customer, price::Price,
+    retrieve_data::retrieve_data_with_customer_and_price::RetrieveDataWithCustomerAndPrice,
+    to_active_model_trait::ToActiveModel,
+};
 use chrono::NaiveDateTime;
 use sea_orm::ActiveValue::{NotSet, Set};
 use serde::{Deserialize, Serialize};
@@ -17,6 +21,25 @@ pub struct RetrieveData {
     #[ts(type = "Date")]
     pub date: NaiveDateTime,
     pub is_paid: bool,
+}
+
+impl RetrieveData {
+    pub fn with_customer_and_price(
+        self,
+        price: Price,
+        customer: Customer,
+    ) -> RetrieveDataWithCustomerAndPrice {
+        RetrieveDataWithCustomerAndPrice {
+            price,
+            customer,
+            retrieve_data_id: self.retrieve_data_id,
+            customer_id: self.customer_id,
+            price_id: self.price_id,
+            amount: self.amount,
+            date: self.date,
+            is_paid: self.is_paid,
+        }
+    }
 }
 
 impl ToActiveModel<ams_entity::retrieve_data::ActiveModel> for RetrieveData {

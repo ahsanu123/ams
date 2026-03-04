@@ -21,7 +21,14 @@ use crate::{
 #[into_params(parameter_in = Query)]
 pub struct BalanceGetAllProps {
     customer_id: Option<i64>,
+
     year: Option<i32>,
+
+    #[ts(type = "Date")]
+    start_date: Option<NaiveDateTime>,
+
+    #[ts(type = "Date")]
+    end_date: Option<NaiveDateTime>,
 }
 
 #[derive(Serialize)]
@@ -29,6 +36,7 @@ pub enum BalanceControllerErr {
     FailToGetLatest,
     FailToGetAll,
     FailToCreate,
+    UnknownQuery,
 }
 
 pub trait BalanceControllerTrait {
@@ -103,6 +111,8 @@ impl BalanceControllerTrait for BalanceController {
         match props {
             BalanceGetAllProps {
                 customer_id: Some(customer_id),
+                start_date: None,
+                end_date: None,
                 year: None,
             } => BALANCE_REPO
                 .lock()
@@ -111,7 +121,43 @@ impl BalanceControllerTrait for BalanceController {
                 .await
                 .map_err(|_| BalanceControllerErr::FailToGetAll),
 
-            _ => todo!(),
+            BalanceGetAllProps {
+                customer_id: Some(customer_id),
+                start_date: None,
+                end_date: None,
+                year: Some(year),
+            } => BALANCE_REPO
+                .lock()
+                .await
+                .get_by_customer_id_and_year(customer_id, year)
+                .await
+                .map_err(|_| BalanceControllerErr::FailToGetAll),
+
+            BalanceGetAllProps {
+                customer_id: Some(customer_id),
+                start_date: Some(start_month),
+                end_date: Some(end_month),
+                year: Some(year),
+            } => BALANCE_REPO
+                .lock()
+                .await
+                .get_by_customer_id_and_month_range(customer_id, start_month, end_month, year)
+                .await
+                .map_err(|_| BalanceControllerErr::FailToGetAll),
+
+            BalanceGetAllProps {
+                customer_id: None,
+                start_date: None,
+                end_date: None,
+                year: Some(year),
+            } => BALANCE_REPO
+                .lock()
+                .await
+                .get_by_year(year)
+                .await
+                .map_err(|_| BalanceControllerErr::FailToGetAll),
+
+            _ => Err(BalanceControllerErr::UnknownQuery),
         }
     }
 

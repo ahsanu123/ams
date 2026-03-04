@@ -32,5 +32,5 @@ WHERE
 GROUP BY
     rd.customer_id
 ORDER BY
-    rd.date
+    rd.date DESC
 
