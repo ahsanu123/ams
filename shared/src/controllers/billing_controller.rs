@@ -26,7 +26,10 @@ pub trait BillingControllerTrait {
         props: BillingGetAllProps,
     ) -> impl Future<Output = Result<Vec<BillingInfo>, BillingControllerErr>>;
 
-    fn create(&mut self, data: BillingCreate) -> impl Future<Output = i64>;
+    fn create(
+        &mut self,
+        data: BillingCreate,
+    ) -> impl Future<Output = Result<i64, BillingControllerErr>>;
 
     fn update(&mut self, data: BillingUpdate) -> impl Future<Output = Billing>;
 }
@@ -34,6 +37,7 @@ pub trait BillingControllerTrait {
 #[derive(Serialize)]
 pub enum BillingControllerErr {
     FailToGetByYear,
+    FailToCreate,
 }
 
 pub struct BillingController;
@@ -55,17 +59,17 @@ impl BillingControllerTrait for BillingController {
                 .get_info_by_year(year)
                 .await
                 .map_err(|_| BillingControllerErr::FailToGetByYear),
-            _ => todo!(),
+            _ => Err(BillingControllerErr::FailToCreate),
         }
     }
 
-    async fn create(&mut self, data: BillingCreate) -> i64 {
+    async fn create(&mut self, data: BillingCreate) -> Result<i64, BillingControllerErr> {
         BILLING_REPO
             .lock()
             .await
             .create(data)
             .await
-            .unwrap_or_default()
+            .map_err(|_| BillingControllerErr::FailToCreate)
     }
 
     async fn update(&mut self, data: BillingUpdate) -> Billing {

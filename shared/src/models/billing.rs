@@ -1,15 +1,12 @@
 use crate::{
-    models::{
-        customer::Customer,
-        retrieve_data::retrieve_data_with_customer_and_price::RetrieveDataWithCustomerAndPrice,
-        to_active_model_trait::ToActiveModel,
-    },
+    models::{customer::Customer, to_active_model_trait::ToActiveModel},
     sqls::billing::{self, query_result::GetQueryResult},
 };
-use chrono::NaiveDateTime;
+use chrono::{Local, NaiveDateTime};
 use sea_orm::ActiveValue::*;
 use serde::{Deserialize, Serialize};
 use ts_rs::TS;
+use utoipa::{IntoParams, ToSchema};
 
 pub mod billing_info;
 pub mod billing_with_retrieve_data;
@@ -32,12 +29,10 @@ pub struct Billing {
     pub amount: i64,
 }
 
-#[derive(Debug, Default, Serialize, Deserialize, Clone, TS)]
+#[derive(Debug, Serialize, Deserialize, ToSchema, IntoParams, Clone, TS)]
 #[ts(export)]
 pub struct BillingCreate {
     pub customer_id: i64,
-    #[ts(type = "Date")]
-    pub date: NaiveDateTime,
 
     #[ts(type = "Date")]
     pub from: NaiveDateTime,
@@ -91,7 +86,7 @@ impl From<BillingCreate> for billing::query_result::CreateQueryResult {
     fn from(value: BillingCreate) -> Self {
         Self {
             customer_id: value.customer_id,
-            date: value.date,
+            date: Local::now().naive_local(),
             from: value.from,
             to: value.to,
         }

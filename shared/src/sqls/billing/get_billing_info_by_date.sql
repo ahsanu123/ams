@@ -19,16 +19,16 @@ SELECT
     SUM(rd.amount * p.value) AS bill,
     SUM(rd.amount) AS total_amount,
 
-   MIN(date(rd.date)) as "from",
-   MAX(date(rd.date)) as "to"
+   MIN(datetime(rd.date)) as "from",
+   MAX(datetime(rd.date)) as "to"
 
 FROM retrieve_data rd
 JOIN customer c on c.customer_id = rd.customer_id
 JOIN price p on p.price_id = rd.price_id
 WHERE
-    rd.date >= date(?) -- start_year
+    rd.date >= datetime(?) -- start_year
     AND
-    rd.date < date(?) -- end_year
+    rd.date < datetime(?) -- end_year
 GROUP BY
     rd.customer_id
 ORDER BY

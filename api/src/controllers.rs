@@ -32,6 +32,12 @@ use utoipa::{
         )
     ),
     paths(
+        // billing controller
+        crate::controllers::billing_controller::get_all,
+        // balance controller
+        crate::controllers::balance_controller::get_latest_by_customer_id,
+        crate::controllers::balance_controller::add_balance,
+        crate::controllers::balance_controller::get_all,
         // retrieve data controller
         crate::controllers::retrieve_data_controller::create,
         crate::controllers::retrieve_data_controller::create_with_date,
@@ -45,14 +51,6 @@ use utoipa::{
         crate::controllers::customer_management_controller::get_all,
         crate::controllers::customer_management_controller::get_by_id,
         crate::controllers::customer_management_controller::delete,
-
-        // balance controller
-        crate::controllers::balance_controller::get_latest_by_customer_id,
-        crate::controllers::balance_controller::add_balance,
-        crate::controllers::balance_controller::get_all,
-
-        // billing controller
-        crate::controllers::billing_controller::get_all,
         // crate::endpoints::customer_endpoints::add_money,
         // crate::endpoints::customer_endpoints::get_all_user_money_history,
         // crate::endpoints::customer_endpoints::delete_customer,

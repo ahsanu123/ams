@@ -47,6 +47,7 @@ where
     params(
         ("customer_name" = String, Path, description = "new customer name"),
     ),
+    operation_id = "3e4aa62c-edc9-4daf-afe6-5cc474aa0c85"
 )]
 #[post("/customer/create/{customer_name}")]
 pub async fn create(_passkey: PassKey, customer_name: Path<String>) -> impl Responder {
@@ -93,7 +94,8 @@ pub async fn update(_passkey: PassKey, request: Json<CustomerUpdate>) -> impl Re
         (status = 200, description = "success"),
         (status = NOT_FOUND, description = "not found")
     ),
-    params(CustomerGetAllProp)
+    params(CustomerGetAllProp),
+    operation_id = "d8593e59-9510-4b46-9c90-a806e758ee65", 
 )]
 #[get("/customer/get_all")]
 pub async fn get_all(_passkey: PassKey, query: Query<CustomerGetAllProp>) -> impl Responder {
@@ -115,7 +117,8 @@ pub async fn get_all(_passkey: PassKey, query: Query<CustomerGetAllProp>) -> imp
     ),
     params(
         ("customer_id" = i64, Path, description = "customer id to search")
-    )
+    ),
+    operation_id = "86e30f57-ea92-467a-8153-4eb96edf7af1"
 )]
 #[get("/customer/{customer_id}")]
 pub async fn get_by_id(_passkey: PassKey, customer_id: Path<i64>) -> impl Responder {
@@ -141,7 +144,8 @@ pub async fn get_by_id(_passkey: PassKey, customer_id: Path<i64>) -> impl Respon
     ),
     params(
         ("customer_id" = i64, Path, description = "customer id to delete")
-    )
+    ),
+    operation_id = "de754a3b-7a38-4dcf-b65b-111cae57ba19"
 )]
 #[delete("/customer/{customer_id}")]
 pub async fn delete(_passkey: PassKey, customer_id: Path<i64>) -> impl Responder {

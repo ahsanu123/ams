@@ -38,10 +38,12 @@ where
         (status = 200, description = "success"),
         (status = NOT_FOUND, description = "not found")
     ),
-    params(BillingGetAllProps )
+    params(BillingGetAllProps),
+    operation_id = "billing_get_all", 
+    operation_id = "0095973a-7ad3-4111-a2f4-19ac7a91fabb", 
 )]
 #[get("/billing-info/get-all")]
-pub async fn get_all(_passkey: PassKey, request: Json<BillingGetAllProps>) -> impl Responder {
+pub async fn get_all(_passkey: PassKey, request: Query<BillingGetAllProps>) -> impl Responder {
     let result = BILLING_CONTROLLER.lock().await.get_all(request.0).await;
 
     match result {

@@ -84,17 +84,12 @@ impl BillingRepository {
             .and_hms_opt(1, 0, 0)
             .ok_or(BillingRepositoryErr::FailToGetInfoByYear)?;
 
+        println!("{:?}, {:?}", start_year, end_year);
+
         let infos = get_billing_info_by_date::query(start_year, end_year)
             .await
             .map_err(|_| BillingRepositoryErr::FailToGetInfoByYear)?;
 
-        // retrieve_data,
-        // customer,
-        // price,
-        // qr.bill,
-        // qr.total_amount,
-        // qr.from,
-        // qr.to,
         let grouped_billing_infos: HashMap<
             i64,
             Vec<(
@@ -121,12 +116,14 @@ impl BillingRepository {
             let info = grouped
                 .first()
                 .ok_or(BillingRepositoryErr::FailToGetInfoByYear)?;
+
             let retrieves_data_with_customer: Vec<RetrieveDataWithCustomerAndPrice> = grouped
                 .iter()
-                .map(|info| {
-                    info.0
+                .map(|group| {
+                    group
+                        .0
                         .clone()
-                        .with_customer_and_price(info.2.clone(), info.1.clone())
+                        .with_customer_and_price(group.2.clone(), group.1.clone())
                 })
                 .collect();
 
@@ -319,7 +316,6 @@ mod test_billing_repository {
         init_environment_variable();
         let billing = BillingCreate {
             customer_id: 3,
-            date: Local::now().naive_local(),
             from: NaiveDate::from_ymd_opt(2026, 2, 19)
                 .unwrap()
                 .and_hms_opt(1, 0, 0)
