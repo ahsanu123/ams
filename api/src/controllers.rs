@@ -1,10 +1,3 @@
-// pub mod customer_endpoints;
-// pub mod dreg_price_endpoint;
-// pub mod make_payment_page_endpoint;
-// pub mod payment_history_endpoint;
-// pub mod taking_record_endpoint;
-// pub mod user_management_enpoint;
-
 pub mod balance_controller;
 pub mod billing_controller;
 pub mod customer_management_controller;
@@ -17,7 +10,6 @@ use utoipa::{
         security::{ApiKey, ApiKeyValue, SecurityScheme},
     },
 };
-// use utoipa::openapi::OpenApi;
 
 // register all endpoint here to be shown in swagger-ui
 #[derive(OpenApi)]
@@ -34,6 +26,7 @@ use utoipa::{
     paths(
         // billing controller
         crate::controllers::billing_controller::get_all,
+        crate::controllers::billing_controller::create,
         // balance controller
         crate::controllers::balance_controller::get_latest_by_customer_id,
         crate::controllers::balance_controller::add_balance,
@@ -97,13 +90,10 @@ use utoipa::{
     components(
         schemas(),
     ),
-    security(
-        ("passkey_auth" = [])
-    )
 )]
 pub struct ApiDoc;
 
-pub fn modified_security_schemes() -> utoipa::openapi::OpenApi {
+pub fn modified_docs_with_security_schemes() -> utoipa::openapi::OpenApi {
     let mut doc = ApiDoc::openapi();
     let components = doc.components.get_or_insert(Default::default());
 
@@ -118,7 +108,6 @@ pub fn modified_security_schemes() -> utoipa::openapi::OpenApi {
     );
 
     let requirements: Vec<SecurityRequirement> = [
-        // NOTE: not sure what "global" mean
         // SecurityRequirement::new("passkey_auth", Vec::<String>::new()),
         SecurityRequirement::new("dev_auth", Vec::<String>::new()),
     ]

@@ -31,6 +31,7 @@ pub struct Billing {
 
 #[derive(Debug, Serialize, Deserialize, ToSchema, IntoParams, Clone, TS)]
 #[ts(export)]
+#[into_params(parameter_in = Query)]
 pub struct BillingCreate {
     pub customer_id: i64,
 

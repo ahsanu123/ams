@@ -34,31 +34,31 @@ impl From<TransactionType> for i64 {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone, TS, ToSchema)]
+#[derive(Debug, PartialEq, Serialize, Deserialize, Clone, TS, ToSchema)]
 #[ts(export)]
 pub struct BalanceCreateOrUpdateWithoutChangedValue {
     pub balance_id: i64,
     pub customer_id: i64,
-    pub value: i64,
+    pub value: f32,
     #[ts(type = "Date")]
     pub date: NaiveDateTime,
     pub transaction_type: TransactionType,
 }
 
-#[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone, TS, ToSchema)]
+#[derive(Debug, PartialEq, Serialize, Deserialize, Clone, TS, ToSchema)]
 #[ts(export)]
 pub struct BalanceCreateOrUpdate {
     pub balance_id: i64,
     pub customer_id: i64,
-    pub value: i64,
-    pub changed_value: i64,
+    pub value: f32,
+    pub changed_value: f32,
     #[ts(type = "Date")]
     pub date: NaiveDateTime,
     pub transaction_type: TransactionType,
 }
 
 impl BalanceCreateOrUpdateWithoutChangedValue {
-    pub fn with_changed_value(&mut self, changed_value: i64) -> BalanceCreateOrUpdate {
+    pub fn with_changed_value(&mut self, changed_value: f32) -> BalanceCreateOrUpdate {
         BalanceCreateOrUpdate {
             balance_id: self.balance_id,
             customer_id: self.customer_id,
@@ -99,8 +99,8 @@ impl ToActiveModel<ams_entity::balance::ActiveModel> for BalanceCreateOrUpdate {
 pub struct BalanceWithCustomer {
     pub balance_id: i64,
     pub customer_id: i64,
-    pub value: i64,
-    pub changed_value: i64,
+    pub value: f32,
+    pub changed_value: f32,
     #[ts(type = "Date")]
     pub date: NaiveDateTime,
     pub transaction_type: TransactionType,

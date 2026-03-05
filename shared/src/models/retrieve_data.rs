@@ -26,8 +26,8 @@ pub struct RetrieveData {
 impl RetrieveData {
     pub fn with_customer_and_price(
         self,
-        price: Price,
         customer: Customer,
+        price: Price,
     ) -> RetrieveDataWithCustomerAndPrice {
         RetrieveDataWithCustomerAndPrice {
             price,
@@ -62,6 +62,31 @@ impl ToActiveModel<ams_entity::retrieve_data::ActiveModel> for RetrieveData {
             amount: Set(self.amount),
             date: Set(self.date),
             is_paid: Set(self.is_paid),
+        }
+    }
+}
+impl From<ams_entity::retrieve_data::Model> for RetrieveData {
+    fn from(value: ams_entity::retrieve_data::Model) -> Self {
+        Self {
+            retrieve_data_id: value.retrieve_data_id,
+            customer_id: value.customer_id,
+            price_id: value.price_id,
+            amount: value.amount,
+            date: value.date,
+            is_paid: value.is_paid,
+        }
+    }
+}
+
+impl From<&ams_entity::retrieve_data::Model> for RetrieveData {
+    fn from(value: &ams_entity::retrieve_data::Model) -> Self {
+        Self {
+            retrieve_data_id: value.retrieve_data_id,
+            customer_id: value.customer_id,
+            price_id: value.price_id,
+            amount: value.amount,
+            date: value.date,
+            is_paid: value.is_paid,
         }
     }
 }

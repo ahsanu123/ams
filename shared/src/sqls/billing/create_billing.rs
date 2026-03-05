@@ -19,9 +19,10 @@ pub async fn query(value: CreateQueryResult) -> Result<u64, DbErr> {
             value.date.into(),
             value.from.into(),
             value.to.into(),
+            value.from.into(),
+            value.to.into(),
         ],
     );
     let result = conn.execute_raw(stmt).await?;
     Ok(result.rows_affected())
 }
-

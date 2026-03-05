@@ -9,22 +9,18 @@ SELECT
     p.price_id,
     p.date AS price_date,
     p.value,
-
-    SUM(rd.amount * p.value) AS bill,
-    SUM(rd.amount) AS total_amount,
-
     SUM(
         CASE WHEN rd.is_paid = true
-            THEN rd.amount * p.value
+             THEN rd.amount * p.value
         ELSE
-            0.0
+             0.0
         END
     ) AS paid_bill,
     SUM(
         CASE WHEN rd.is_paid = true
              THEN rd.amount
         ELSE
-            0
+             0
         END
     ) AS paid_total_amount,
 
@@ -32,7 +28,7 @@ SELECT
         CASE WHEN rd.is_paid = false
              THEN rd.amount * p.value
         ELSE
-            0.0
+             0.0
         END
     ) AS unpaid_bill,
     SUM(
@@ -43,6 +39,9 @@ SELECT
         END
     ) AS unpaid_total_amount,
 
+    SUM(rd.amount * p.value) AS bill,
+    SUM(rd.amount) AS total_amount,
+
     MIN(datetime(rd.date)) as "from",
     MAX(datetime(rd.date)) as "to"
 
@@ -50,9 +49,11 @@ FROM retrieve_data rd
 JOIN customer c on c.customer_id = rd.customer_id
 JOIN price p on p.price_id = rd.price_id
 WHERE
-    rd.date >= datetime(?) -- start_year
+    rd.date >= date(?) -- start_year
     AND
-    rd.date < datetime(?) -- end_year
+    rd.date < date(?) -- end_year
+    AND 
+    rd.customer_id = ? -- customer_id
 GROUP BY
     rd.customer_id
 ORDER BY

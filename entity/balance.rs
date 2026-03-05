@@ -4,7 +4,7 @@ use sea_orm::entity::prelude::*;
 use serde::{Deserialize, Serialize};
 
 #[derive(
-    Clone, Debug, PartialEq, Eq, DeriveEntityModel, Serialize, Deserialize, utoipa :: ToSchema,
+    Clone, Debug, PartialEq, DeriveEntityModel, Serialize, Deserialize, utoipa :: ToSchema,
 )]
 #[sea_orm(table_name = "balance")]
 #[serde(rename_all = "camelCase")]
@@ -12,8 +12,10 @@ pub struct Model {
     #[sea_orm(primary_key)]
     pub balance_id: i64,
     pub customer_id: i64,
-    pub value: i64,
-    pub changed_value: i64,
+    #[sea_orm(column_type = "Float")]
+    pub value: f32,
+    #[sea_orm(column_type = "Float")]
+    pub changed_value: f32,
     pub date: DateTime,
     pub transaction_type: i64,
 }

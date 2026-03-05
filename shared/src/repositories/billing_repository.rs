@@ -18,7 +18,8 @@ use crate::{
         generic_crud_repository::GenericCrudRepository,
     },
     sqls::billing::{
-        create_billing, get_billing_info_by_date, get_by_billing_id, get_by_customer_id,
+        create_billing, get_billing_info_by_customer_id, get_billing_info_by_date,
+        get_billing_info_by_date_and_customer_id, get_by_billing_id, get_by_customer_id,
         update_by_billing,
     },
 };
@@ -28,7 +29,7 @@ use ams_entity::prelude::Customer as CustomerDb;
 use ams_entity::prelude::Price as PriceDb;
 use ams_entity::prelude::RetrieveData as RetrieveDataDb;
 use ams_entity::retrieve_data as retrieve_data_db;
-use chrono::{NaiveDate, NaiveDateTime};
+use chrono::{Datelike, NaiveDate, NaiveDateTime};
 use itertools::Itertools;
 use sea_orm::{
     ColumnTrait, EntityTrait, ExprTrait, JoinType, QueryFilter, QuerySelect, RelationTrait,
@@ -52,22 +53,33 @@ impl BillingRepository {
         &mut self,
         month: NaiveDateTime,
     ) -> Result<Vec<BillingInfo>, BillingRepositoryErr> {
-        let conn = get_database_connection().await;
+        let start_month = NaiveDate::from_ymd_opt(month.year(), month.month(), 1)
+            .ok_or(BillingRepositoryErr::FailToGetInfoByMonth)?
+            .and_hms_opt(1, 0, 0)
+            .ok_or(BillingRepositoryErr::FailToGetInfoByMonth)?;
 
-        let query = RetrieveDataDb::find()
-            .select_only()
-            .find_also_related(CustomerDb)
-            .find_also_related(PriceDb)
-            .expr_as(
-                Expr::col(retrieve_data_db::Column::Amount).sum(),
-                "total_amount",
-            )
-            .join(JoinType::Join, retrieve_data_db::Relation::Customer.def())
-            .join(JoinType::Join, retrieve_data_db::Relation::Price.def())
-            // .filter(retrieve_data_db::Column::Date.between(a, b))
-            .all(conn)
-            .await;
-        todo!()
+        let end_month = NaiveDate::from_ymd_opt(month.year(), month.month() + 1, 1)
+            .ok_or(BillingRepositoryErr::FailToGetInfoByMonth)?
+            .and_hms_opt(1, 0, 0)
+            .ok_or(BillingRepositoryErr::FailToGetInfoByMonth)?;
+
+        let billing_infos = get_billing_info_by_date::query(start_month, end_month)
+            .await
+            .map_err(|_| BillingRepositoryErr::FailToGetInfoByMonth)?;
+
+        Ok(billing_infos)
+    }
+
+    pub async fn get_info_by_date_range(
+        &mut self,
+        from: NaiveDateTime,
+        to: NaiveDateTime,
+    ) -> Result<Vec<BillingInfo>, BillingRepositoryErr> {
+        let billing_infos = get_billing_info_by_date::query(from, to)
+            .await
+            .map_err(|_| BillingRepositoryErr::FailToGetInfoByMonth)?;
+
+        Ok(billing_infos)
     }
 
     pub async fn get_info_by_year(
@@ -84,57 +96,9 @@ impl BillingRepository {
             .and_hms_opt(1, 0, 0)
             .ok_or(BillingRepositoryErr::FailToGetInfoByYear)?;
 
-        println!("{:?}, {:?}", start_year, end_year);
-
-        let infos = get_billing_info_by_date::query(start_year, end_year)
+        let billing_infos = get_billing_info_by_date::query(start_year, end_year)
             .await
             .map_err(|_| BillingRepositoryErr::FailToGetInfoByYear)?;
-
-        let grouped_billing_infos: HashMap<
-            i64,
-            Vec<(
-                RetrieveData,
-                Customer,
-                Price,
-                f64,
-                i64,
-                NaiveDateTime,
-                NaiveDateTime,
-            )>,
-        > = infos
-            .into_iter()
-            .into_grouping_map_by(|info| info.1.customer_id)
-            .collect();
-
-        let mut billing_infos: Vec<BillingInfo> = Vec::<BillingInfo>::new();
-
-        for (_, grouped) in grouped_billing_infos {
-            if grouped.is_empty() {
-                continue;
-            }
-
-            let info = grouped
-                .first()
-                .ok_or(BillingRepositoryErr::FailToGetInfoByYear)?;
-
-            let retrieves_data_with_customer: Vec<RetrieveDataWithCustomerAndPrice> = grouped
-                .iter()
-                .map(|group| {
-                    group
-                        .0
-                        .clone()
-                        .with_customer_and_price(group.2.clone(), group.1.clone())
-                })
-                .collect();
-
-            billing_infos.push(BillingInfo {
-                from: info.5,
-                to: info.6,
-                retrieve_data: retrieves_data_with_customer.clone(),
-                bill: info.3,
-                amount: info.4,
-            });
-        }
 
         Ok(billing_infos)
     }
@@ -144,7 +108,22 @@ impl BillingRepository {
         customer_id: i64,
         year: i32,
     ) -> Result<Vec<BillingInfo>, BillingRepositoryErr> {
-        todo!()
+        let start_year = NaiveDate::from_ymd_opt(year, 1, 1)
+            .ok_or(BillingRepositoryErr::FailToGetInfoByYear)?
+            .and_hms_opt(1, 0, 0)
+            .ok_or(BillingRepositoryErr::FailToGetInfoByYear)?;
+
+        let end_year = NaiveDate::from_ymd_opt(year + 1, 1, 1)
+            .ok_or(BillingRepositoryErr::FailToGetInfoByYear)?
+            .and_hms_opt(1, 0, 0)
+            .ok_or(BillingRepositoryErr::FailToGetInfoByYear)?;
+
+        let billing_infos =
+            get_billing_info_by_date_and_customer_id::query(start_year, end_year, customer_id)
+                .await
+                .map_err(|_| BillingRepositoryErr::FailToGetInfoByYear)?;
+
+        Ok(billing_infos)
     }
 
     pub async fn get_info_by_customer_id_and_month(
@@ -152,14 +131,40 @@ impl BillingRepository {
         customer_id: i64,
         month: NaiveDateTime,
     ) -> Result<Vec<BillingInfo>, BillingRepositoryErr> {
-        todo!()
+        let end_month = month
+            .with_month(month.month() + 1)
+            .ok_or(BillingRepositoryErr::FailToGetInfoByCustomerIdAndMonth)?;
+
+        let billing_infos =
+            get_billing_info_by_date_and_customer_id::query(month, end_month, customer_id)
+                .await
+                .map_err(|_| BillingRepositoryErr::FailToGetInfoByYear)?;
+
+        Ok(billing_infos)
+    }
+
+    pub async fn get_info_by_customer_id_and_date_range(
+        &mut self,
+        customer_id: i64,
+        from: NaiveDateTime,
+        to: NaiveDateTime,
+    ) -> Result<Vec<BillingInfo>, BillingRepositoryErr> {
+        let billing_infos = get_billing_info_by_date_and_customer_id::query(from, to, customer_id)
+            .await
+            .map_err(|_| BillingRepositoryErr::FailToGetInfoByYear)?;
+
+        Ok(billing_infos)
     }
 
     pub async fn get_info_by_customer_id(
         &mut self,
         customer_id: i64,
     ) -> Result<Vec<BillingInfo>, BillingRepositoryErr> {
-        todo!()
+        let billing_infos = get_billing_info_by_customer_id::query(customer_id)
+            .await
+            .map_err(|_| BillingRepositoryErr::FailToGetByCustomerId)?;
+
+        Ok(billing_infos)
     }
 
     pub async fn get_by_customer_id(
@@ -183,50 +188,6 @@ impl BillingRepository {
             .collect::<Vec<Billing>>();
 
         Ok(results)
-    }
-
-    pub async fn get_with_retrieve_data_by_customer_id(
-        &mut self,
-        customer_id: i64,
-    ) -> Result<Vec<BillingWithRetrieveData>, BillingRepositoryErr> {
-        let conn = get_database_connection().await;
-
-        let customer: Customer = CustomerDb
-            .get_by_id(customer_id)
-            .await
-            .map_err(|_| BillingRepositoryErr::FailToGetByCustomerId)?
-            .ok_or(BillingRepositoryErr::FailToGetByCustomerId)?
-            .into();
-
-        let results = get_by_customer_id::query(customer_id)
-            .await
-            .map_err(|_| BillingRepositoryErr::FailToGetByCustomerId)?;
-
-        let billing_ids = results
-            .iter()
-            .map(|data| data.billing_id)
-            .collect::<Vec<i64>>();
-
-        let rds = RetrieveDataDb::find()
-            .join(
-                JoinType::Join,
-                retrieve_data_db::Relation::BillingRetrieveData.def(),
-            )
-            .filter(billing_retrieve_data_db::Column::BillingId.is_in(billing_ids))
-            .all(conn)
-            .await
-            .map_err(|_| BillingRepositoryErr::FailToGetByCustomerId)?;
-        // .iter()
-        // .map(|data| data.into())
-        // .collect::<Vec<RetrieveData>>();
-
-        let results = results
-            .iter()
-            .map(|result| Billing::from_query_result(*result, customer.clone()))
-            .collect::<Vec<Billing>>();
-
-        // Ok(results)
-        todo!()
     }
 }
 

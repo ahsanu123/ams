@@ -2,27 +2,27 @@ use core::hash::Hash;
 use itertools::Itertools;
 use std::collections::HashMap;
 
-pub fn assign_to_parent_arr<CT, PT, CK, CKSFN, PKSFN, AFN>(
+pub fn assign_to_parent_arr<CT, PT, CK, CKSFN, PKSFN, AFN, RT>(
     childs: Vec<CT>,
     parents: Vec<PT>,
     child_key_selector_fn: CKSFN,
     mut parent_key_selector_fn: PKSFN,
     assigner_fn: AFN,
-) -> Vec<PT>
+) -> Vec<RT>
 where
     CK: Hash + Eq,
     PT: Clone,
     CT: Clone,
     CKSFN: FnMut(&CT) -> CK,
     PKSFN: FnMut(&PT) -> CK,
-    AFN: Fn(PT, Vec<CT>) -> PT,
+    AFN: Fn(PT, Vec<CT>) -> RT,
 {
     let childs_map: HashMap<CK, Vec<CT>> = childs
         .into_iter()
         .into_grouping_map_by(child_key_selector_fn)
         .collect();
 
-    let mut results = Vec::<PT>::new();
+    let mut results = Vec::<RT>::new();
 
     for p in &parents {
         let parent_key = parent_key_selector_fn(&p);

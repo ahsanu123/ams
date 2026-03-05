@@ -2,7 +2,8 @@ use crate::controllers::{
     balance_controller::BalanceServiceExtensionTrait,
     billing_controller::BillingServiceExtensionTrait,
     customer_management_controller::CustomerManagementServiceExtensionTrait,
-    modified_security_schemes, retrieve_data_controller::RetrieveDataServiceExtensionTrait,
+    modified_docs_with_security_schemes,
+    retrieve_data_controller::RetrieveDataServiceExtensionTrait,
 };
 use actix_cors::Cors;
 use actix_files::Files;
@@ -33,7 +34,7 @@ pub async fn start_server() -> std::io::Result<()> {
             .wrap(cors)
             .wrap(Logger::new("%a %{User-Agent}i"))
             .into_utoipa_app()
-            .openapi(modified_security_schemes())
+            .openapi(modified_docs_with_security_schemes())
             .openapi_service(|api| {
                 SwaggerUi::new("/swagger-ui/{_:.*}")
                     .url("/api/openapi.json", api)

@@ -1,4 +1,5 @@
 pub mod create_billing;
+pub mod get_billing_info_by_customer_id;
 pub mod get_billing_info_by_date;
 pub mod get_billing_info_by_date_and_customer_id;
 pub mod get_by_billing_id;

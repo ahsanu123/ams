@@ -92,7 +92,7 @@ impl BalanceControllerTrait for BalanceController {
                     .map_err(|_| BalanceControllerErr::FailToCreate)
             }
             Err(_) => {
-                let final_data = data.with_changed_value(0);
+                let final_data = data.with_changed_value(0.0);
 
                 BALANCE_REPO
                     .lock()

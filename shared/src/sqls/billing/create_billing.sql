@@ -16,6 +16,17 @@ CROSS JOIN inserted
 WHERE
     datetime(date) >= datetime(?) -- from
     AND
+    datetime(date) <= datetime(?) -- to
+    AND
+    is_paid = false;
+
+UPDATE retrieve_data
+SET is_paid = true
+WHERE
+    is_paid = false
+    AND
+    datetime(date) >= datetime(?) -- from
+    AND
     datetime(date) <= datetime(?); -- to
 
 COMMIT;

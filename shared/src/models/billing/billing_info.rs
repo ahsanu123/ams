@@ -20,7 +20,13 @@ pub struct BillingInfo {
 
     pub retrieve_data: Vec<RetrieveDataWithCustomerAndPrice>,
 
-    pub bill: f64,
+    pub paid_bill: f32,
+    pub paid_total_amount: i64,
+
+    pub unpaid_bill: f32,
+    pub unpaid_total_amount: i64,
+
+    pub bill: f32,
     pub amount: i64,
 }
 
