@@ -19,7 +19,7 @@ use crate::{
         generic_crud_repository::GenericCrudRepository,
     },
     sqls::billing::{
-        create_billing, get_billing_by_billing_id, get_billing_by_customer_id,
+        create_billing, get_all_billing, get_billing_by_billing_id, get_billing_by_customer_id,
         get_billing_info_by_customer_id, get_billing_info_by_date,
         get_billing_info_by_date_and_customer_id, get_by_billing_id, get_by_customer_id,
         update_by_billing,
@@ -208,6 +208,16 @@ impl BillingRepository {
         customer_id: i64,
     ) -> Result<Vec<BillingInfoWithBalance>, BillingRepositoryErr> {
         let billing_info_with_balance = get_billing_by_customer_id::query(customer_id)
+            .await
+            .map_err(|_| BillingRepositoryErr::FailToGetByCustomerId)?;
+
+        Ok(billing_info_with_balance)
+    }
+
+    pub async fn get_all_billing(
+        &mut self,
+    ) -> Result<Vec<BillingInfoWithBalance>, BillingRepositoryErr> {
+        let billing_info_with_balance = get_all_billing::query()
             .await
             .map_err(|_| BillingRepositoryErr::FailToGetByCustomerId)?;
 

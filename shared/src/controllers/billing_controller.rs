@@ -48,7 +48,7 @@ pub trait BillingControllerTrait {
 
     fn get_all_billing(
         &mut self,
-    ) -> impl Future<Output = Result<Vec<BillingInfo>, BillingControllerErr>>;
+    ) -> impl Future<Output = Result<Vec<BillingInfoWithBalance>, BillingControllerErr>>;
 
     fn get_by(
         &mut self,
@@ -68,6 +68,7 @@ pub enum BillingControllerErr {
     FailToGetByYear,
     FailToGetByBillingId,
     FailToCreate,
+    FailToGetAll,
     UnknownQuery,
 }
 
@@ -257,8 +258,15 @@ impl BillingControllerTrait for BillingController {
             .unwrap_or_default()
     }
 
-    async fn get_all_billing(&mut self) -> Result<Vec<BillingInfo>, BillingControllerErr> {
-        todo!()
+    async fn get_all_billing(
+        &mut self,
+    ) -> Result<Vec<BillingInfoWithBalance>, BillingControllerErr> {
+        BILLING_REPO
+            .lock()
+            .await
+            .get_all_billing()
+            .await
+            .map_err(|_| BillingControllerErr::FailToGetAll)
     }
 
     async fn get_by(

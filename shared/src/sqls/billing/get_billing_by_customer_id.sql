@@ -46,3 +46,4 @@ JOIN balance blc ON blc.balance_id = bb.balance_id
 JOIN customer c ON b.customer_id = c.customer_id
 WHERE
     c.customer_id= ? -- customer_id
+GROUP BY b.billing_id;

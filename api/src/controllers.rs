@@ -25,9 +25,10 @@ use utoipa::{
     ),
     paths(
         // billing controller
-        crate::controllers::billing_controller::get_all,
         crate::controllers::billing_controller::create,
         crate::controllers::billing_controller::get_by,
+        crate::controllers::billing_controller::get_all_billing,
+        crate::controllers::billing_controller::get_all_billing_info,
         // balance controller
         crate::controllers::balance_controller::get_latest_by_customer_id,
         crate::controllers::balance_controller::add_balance,
@@ -49,7 +50,7 @@ use utoipa::{
         // crate::endpoints::customer_endpoints::get_all_user_money_history,
         // crate::endpoints::customer_endpoints::delete_customer,
         //
-        // // taking_record_endpoint
+        // taking_record_endpoint
         // crate::endpoints::taking_record_endpoint::add_new_taking_record,
         // crate::endpoints::taking_record_endpoint::add_new_taking_record_by_date,
         // crate::endpoints::taking_record_endpoint::get_taking_record_by_user_id,
@@ -62,21 +63,21 @@ use utoipa::{
         // crate::endpoints::taking_record_endpoint::get_taking_record_by_day,
         // crate::endpoints::taking_record_endpoint::get_taking_record_by_user_id_and_month_range,
         //
-        // // dreg_price_endpoint
+        // dreg_price_endpoint
         // crate::endpoints::dreg_price_endpoint::get_latest_dreg_price,
         // crate::endpoints::dreg_price_endpoint::update_dreg_price,
         // crate::endpoints::dreg_price_endpoint::get_all_dreg_price,
         //
-        // // payment_history_endpoint
+        // payment_history_endpoint
         // crate::endpoints::payment_history_endpoint::get_payment_record_by_user_id,
         // crate::endpoints::payment_history_endpoint::get_month_summary,
         // crate::endpoints::payment_history_endpoint::get_payment_record_by_user_id_and_month,
         //
-        // //// crate::endpoints::payment_history_endpoint::get_month_summary_by_user_id,
+        // crate::endpoints::payment_history_endpoint::get_month_summary_by_user_id,
         // crate::endpoints::payment_history_endpoint::update_payment_record,
         // crate::endpoints::payment_history_endpoint::update_bulk_payment_record,
         //
-        // // user_management_enpoint 
+        // user_management_enpoint 
         // crate::endpoints::user_management_enpoint::create_new_user,
         // crate::endpoints::user_management_enpoint::insert_new_user,
         // crate::endpoints::user_management_enpoint::get_all_user,
@@ -84,7 +85,7 @@ use utoipa::{
         // crate::endpoints::user_management_enpoint::upsert_user,
         // crate::endpoints::user_management_enpoint::get_by_user_id,
         //
-        // // make_payment_page_endpoint 
+        // make_payment_page_endpoint 
         // crate::endpoints::make_payment_page_endpoint::payment_page_get_page_model,
         // crate::endpoints::make_payment_page_endpoint::payment_page_make_payment
     ),

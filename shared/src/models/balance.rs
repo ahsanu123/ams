@@ -57,6 +57,19 @@ pub struct BalanceCreateOrUpdate {
     pub transaction_type: TransactionType,
 }
 
+impl BalanceCreateOrUpdate {
+    pub fn empty_balance(customer_id: i64) -> Self {
+        Self {
+            balance_id: 0,
+            customer_id,
+            value: 0.0,
+            changed_value: 0.0,
+            date: Local::now().naive_local(),
+            transaction_type: TransactionType::TopUp,
+        }
+    }
+}
+
 impl BalanceCreateOrUpdateWithoutChangedValue {
     pub fn with_changed_value(&mut self, changed_value: f32) -> BalanceCreateOrUpdate {
         BalanceCreateOrUpdate {

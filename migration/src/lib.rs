@@ -19,6 +19,7 @@ impl MigratorTrait for MainMigrator {
             Box::new(migration1::m202602171414_create_data_record_table::Migration),
             Box::new(migration1::m202602171438_seeding_customer::Migration),
             Box::new(migration1::m202602171440_seeding_price::Migration),
+            Box::new(migration1::m202603071440_seeding_balance::Migration),
         ]
     }
 }

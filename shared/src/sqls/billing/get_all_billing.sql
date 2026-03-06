@@ -44,5 +44,4 @@ JOIN price p ON rd.price_id = p.price_id
 JOIN balance_billing bb ON bb.billing_id = b.billing_id
 JOIN balance blc ON blc.balance_id = bb.balance_id
 JOIN customer c ON b.customer_id = c.customer_id
-GROUP BY
-    c.customer_id;
+GROUP BY b.billing_id;

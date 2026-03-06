@@ -8,3 +8,5 @@ pub mod m202602171412_create_balance_billing_table;
 pub mod m202602171414_create_data_record_table;
 pub mod m202602171438_seeding_customer;
 pub mod m202602171440_seeding_price;
+pub mod m202603071440_seeding_balance;
+

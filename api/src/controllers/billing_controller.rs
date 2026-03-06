@@ -25,7 +25,10 @@ where
     T: ServiceFactory<ServiceRequest, Config = (), Error = actix_web::Error, InitError = ()>,
 {
     fn register_billing_controller(self) -> Self {
-        self.service(get_all).service(create).service(get_by)
+        self.service(get_all_billing_info)
+            .service(create)
+            .service(get_by)
+            .service(get_all_billing)
     }
 }
 
@@ -41,7 +44,10 @@ where
     operation_id = "0095973a-7ad3-4111-a2f4-19ac7a91fabb", 
 )]
 #[get("/billing-info/get-all")]
-pub async fn get_all(_passkey: PassKey, query: Query<BillingInfoGetAllProps>) -> impl Responder {
+pub async fn get_all_billing_info(
+    _passkey: PassKey,
+    query: Query<BillingInfoGetAllProps>,
+) -> impl Responder {
     let result = BILLING_CONTROLLER
         .lock()
         .await
@@ -92,6 +98,26 @@ pub async fn create(_passkey: PassKey, request: Json<BillingCreate>) -> impl Res
 #[get("/billing/get_by")]
 pub async fn get_by(_passkey: PassKey, query: Query<BillingGetByProps>) -> impl Responder {
     let result = BILLING_CONTROLLER.lock().await.get_by(query.0).await;
+
+    match result {
+        Ok(data) => HttpResponse::Ok().json(data),
+        Err(err) => HttpResponse::BadRequest().json(err),
+    }
+}
+
+#[utoipa::path(
+    get,
+    tag = TAG_NAME,
+    path = "/billing/get-all",
+    responses(
+        (status = 200, description = "success"),
+        (status = NOT_FOUND, description = "not found")
+    ),
+    operation_id = "664f8641-47ac-42b6-a78a-88f72f12b30b", 
+)]
+#[get("/billing/get-all")]
+pub async fn get_all_billing(_passkey: PassKey) -> impl Responder {
+    let result = BILLING_CONTROLLER.lock().await.get_all_billing().await;
 
     match result {
         Ok(data) => HttpResponse::Ok().json(data),

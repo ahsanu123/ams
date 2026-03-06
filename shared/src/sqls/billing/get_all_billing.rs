@@ -1,3 +1,5 @@
+use std::{collections::HashMap, hash::Hash};
+
 use crate::{
     models::{
         balance::{BalanceWithCustomer, BalanceWithCustomerExtensionMethodTrait},
@@ -11,16 +13,19 @@ use crate::{
     repositories::database_connection::get_database_connection,
     shared_fn::assign_to_parrent_arr::assign_to_parent_arr,
 };
-use ams_entity::balance as balance_db;
 use ams_entity::balance_billing as balance_billing_db;
 use ams_entity::billing_retrieve_data as billing_retrieve_data_db;
 use ams_entity::customer as customer_db;
 use ams_entity::prelude::Balance as BalanceDb;
+use ams_entity::prelude::BalanceBilling as BalanceBillingDb;
+use ams_entity::prelude::BillingRetrieveData as BillingRetrieveDataDb;
 use ams_entity::prelude::Customer as CustomerDb;
 use ams_entity::prelude::Price as PriceDb;
 use ams_entity::prelude::RetrieveData as RetrieveDataDb;
 use ams_entity::retrieve_data as retrieve_data_db;
+use ams_entity::{balance as balance_db, price};
 use chrono::NaiveDateTime;
+use itertools::Itertools;
 use sea_orm::{
     ColumnTrait, DatabaseBackend, DbErr, EntityTrait, FromQueryResult, JoinType, Order,
     QueryFilter, QueryOrder, QuerySelect, RelationTrait, Statement,
@@ -45,101 +50,150 @@ pub struct GetQueryResult {
     pub to: NaiveDateTime,
 }
 
-const GET_BILLING_BY_BILLING_ID: &str = include_str!("./get_billing_by_billing_id.sql");
+const GET_ALL_BILLING: &str = include_str!("./get_all_billing.sql");
 
-pub async fn query(billing_id: i64) -> Result<BillingInfoWithBalance, DbErr> {
+pub async fn query() -> Result<Vec<BillingInfoWithBalance>, DbErr> {
     let conn = get_database_connection().await;
 
-    let stmt = Statement::from_sql_and_values(
-        DatabaseBackend::Sqlite,
-        GET_BILLING_BY_BILLING_ID,
-        [billing_id.into()],
-    );
+    let stmt = Statement::from_sql_and_values(DatabaseBackend::Sqlite, GET_ALL_BILLING, []);
 
-    let query_result = GetQueryResult::find_by_statement(stmt)
-        .one(conn)
+    let query_results = GetQueryResult::find_by_statement(stmt).all(conn).await?;
+
+    let billing_ids: Vec<i64> = query_results
+        .iter()
+        .map(|result| result.billing_id)
+        .collect();
+
+    let grouped_brd_models: HashMap<
+        i64,
+        Vec<(
+            billing_retrieve_data_db::Model,
+            Vec<retrieve_data_db::Model>,
+        )>,
+    > = BillingRetrieveDataDb::find()
+        .find_with_related(RetrieveDataDb)
+        .filter(billing_retrieve_data_db::Column::BillingId.is_in(billing_ids.clone()))
+        .all(conn)
         .await?
-        .ok_or(DbErr::Custom("fail to get by billing_id".into()))?;
+        .into_iter()
+        .into_grouping_map_by(|brd| brd.0.billing_id)
+        .collect();
 
-    let customer: Customer = CustomerDb::find()
-        .filter(customer_db::Column::CustomerId.eq(query_result.customer_id))
-        .one(conn)
+    let grouped_bb_models: HashMap<
+        i64,
+        Vec<(balance_billing_db::Model, Option<balance_db::Model>)>,
+    > = BalanceBillingDb::find()
+        .find_also_related(BalanceDb)
+        .filter(balance_billing_db::Column::BillingId.is_in(billing_ids.clone()))
+        .order_by_desc(balance_db::Column::Date)
+        .all(conn)
         .await?
-        .ok_or(DbErr::Custom("fail to get customer".into()))?
-        .into();
+        .into_iter()
+        .into_grouping_map_by(|bb| bb.0.billing_id)
+        .collect();
 
-    let balance: BalanceWithCustomer = BalanceDb::find()
-        .join(JoinType::Join, balance_db::Relation::BalanceBilling.def())
-        .filter(balance_billing_db::Column::BillingId.eq(query_result.billing_id))
-        .one(conn)
+    let customer_ids: Vec<i64> = query_results
+        .iter()
+        .map(|result| result.customer_id)
+        .collect();
+
+    let customers: Vec<Customer> = CustomerDb::find()
+        .filter(customer_db::Column::CustomerId.is_in(customer_ids))
+        .all(conn)
         .await?
-        .ok_or(DbErr::Custom("fail to get balance".into()))?
-        .with_customer(customer);
+        .iter()
+        .map(|model| model.into())
+        .collect();
 
-    let rd_cs_prs = RetrieveDataDb::find()
-        .find_also_related(CustomerDb)
-        .find_also_related(PriceDb)
-        .order_by(retrieve_data_db::Column::Date, Order::Desc)
+    let prices: Vec<Price> = PriceDb::find()
+        .join(
+            JoinType::Join,
+            billing_retrieve_data_db::Relation::RetrieveData.def(),
+        )
         .join(
             JoinType::Join,
             retrieve_data_db::Relation::BillingRetrieveData.def(),
         )
-        .filter(billing_retrieve_data_db::Column::BillingId.eq(query_result.billing_id))
+        .filter(billing_retrieve_data_db::Column::BillingId.is_in(billing_ids))
         .all(conn)
-        .await?;
+        .await?
+        .iter()
+        .map(|model| model.into())
+        .collect();
 
-    let mut retrieve_data_wcp = Vec::<RetrieveDataWithCustomerAndPrice>::new();
+    let mut billing_infos = Vec::<BillingInfoWithBalance>::new();
 
-    for rd_cs_pr in rd_cs_prs {
-        let price: Price = rd_cs_pr
-            .2
-            .ok_or(DbErr::Custom(
-                "cant find related price in retrieve data".into(),
-            ))?
-            .into();
+    for qr in query_results {
+        if let Some(rd_models) = grouped_brd_models.get(&qr.billing_id)
+            && let Some(bb_models) = grouped_bb_models.get(&qr.billing_id)
+        {
+            let rd_wcp_models = rd_models
+                .iter()
+                .flat_map(|(_, retrieve_data_model)| retrieve_data_model)
+                .cloned()
+                .collect::<Vec<retrieve_data_db::Model>>();
 
-        let customer: Customer = rd_cs_pr
-            .1
-            .ok_or(DbErr::Custom(
-                "cant find related price in retrieve data".into(),
-            ))?
-            .into();
-        let rd_w_cs_pr =
-            RetrieveDataWithCustomerAndPrice::with_price_and_customer(rd_cs_pr.0, price, customer);
+            let mut rd_wcps = Vec::<RetrieveDataWithCustomerAndPrice>::new();
 
-        retrieve_data_wcp.push(rd_w_cs_pr);
+            for rd_wcp_m in rd_wcp_models {
+                let price = prices
+                    .iter()
+                    .find(|p| p.price_id == rd_wcp_m.price_id)
+                    .ok_or(DbErr::Custom(
+                        "fail to get price from retrieve data model".into(),
+                    ))?
+                    .clone();
+
+                let customer = customers
+                    .iter()
+                    .find(|c| c.customer_id == rd_wcp_m.customer_id)
+                    .ok_or(DbErr::Custom(
+                        "fail to get customer from retrieve data model".into(),
+                    ))?
+                    .clone();
+
+                rd_wcps.push(RetrieveDataWithCustomerAndPrice {
+                    retrieve_data_id: rd_wcp_m.retrieve_data_id,
+                    customer_id: rd_wcp_m.customer_id,
+                    price_id: rd_wcp_m.price_id,
+                    amount: rd_wcp_m.amount,
+                    date: rd_wcp_m.date,
+                    is_paid: rd_wcp_m.is_paid,
+                    customer,
+                    price,
+                });
+            }
+
+            let balance = bb_models
+                .first()
+                .ok_or(DbErr::Custom("fail to get balance billing".into()))?
+                .1
+                .clone()
+                .ok_or(DbErr::Custom("fail to get balance billing".into()))?;
+
+            let customer = customers
+                .iter()
+                .find(|c| c.customer_id == qr.customer_id)
+                .ok_or(DbErr::Custom("fail to get customer for balance".into()))?
+                .clone();
+
+            let balance = BalanceWithCustomer::with_customer(balance, customer);
+
+            billing_infos.push(BillingInfoWithBalance {
+                from: qr.from,
+                to: qr.to,
+                paid_bill: qr.paid_bill,
+                paid_total_amount: qr.paid_total_amount,
+                unpaid_bill: qr.unpaid_bill,
+                unpaid_total_amount: qr.unpaid_total_amount,
+                bill: qr.bill,
+                amount: qr.amount,
+
+                retrieve_data: rd_wcps,
+                balance,
+            });
+        }
     }
 
-    Ok(BillingInfoWithBalance {
-        from: query_result.from,
-        to: query_result.to,
-        retrieve_data: retrieve_data_wcp,
-        balance,
-        paid_bill: query_result.paid_bill,
-        paid_total_amount: query_result.paid_total_amount,
-        unpaid_bill: query_result.unpaid_bill,
-        unpaid_total_amount: query_result.unpaid_total_amount,
-        bill: query_result.bill,
-        amount: query_result.amount,
-    })
-}
-
-#[cfg(test)]
-mod test_get_billing_by_billing_id {
-    use sea_orm::QueryTrait as _;
-
-    use super::*;
-
-    #[test]
-    fn test_get_billing_by_billing_id_fn() {
-        let retrieves_dat_query = RetrieveDataDb::find()
-            .order_by(retrieve_data_db::Column::Date, Order::Desc)
-            .join(
-                JoinType::Join,
-                retrieve_data_db::Relation::BillingRetrieveData.def(),
-            )
-            .filter(billing_retrieve_data_db::Column::BillingId.eq(1))
-            .build(DatabaseBackend::Sqlite);
-        println!("{}", retrieves_dat_query);
-    }
+    Ok(billing_infos)
 }

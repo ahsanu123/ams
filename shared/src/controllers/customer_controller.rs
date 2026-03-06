@@ -1,6 +1,9 @@
 use crate::{
-    models::customer::{Customer, CustomerUpdate},
-    repositories::{CUSTOMER_REPO, base_repository_trait::BaseRepositoryWithCRUType},
+    models::{
+        balance::BalanceCreateOrUpdate,
+        customer::{Customer, CustomerUpdate},
+    },
+    repositories::{BALANCE_REPO, CUSTOMER_REPO, base_repository_trait::BaseRepositoryWithCRUType},
 };
 use chrono::Local;
 use serde::{Deserialize, Serialize};
@@ -86,7 +89,14 @@ impl CustomerControllerTrait for CustomerController {
             .await
             .map_err(|_| CustomerControllerErr::FailToCreateNewCustomer)?;
 
-        match customer_id {
+        let balance_id = BALANCE_REPO
+            .lock()
+            .await
+            .create(BalanceCreateOrUpdate::empty_balance(customer_id))
+            .await
+            .map_err(|_| CustomerControllerErr::FailToCreateNewCustomer)?;
+
+        match balance_id {
             0 => Err(CustomerControllerErr::FailToCreateNewCustomer),
             customer_id => Ok(customer_id),
         }
