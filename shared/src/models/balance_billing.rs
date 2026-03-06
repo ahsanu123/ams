@@ -1,12 +1,37 @@
 use crate::models::{
-    balance::BalanceWithCustomer, billing::Billing, customer::Customer,
-    to_active_model_trait::ToActiveModel,
+    balance::BalanceWithCustomer, billing::Billing, to_active_model_trait::ToActiveModel,
 };
 use ams_entity::balance::Model as BalanceModel;
 use ams_entity::balance_billing::Model as BalanceBillingModel;
 use sea_orm::ActiveValue::{NotSet, Set};
 use serde::{Deserialize, Serialize};
 use ts_rs::TS;
+
+#[derive(Debug, Serialize, Deserialize, Clone, TS)]
+#[ts(export)]
+pub struct BalanceBillingCreateOrUpdate {
+    pub balance_billing_id: i64,
+    pub balance_id: i64,
+    pub billing_id: i64,
+}
+
+impl ToActiveModel<ams_entity::balance_billing::ActiveModel> for BalanceBillingCreateOrUpdate {
+    fn to_active_without_id(&self) -> ams_entity::balance_billing::ActiveModel {
+        ams_entity::balance_billing::ActiveModel {
+            balance_billing_id: NotSet,
+            balance_id: Set(self.balance_id),
+            billing_id: Set(self.billing_id),
+        }
+    }
+
+    fn to_active_with_id(&self) -> ams_entity::balance_billing::ActiveModel {
+        ams_entity::balance_billing::ActiveModel {
+            balance_billing_id: Set(self.balance_billing_id),
+            balance_id: Set(self.balance_id),
+            billing_id: Set(self.billing_id),
+        }
+    }
+}
 
 #[derive(Debug, Serialize, Deserialize, Clone, TS)]
 #[ts(export)]

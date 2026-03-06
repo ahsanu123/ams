@@ -33,6 +33,17 @@ impl From<ams_entity::price::Model> for Price {
         }
     }
 }
+
+impl From<&ams_entity::price::Model> for Price {
+    fn from(value: &ams_entity::price::Model) -> Self {
+        Self {
+            price_id: value.price_id,
+            date: value.date,
+            value: value.value,
+        }
+    }
+}
+
 impl ToActiveModel<ams_entity::price::ActiveModel> for Price {
     fn to_active_without_id(&self) -> ams_entity::price::ActiveModel {
         ams_entity::price::ActiveModel {

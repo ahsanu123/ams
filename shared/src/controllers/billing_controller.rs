@@ -7,15 +7,21 @@ use crate::{
     controllers::{BALANCE_CONTROLLER, balance_controller::BalanceControllerTrait},
     models::{
         balance::{BalanceCreateOrUpdateWithoutChangedValue, TransactionType},
-        billing::{Billing, BillingCreate, BillingUpdate, billing_info::BillingInfo},
+        balance_billing::BalanceBillingCreateOrUpdate,
+        billing::{
+            Billing, BillingCreate, BillingUpdate,
+            billing_info::{BillingInfo, BillingInfoWithBalance},
+        },
     },
-    repositories::{BALANCE_REPO, BILLING_REPO, base_repository_trait::BaseRepositoryWithCRUType},
+    repositories::{
+        BALANCE_BILLING_REPO, BILLING_REPO, base_repository_trait::BaseRepositoryWithCRUType,
+    },
 };
 
 #[derive(Debug, Serialize, Deserialize, ToSchema, IntoParams, Clone, TS)]
 #[into_params(parameter_in = Query)]
 #[ts(export)]
-pub struct BillingGetAllProps {
+pub struct BillingInfoGetAllProps {
     customer_id: Option<i64>,
     year: Option<i32>,
     month: Option<i32>,
@@ -25,11 +31,29 @@ pub struct BillingGetAllProps {
     #[ts(type = "Date")]
     to: Option<NaiveDateTime>,
 }
+
+#[derive(Debug, Serialize, Deserialize, ToSchema, IntoParams, Clone, TS)]
+#[into_params(parameter_in = Query)]
+#[ts(export)]
+pub struct BillingGetByProps {
+    customer_id: Option<i64>,
+    billing_id: Option<i64>,
+}
+
 pub trait BillingControllerTrait {
-    fn get_all(
+    fn get_all_billing_info(
         &mut self,
-        props: BillingGetAllProps,
+        props: BillingInfoGetAllProps,
     ) -> impl Future<Output = Result<Vec<BillingInfo>, BillingControllerErr>>;
+
+    fn get_all_billing(
+        &mut self,
+    ) -> impl Future<Output = Result<Vec<BillingInfo>, BillingControllerErr>>;
+
+    fn get_by(
+        &mut self,
+        props: BillingGetByProps,
+    ) -> impl Future<Output = Result<Vec<BillingInfoWithBalance>, BillingControllerErr>>;
 
     fn create(
         &mut self,
@@ -42,6 +66,7 @@ pub trait BillingControllerTrait {
 #[derive(Serialize)]
 pub enum BillingControllerErr {
     FailToGetByYear,
+    FailToGetByBillingId,
     FailToCreate,
     UnknownQuery,
 }
@@ -49,12 +74,12 @@ pub enum BillingControllerErr {
 pub struct BillingController;
 
 impl BillingControllerTrait for BillingController {
-    async fn get_all(
+    async fn get_all_billing_info(
         &mut self,
-        props: BillingGetAllProps,
+        props: BillingInfoGetAllProps,
     ) -> Result<Vec<BillingInfo>, BillingControllerErr> {
         match props {
-            BillingGetAllProps {
+            BillingInfoGetAllProps {
                 year: Some(year),
                 customer_id: None,
                 month: None,
@@ -67,7 +92,7 @@ impl BillingControllerTrait for BillingController {
                 .await
                 .map_err(|_| BillingControllerErr::FailToGetByYear),
 
-            BillingGetAllProps {
+            BillingInfoGetAllProps {
                 year: Some(year),
                 customer_id: Some(customer_id),
                 month: None,
@@ -80,7 +105,7 @@ impl BillingControllerTrait for BillingController {
                 .await
                 .map_err(|_| BillingControllerErr::FailToGetByYear),
 
-            BillingGetAllProps {
+            BillingInfoGetAllProps {
                 year: Some(year),
                 customer_id: None,
                 month: Some(month),
@@ -98,7 +123,7 @@ impl BillingControllerTrait for BillingController {
                 .await
                 .map_err(|_| BillingControllerErr::FailToGetByYear),
 
-            BillingGetAllProps {
+            BillingInfoGetAllProps {
                 year: Some(year),
                 customer_id: Some(customer_id),
                 month: Some(month),
@@ -118,7 +143,7 @@ impl BillingControllerTrait for BillingController {
                     .map_err(|_| BillingControllerErr::FailToGetByYear)
             }
 
-            BillingGetAllProps {
+            BillingInfoGetAllProps {
                 year: None,
                 customer_id: Some(customer_id),
                 month: None,
@@ -131,7 +156,7 @@ impl BillingControllerTrait for BillingController {
                 .await
                 .map_err(|_| BillingControllerErr::FailToGetByYear),
 
-            BillingGetAllProps {
+            BillingInfoGetAllProps {
                 year: None,
                 customer_id: None,
                 month: None,
@@ -144,7 +169,7 @@ impl BillingControllerTrait for BillingController {
                 .await
                 .map_err(|_| BillingControllerErr::FailToGetByYear),
 
-            BillingGetAllProps {
+            BillingInfoGetAllProps {
                 year: None,
                 customer_id: Some(customer_id),
                 month: None,
@@ -163,7 +188,7 @@ impl BillingControllerTrait for BillingController {
 
     async fn create(&mut self, data: BillingCreate) -> Result<BillingInfo, BillingControllerErr> {
         let info = self
-            .get_all(BillingGetAllProps {
+            .get_all_billing_info(BillingInfoGetAllProps {
                 customer_id: Some(data.customer_id),
                 year: None,
                 month: None,
@@ -175,7 +200,7 @@ impl BillingControllerTrait for BillingController {
             .ok_or(BillingControllerErr::FailToCreate)?
             .clone();
 
-        BALANCE_CONTROLLER
+        let balance_id = BALANCE_CONTROLLER
             .lock()
             .await
             .add_balance(BalanceCreateOrUpdateWithoutChangedValue {
@@ -188,14 +213,29 @@ impl BillingControllerTrait for BillingController {
             .await
             .map_err(|_| BillingControllerErr::FailToCreate)?;
 
-        BILLING_REPO
+        let billing_id = BILLING_REPO
             .lock()
             .await
             .create(data.clone())
             .await
             .map_err(|_| BillingControllerErr::FailToCreate)?;
 
-        self.get_all(BillingGetAllProps {
+        let balance_billing_id = BALANCE_BILLING_REPO
+            .lock()
+            .await
+            .create(BalanceBillingCreateOrUpdate {
+                balance_billing_id: 0,
+                balance_id,
+                billing_id,
+            })
+            .await
+            .map_err(|_| BillingControllerErr::FailToCreate)?;
+
+        if balance_billing_id == 0 {
+            return Err(BillingControllerErr::FailToCreate);
+        }
+
+        self.get_all_billing_info(BillingInfoGetAllProps {
             customer_id: Some(data.customer_id),
             year: None,
             month: None,
@@ -216,4 +256,65 @@ impl BillingControllerTrait for BillingController {
             .await
             .unwrap_or_default()
     }
+
+    async fn get_all_billing(&mut self) -> Result<Vec<BillingInfo>, BillingControllerErr> {
+        todo!()
+    }
+
+    async fn get_by(
+        &mut self,
+        props: BillingGetByProps,
+    ) -> Result<Vec<BillingInfoWithBalance>, BillingControllerErr> {
+        match props {
+            BillingGetByProps {
+                customer_id: None,
+                billing_id: Some(billing_id),
+            } => {
+                let result = BILLING_REPO
+                    .lock()
+                    .await
+                    .get_by_billing_id(billing_id)
+                    .await
+                    .map_err(|_| BillingControllerErr::FailToGetByBillingId)?;
+
+                Ok([result].to_vec())
+            }
+
+            BillingGetByProps {
+                customer_id: Some(customer_id),
+                billing_id: None,
+            } => BILLING_REPO
+                .lock()
+                .await
+                .get_billing_info_with_balance_by_customer_id(customer_id)
+                .await
+                .map_err(|_| BillingControllerErr::FailToGetByBillingId),
+
+            _ => Err(BillingControllerErr::UnknownQuery),
+        }
+    }
+
+    // async fn get_by_billing_id(
+    //     &mut self,
+    //     billing_id: i64,
+    // ) -> Result<BillingInfoWithBalance, BillingControllerErr> {
+    //     BILLING_REPO
+    //         .lock()
+    //         .await
+    //         .get_by_billing_id(billing_id)
+    //         .await
+    //         .map_err(|_| BillingControllerErr::FailToGetByBillingId)
+    // }
+    //
+    // async fn get_by_customer_id(
+    //     &mut self,
+    //     customer_id: i64,
+    // ) -> Result<Vec<BillingInfoWithBalance>, BillingControllerErr> {
+    //     BILLING_REPO
+    //         .lock()
+    //         .await
+    //         .get_billing_info_with_balance_by_customer_id(customer_id)
+    //         .await
+    //         .map_err(|_| BillingControllerErr::FailToGetByBillingId)
+    // }
 }

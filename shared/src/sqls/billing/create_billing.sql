@@ -1,5 +1,3 @@
-BEGIN;
-
 INSERT INTO billing (customer_id, date)
 VALUES
     (?, ?); -- customer_id, date
@@ -18,15 +16,23 @@ WHERE
     AND
     datetime(date) <= datetime(?) -- to
     AND
-    is_paid = false;
+    is_paid = false
+    AND
+    customer_id = ?; -- customer_id
+
 
 UPDATE retrieve_data
 SET is_paid = true
 WHERE
-    is_paid = false
-    AND
     datetime(date) >= datetime(?) -- from
     AND
-    datetime(date) <= datetime(?); -- to
+    datetime(date) <= datetime(?) -- to
+    AND
+    is_paid = false
+    AND
+    customer_id = ?; -- customer_id
 
-COMMIT;
+SELECT *
+FROM billing
+ORDER BY date DESC, billing_id DESC
+LIMIT 1;

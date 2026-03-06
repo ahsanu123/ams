@@ -1,7 +1,10 @@
 use crate::{
     models::{
-        balance::BalanceWithCustomer, balance_billing::BalanceBilling, billing::Billing,
-        customer::Customer, to_active_model_trait::ToActiveModel,
+        balance::BalanceWithCustomer,
+        balance_billing::{BalanceBilling, BalanceBillingCreateOrUpdate},
+        billing::Billing,
+        customer::Customer,
+        to_active_model_trait::ToActiveModel,
     },
     repositories::{
         base_repository_trait::{BaseRepository, BaseRepositoryErr, BaseRepositoryWithCRUType},
@@ -212,8 +215,15 @@ impl BalanceBillingRepository {
     }
 }
 
-impl BaseRepository<BalanceBilling> for BalanceBillingRepository {
-    async fn create(&mut self, model: BalanceBilling) -> Result<i64, BaseRepositoryErr> {
+impl BaseRepositoryWithCRUType for BalanceBillingRepository {
+    type CreateType = BalanceBillingCreateOrUpdate;
+    type ReturnType = BalanceBilling;
+    type UpdateType = BalanceBillingCreateOrUpdate;
+
+    async fn create(
+        &mut self,
+        model: BalanceBillingCreateOrUpdate,
+    ) -> Result<i64, BaseRepositoryErr> {
         let active_model = model.to_active_without_id();
         let result = BalanceBillingDb.create(active_model).await;
 
@@ -258,7 +268,10 @@ impl BaseRepository<BalanceBilling> for BalanceBillingRepository {
         Ok(Some(balance_billing))
     }
 
-    async fn update(&mut self, model: BalanceBilling) -> Result<BalanceBilling, BaseRepositoryErr> {
+    async fn update(
+        &mut self,
+        model: BalanceBillingCreateOrUpdate,
+    ) -> Result<BalanceBilling, BaseRepositoryErr> {
         let active_model = model.to_active_with_id();
         let update_result = BalanceBillingDb.update_by_model(active_model).await;
 

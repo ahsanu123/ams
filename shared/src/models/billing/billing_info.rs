@@ -1,6 +1,6 @@
 use crate::{
     models::{
-        customer::Customer, price::Price,
+        balance::BalanceWithCustomer, customer::Customer, price::Price,
         retrieve_data::retrieve_data_with_customer_and_price::RetrieveDataWithCustomerAndPrice,
     },
     sqls::billing::{get_billing_info_by_date, get_billing_info_by_date_and_customer_id},
@@ -9,6 +9,27 @@ use chrono::NaiveDateTime;
 use itertools::{self, Itertools};
 use serde::{Deserialize, Serialize};
 use ts_rs::TS;
+
+#[derive(Debug, Serialize, Deserialize, Clone, TS)]
+#[ts(export)]
+pub struct BillingInfoWithBalance {
+    #[ts(type = "Date")]
+    pub from: NaiveDateTime,
+    #[ts(type = "Date")]
+    pub to: NaiveDateTime,
+
+    pub retrieve_data: Vec<RetrieveDataWithCustomerAndPrice>,
+    pub balance: BalanceWithCustomer,
+
+    pub paid_bill: f32,
+    pub paid_total_amount: i64,
+
+    pub unpaid_bill: f32,
+    pub unpaid_total_amount: i64,
+
+    pub bill: f32,
+    pub amount: i64,
+}
 
 #[derive(Debug, Serialize, Deserialize, Clone, TS)]
 #[ts(export)]

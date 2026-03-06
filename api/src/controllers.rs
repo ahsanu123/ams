@@ -27,6 +27,7 @@ use utoipa::{
         // billing controller
         crate::controllers::billing_controller::get_all,
         crate::controllers::billing_controller::create,
+        crate::controllers::billing_controller::get_by,
         // balance controller
         crate::controllers::balance_controller::get_latest_by_customer_id,
         crate::controllers::balance_controller::add_balance,

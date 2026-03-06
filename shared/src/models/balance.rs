@@ -122,6 +122,25 @@ impl BalanceWithCustomer {
     }
 }
 
+pub trait BalanceWithCustomerExtensionMethodTrait {
+    fn with_customer(&mut self, customer: Customer) -> BalanceWithCustomer;
+}
+
+impl BalanceWithCustomerExtensionMethodTrait for ams_entity::balance::Model {
+    fn with_customer(&mut self, customer: Customer) -> BalanceWithCustomer {
+        BalanceWithCustomer {
+            balance_id: self.balance_id,
+            customer_id: self.customer_id,
+            value: self.value,
+            changed_value: self.changed_value,
+            date: self.date,
+            transaction_type: self.transaction_type.into(),
+
+            customer,
+        }
+    }
+}
+
 impl ToActiveModel<ams_entity::balance::ActiveModel> for BalanceWithCustomer {
     fn to_active_without_id(&self) -> ams_entity::balance::ActiveModel {
         ams_entity::balance::ActiveModel {

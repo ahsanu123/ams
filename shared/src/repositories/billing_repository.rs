@@ -3,7 +3,8 @@ use std::collections::HashMap;
 use crate::{
     models::{
         billing::{
-            Billing, BillingCreate, BillingUpdate, billing_info::BillingInfo,
+            Billing, BillingCreate, BillingUpdate,
+            billing_info::{BillingInfo, BillingInfoWithBalance},
             billing_with_retrieve_data::BillingWithRetrieveData,
         },
         customer::Customer,
@@ -18,7 +19,8 @@ use crate::{
         generic_crud_repository::GenericCrudRepository,
     },
     sqls::billing::{
-        create_billing, get_billing_info_by_customer_id, get_billing_info_by_date,
+        create_billing, get_billing_by_billing_id, get_billing_by_customer_id,
+        get_billing_info_by_customer_id, get_billing_info_by_date,
         get_billing_info_by_date_and_customer_id, get_by_billing_id, get_by_customer_id,
         update_by_billing,
     },
@@ -188,6 +190,28 @@ impl BillingRepository {
             .collect::<Vec<Billing>>();
 
         Ok(results)
+    }
+
+    pub async fn get_by_billing_id(
+        &mut self,
+        billing_id: i64,
+    ) -> Result<BillingInfoWithBalance, BillingRepositoryErr> {
+        let billing_info_with_balance = get_billing_by_billing_id::query(billing_id)
+            .await
+            .map_err(|_| BillingRepositoryErr::FailToGetByCustomerId)?;
+
+        Ok(billing_info_with_balance)
+    }
+
+    pub async fn get_billing_info_with_balance_by_customer_id(
+        &mut self,
+        customer_id: i64,
+    ) -> Result<Vec<BillingInfoWithBalance>, BillingRepositoryErr> {
+        let billing_info_with_balance = get_billing_by_customer_id::query(customer_id)
+            .await
+            .map_err(|_| BillingRepositoryErr::FailToGetByCustomerId)?;
+
+        Ok(billing_info_with_balance)
     }
 }
 
