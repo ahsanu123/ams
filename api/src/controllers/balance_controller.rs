@@ -46,7 +46,7 @@ where
         content =  BalanceCreateOrUpdateWithoutChangedValue,
         content_type =  "application/json",
     ),
-    operation_id = "527bde99-9630-4266-bdc6-23b095b2196f", 
+    operation_id = "postCreateBalance", 
 )]
 #[post("/balance")]
 pub async fn add_balance(
@@ -72,7 +72,7 @@ pub async fn add_balance(
     params(
         ("customer_id" = i64, Path, description = "customer id to get info"),
     ),
-    operation_id = "df6e7a5e-9af3-4333-bbc7-976536fdab83", 
+    operation_id = "getLatestBalanceByCustomerId", 
 )]
 #[get("/balance/latest/{customer_id}")]
 pub async fn get_latest_by_customer_id(
@@ -100,7 +100,7 @@ pub async fn get_latest_by_customer_id(
         (status = NOT_FOUND, description = "not found")
     ),
     params(BalanceGetAllProps),
-    operation_id = "a832e026-8f6b-491c-aabe-d75f69e29bd0", 
+    operation_id = "getAllBalance", 
 )]
 #[get("/balance/get-all")]
 pub async fn get_all(_passkey: PassKey, query: Query<BalanceGetAllProps>) -> impl Responder {

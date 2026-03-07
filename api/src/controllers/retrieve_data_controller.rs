@@ -49,7 +49,7 @@ where
         content =  RetrieveDataCreate ,
         content_type =  "application/json",
     ),
-    operation_id = "15475b14-91f9-49eb-b408-91f915fc9b08"
+    operation_id = "postCreateRetrieveData"
 )]
 #[post("/retrieve-data/create")]
 pub async fn create(_passkey: PassKey, request: Json<RetrieveDataCreate>) -> impl Responder {
@@ -77,7 +77,7 @@ pub async fn create(_passkey: PassKey, request: Json<RetrieveDataCreate>) -> imp
         content =  RetrieveDataCreateWithDate ,
         content_type =  "application/json",
     ),
-    operation_id = "54215a05-deca-4885-90a1-b8e0cf53137a"
+    operation_id = "postCreateRetrieveDataWithDate"
 )]
 #[post("/retrieve-data/create-with-date")]
 pub async fn create_with_date(
@@ -108,7 +108,7 @@ pub async fn create_with_date(
         content =  RetrieveDataCreateOrUpdate,
         content_type =  "application/json",
     ),
-    operation_id = "c0e9c71d-65eb-4daa-89d8-33117f3b7431"
+    operation_id = "postUpdateRetrieveData"
 )]
 #[post("/retrieve-data/update")]
 pub async fn update(
@@ -136,7 +136,7 @@ pub async fn update(
         (status = NOT_FOUND, description = "not found")
     ),
     params(RetrieveDataGetAllProps),
-    operation_id = "c17d772b-370e-450f-8e92-a83ed2575772"
+    operation_id = "getAllRetrieveData"
 )]
 #[get("/retrieve-data/get-all")]
 pub async fn get_all(_passkey: PassKey, request: Query<RetrieveDataGetAllProps>) -> impl Responder {
@@ -163,7 +163,7 @@ pub async fn get_all(_passkey: PassKey, request: Query<RetrieveDataGetAllProps>)
         (status = 200, description = "success"),
         (status = NOT_FOUND, description = "not found")
     ),
-    operation_id = "4f6408f2-7767-411e-9972-f2e92f4b6067"
+    operation_id = "deleteRetrieveDataByRetrieveDataId"
 )]
 #[delete("/retrieve-data/delete/{retrieve_data_id}")]
 pub async fn delete(_passkey: PassKey, retrieve_data_id: Path<i64>) -> impl Responder {

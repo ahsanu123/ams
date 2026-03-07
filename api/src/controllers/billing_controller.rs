@@ -41,7 +41,7 @@ where
         (status = NOT_FOUND, description = "not found")
     ),
     params(BillingInfoGetAllProps),
-    operation_id = "0095973a-7ad3-4111-a2f4-19ac7a91fabb", 
+    operation_id = "getAllBillingInfo", 
 )]
 #[get("/billing-info/get-all")]
 pub async fn get_all_billing_info(
@@ -72,7 +72,7 @@ pub async fn get_all_billing_info(
         content =  BillingCreate,
         content_type =  "application/json",
     ),
-    operation_id = "c2f42b36-bddd-4276-a387-35d371d05745", 
+    operation_id = "postCreateBilling", 
 )]
 #[post("/billing/create")]
 pub async fn create(_passkey: PassKey, request: Json<BillingCreate>) -> impl Responder {
@@ -93,7 +93,7 @@ pub async fn create(_passkey: PassKey, request: Json<BillingCreate>) -> impl Res
         (status = NOT_FOUND, description = "not found")
     ),
     params(BillingGetByProps),
-    operation_id = "c770de31-8598-49ee-83ca-c8d2c2546b56", 
+    operation_id = "getBillingByProps", 
 )]
 #[get("/billing/get_by")]
 pub async fn get_by(_passkey: PassKey, query: Query<BillingGetByProps>) -> impl Responder {
@@ -113,7 +113,7 @@ pub async fn get_by(_passkey: PassKey, query: Query<BillingGetByProps>) -> impl 
         (status = 200, description = "success"),
         (status = NOT_FOUND, description = "not found")
     ),
-    operation_id = "664f8641-47ac-42b6-a78a-88f72f12b30b", 
+    operation_id = "getAllBilling", 
 )]
 #[get("/billing/get-all")]
 pub async fn get_all_billing(_passkey: PassKey) -> impl Responder {
