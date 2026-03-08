@@ -2,7 +2,7 @@ import BottomInformation from "@/components/BottomInformation";
 import BottomCornerLeftInfo from "@/components/BottomLeftInformation";
 import RightSideBar from "@/components/RightSideBar";
 import { useLayoutStore } from "@/utilities/layout-store";
-import { Box } from "@mantine/core"
+import { Box, Notification } from "@mantine/core"
 import { useElementSize, useViewportSize } from "@mantine/hooks"
 import { useEffect } from "react";
 import { Outlet } from "react-router"
@@ -52,63 +52,65 @@ export default function MainLayout() {
   ])
 
   return (
-    <Box
-      style={{
-        backgroundColor: 'gray',
-        padding: "5px",
-        height: `${ld.height}px`,
-        display: 'grid',
-        gridTemplateColumns: "repeat(12, 1fr)",
-        gridTemplateRows: "repeat(12, 1fr)",
-        gap: "5px"
-      }}
-    >
+    <>
       <Box
-        ref={mainRef}
-        bg={'white'}
         style={{
-          gridColumn: "1/10",
-          gridRow: "1/12",
-          borderRadius: "5px"
+          backgroundColor: 'gray',
+          padding: "5px",
+          height: `${ld.height}px`,
+          display: 'grid',
+          gridTemplateColumns: "repeat(12, 1fr)",
+          gridTemplateRows: "repeat(12, 1fr)",
+          gap: "5px"
         }}
       >
-        <Outlet />
+        <Box
+          ref={mainRef}
+          bg={'white'}
+          style={{
+            gridColumn: "1/10",
+            gridRow: "1/12",
+            borderRadius: "5px"
+          }}
+        >
+          <Outlet />
+        </Box>
+        <Box
+          ref={sideBarRef}
+          bg={'white'}
+          style={{
+            gridColumn: "10/13",
+            gridRow: "1/12",
+            borderRadius: "5px"
+          }}
+        >
+          <RightSideBar />
+        </Box>
+        <Box
+          ref={bottomInfoRef}
+          bg={'white'}
+          style={{
+            alignContent: "center",
+            gridColumn: "1/10",
+            gridRow: "12/13",
+            borderRadius: "5px"
+          }}
+        >
+          <BottomInformation />
+        </Box>
+        <Box
+          ref={cornerBottomInfoRef}
+          bg={'white'}
+          style={{
+            alignContent: "center",
+            gridColumn: "10/13",
+            gridRow: "12/13",
+            borderRadius: "5px"
+          }}
+        >
+          <BottomCornerLeftInfo />
+        </Box>
       </Box>
-      <Box
-        ref={sideBarRef}
-        bg={'white'}
-        style={{
-          gridColumn: "10/13",
-          gridRow: "1/12",
-          borderRadius: "5px"
-        }}
-      >
-        <RightSideBar />
-      </Box>
-      <Box
-        ref={bottomInfoRef}
-        bg={'white'}
-        style={{
-          alignContent: "center",
-          gridColumn: "1/10",
-          gridRow: "12/13",
-          borderRadius: "5px"
-        }}
-      >
-        <BottomInformation />
-      </Box>
-      <Box
-        ref={cornerBottomInfoRef}
-        bg={'white'}
-        style={{
-          alignContent: "center",
-          gridColumn: "10/13",
-          gridRow: "12/13",
-          borderRadius: "5px"
-        }}
-      >
-        <BottomCornerLeftInfo />
-      </Box>
-    </Box>
+    </>
   )
 }

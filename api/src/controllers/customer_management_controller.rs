@@ -7,12 +7,13 @@ use actix_web::{
     get, post,
     web::{Json, Path, Query},
 };
+use ams_entity::customer::Entity;
 use ams_shared::{
     controllers::{
         CUSTOMER_CONTROLLER,
         customer_controller::{CustomerControllerTrait, CustomerGetAllProp},
     },
-    models::customer::CustomerUpdate,
+    models::customer::{Customer, CustomerUpdate},
 };
 
 use crate::extractors::calculated_passkey_extractor::PassKey;
@@ -92,7 +93,7 @@ pub async fn update(_passkey: PassKey, request: Json<CustomerUpdate>) -> impl Re
     tag = TAG_NAME,
     path = "/customer/get_all",
     responses(
-        (status = 200, description = "success"),
+        (status = 200, description = "success", body = Vec<Customer>),
         (status = NOT_FOUND, description = "not found")
     ),
     params(CustomerGetAllProp),

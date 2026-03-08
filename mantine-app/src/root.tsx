@@ -8,10 +8,13 @@ import {
 } from "react-router";
 import type { Route } from "./+types/root";
 import { MantineProvider } from "@mantine/core";
+import { Notifications } from '@mantine/notifications';
 import { theme } from "./theme";
 import "@mantine/core/styles.css";
 import '@mantine/charts/styles.css';
 import '@mantine/dates/styles.css';
+import '@mantine/notifications/styles.css';
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 // import type { Route } from "./+types/root";
 // import asmLogo from './svg/ams-icon.svg'
 // import { ChakraProvider, createSystem, defaultConfig } from "@chakra-ui/react";
@@ -20,11 +23,16 @@ import '@mantine/dates/styles.css';
 // import { QueryClientProvider } from "@tanstack/react-query";
 // import { queryClient } from "./commands";
 
+const queryClient = new QueryClient();
+
 export default function Root() {
   return (
-    <MantineProvider theme={theme}>
-      <Outlet />
-    </MantineProvider>
+    <QueryClientProvider client={queryClient}>
+      <MantineProvider theme={theme}>
+        <Notifications />
+        <Outlet />
+      </MantineProvider>
+    </QueryClientProvider>
   )
 }
 

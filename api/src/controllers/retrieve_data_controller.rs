@@ -11,8 +11,11 @@ use ams_shared::{
         RETRIEVE_DATA_CONTROLLER,
         retrieve_data_controller::{RetrieveDataControllerTrait, RetrieveDataGetAllProps},
     },
-    models::retrieve_data::retrieve_data_create_or_update::{
-        RetrieveDataCreate, RetrieveDataCreateOrUpdate, RetrieveDataCreateWithDate,
+    models::retrieve_data::{
+        retrieve_data_create_or_update::{
+            RetrieveDataCreate, RetrieveDataCreateOrUpdate, RetrieveDataCreateWithDate,
+        },
+        retrieve_data_with_customer_and_price::RetrieveDataWithCustomerAndPrice,
     },
 };
 
@@ -132,7 +135,7 @@ pub async fn update(
     tag = TAG_NAME,
     path = "/retrieve-data/get-all",
     responses(
-        (status = 200, description = "success"),
+        (status = 200, description = "success", body = Vec<RetrieveDataWithCustomerAndPrice>),
         (status = NOT_FOUND, description = "not found")
     ),
     params(RetrieveDataGetAllProps),

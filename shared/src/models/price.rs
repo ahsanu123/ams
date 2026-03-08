@@ -2,10 +2,11 @@ use chrono::{Local, NaiveDateTime};
 use sea_orm::ActiveValue::{NotSet, Set};
 use serde::{Deserialize, Serialize};
 use ts_rs::TS;
+use utoipa::ToSchema;
 
 use crate::models::to_active_model_trait::ToActiveModel;
 
-#[derive(Debug, Serialize, Deserialize, Clone, TS)]
+#[derive(Debug, Serialize, Deserialize, Clone, TS, ToSchema)]
 #[ts(export)]
 pub struct Price {
     pub price_id: i64,

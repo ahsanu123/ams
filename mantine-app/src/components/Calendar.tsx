@@ -1,16 +1,17 @@
+import { RetrieveDataWithCustomerAndPrice } from "@/api/v1/models";
 import { Customer } from "@/bindings/Customer";
 import { RetrieveData } from "@/bindings/RetrieveData";
 import { generateCalendarObjectWithRetrieveData, ICalendarDateObject } from "@/utilities/generate-calendar-object";
 import { useLayoutStore } from "@/utilities/layout-store";
 import { Text, Avatar, Button, Center, Flex, Grid, Group, Stack, Title, Card } from "@mantine/core";
 import { useViewportSize } from "@mantine/hooks";
-import { addMonths, getDate, subMonths } from "date-fns";
+import { addMonths, getDate, parseISO, subMonths } from "date-fns";
 import { ReactNode, useMemo } from "react";
 import { FaRegCircleCheck } from "react-icons/fa6";
 
 interface CalendarProps {
   date?: Date,
-  retrievesData?: RetrieveData[],
+  retrievesData?: RetrieveDataWithCustomerAndPrice[],
   customer?: Customer,
   rightTopMenu?: () => ReactNode,
   onPrevMonth?: (date: Date) => void,
@@ -34,7 +35,17 @@ export default function Calendar(props: CalendarProps) {
   const allLayoutState = useLayoutStore(store => store.getAll);
   const isLayoutStateReady = useLayoutStore(store => store.isReady);
 
-  const calendarObjs = useMemo(() => generateCalendarObjectWithRetrieveData(retrievesData, date), [date, retrievesData]);
+  const calendarObjs = useMemo(() => generateCalendarObjectWithRetrieveData(
+    retrievesData?.map<RetrieveData>((rdwc) => ({
+      retrieve_data_id: rdwc.retrieve_data_id,
+      customer_id: rdwc.customer_id,
+      price_id: rdwc.price_id,
+      amount: rdwc.amount,
+      date: parseISO(rdwc.date),
+      is_paid: rdwc.is_paid,
+    })),
+    date
+  ), [date, retrievesData]);
   const calendarCellHeight = useMemo(() => {
     const { mainHeight } = allLayoutState();
 
@@ -92,22 +103,22 @@ export default function Calendar(props: CalendarProps) {
             </>
           )}
 
-          <Group
-            hidden={!(onPrevMonth || onNextMonth)}
-          >
-            <Button
-              size="xl"
-              onClick={() => onPrevMonth?.(subMonths(date, 1))}
-            >
-              Prev
-            </Button>
-            <Button
-              size="xl"
-              onClick={() => onNextMonth?.(addMonths(date, 1))}
-            >
-              Next
-            </Button>
-          </Group>
+          {onPrevMonth && onNextMonth && (
+            <Group>
+              <Button
+                size="xl"
+                onClick={() => onPrevMonth?.(subMonths(date, 1))}
+              >
+                Prev
+              </Button>
+              <Button
+                size="xl"
+                onClick={() => onNextMonth?.(addMonths(date, 1))}
+              >
+                Next
+              </Button>
+            </Group>
+          )}
         </Group>
 
         <Group hidden={!!rightTopMenu}>

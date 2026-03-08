@@ -83,17 +83,17 @@ impl RetrieveDataRepository {
     pub async fn get_by_month(
         &mut self,
         year: i32,
-        from: Month,
-        to: Month,
+        from: u32,
+        to: u32,
     ) -> Result<Vec<RetrieveDataWithCustomerAndPrice>, RetrieveDataRepositoryErr> {
         let conn = get_database_connection().await;
 
-        let from_month = NaiveDate::from_ymd_opt(year, from.number_from_month(), 1)
+        let from_month = NaiveDate::from_ymd_opt(year, from, 1)
             .unwrap()
             .and_hms_opt(1, 0, 0)
             .unwrap();
 
-        let to_month = from_month.with_month(to.number_from_month()).unwrap();
+        let to_month = from_month.with_month(to).unwrap();
 
         let data = RetrieveDataDb::find()
             .filter(retrieve_data_db::Column::Date.between(from_month, to_month))
@@ -138,17 +138,17 @@ impl RetrieveDataRepository {
         &mut self,
         customer_id: i64,
         year: i32,
-        from: Month,
-        to: Month,
+        from: u32,
+        to: u32,
     ) -> Result<Vec<RetrieveDataWithCustomerAndPrice>, RetrieveDataRepositoryErr> {
         let conn = get_database_connection().await;
 
-        let from_month = NaiveDate::from_ymd_opt(year, from.number_from_month(), 1)
+        let from_month = NaiveDate::from_ymd_opt(year, from, 1)
             .unwrap()
             .and_hms_opt(1, 0, 0)
             .unwrap();
 
-        let to_month = from_month.with_month(to.number_from_month()).unwrap();
+        let to_month = from_month.with_month(to).unwrap();
 
         let data = RetrieveDataDb::find()
             .filter(retrieve_data_db::Column::CustomerId.eq(customer_id))

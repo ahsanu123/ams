@@ -1,4 +1,5 @@
-import { Customer } from "@/bindings/Customer";
+import { useGetAllCustomerByProps, usePostUpdateCustomer } from "@/api/v1/customer-management-controller/customer-management-controller";
+import { Customer } from "@/api/v1/models";
 import CustomerPicker from "@/components/CustomerPicker";
 import VirtualKeypad from "@/components/VirtualKeypad";
 import { useSidebarStore } from "@/global-stores/right-sidebar-store";
@@ -7,51 +8,29 @@ import { useEffect, useState } from "react";
 export default function MainPageCustomerPicker() {
 
   const [selectedCustomer, setSelectedCustomer] = useState<Customer | undefined>(undefined)
-
   const setSidebarTitle = useSidebarStore(store => store.setTitle)
 
   const handleOnConfirm = (value: number) => {
+    mutator.mutate({
+      data: {
+        customer_id: 0,
+        customer_name: "llll",
+        is_active: false,
+        is_admin: false
+      }
+    })
     setSelectedCustomer(undefined)
   }
 
   useEffect(() => {
+    handleOnConfirm(1)
     setSidebarTitle(selectedCustomer ? "Masukan Jumlah" : "Pilih Nama")
   }, [selectedCustomer])
 
-  const customers: Customer[] = [
-    {
-      customer_id: 0,
-      customer_name: "Tresno",
-      is_active: false,
-      is_admin: false,
-      created_date: new Date(),
-      updated_date: new Date()
-    },
-    {
-      customer_id: 0,
-      customer_name: "Sinin",
-      is_active: false,
-      is_admin: false,
-      created_date: new Date(),
-      updated_date: new Date()
-    },
-    {
-      customer_id: 0,
-      customer_name: "Misbah",
-      is_active: false,
-      is_admin: false,
-      created_date: new Date(),
-      updated_date: new Date()
-    },
-    {
-      customer_id: 0,
-      customer_name: "Lurah",
-      is_active: false,
-      is_admin: false,
-      created_date: new Date(),
-      updated_date: new Date()
-    },
-  ]
+  const { data: customers } = useGetAllCustomerByProps();
+  const mutator = usePostUpdateCustomer()
+
+
   return (
     <>
       {selectedCustomer ? (
@@ -61,7 +40,7 @@ export default function MainPageCustomerPicker() {
       )
         : (
           <CustomerPicker
-            customers={customers}
+            customers={customers ?? []}
             onSelectedCustomer={(customer) => setSelectedCustomer(customer)}
           />
         )}

@@ -3,8 +3,9 @@ use chrono::NaiveDateTime;
 use sea_orm::ActiveValue::{NotSet, Set};
 use serde::{Deserialize, Serialize};
 use ts_rs::TS;
+use utoipa::ToSchema;
 
-#[derive(Debug, Serialize, Deserialize, Clone, TS)]
+#[derive(Debug, Serialize, Deserialize, Clone, ToSchema, TS)]
 #[ts(export)]
 pub struct RetrieveDataWithCustomerAndPrice {
     pub retrieve_data_id: i64,

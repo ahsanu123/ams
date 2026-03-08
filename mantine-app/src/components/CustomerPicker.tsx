@@ -1,4 +1,4 @@
-import { Customer } from "@/bindings/Customer";
+import { Customer } from "@/api/v1/models";
 import { Box, Button, ScrollArea, Title } from "@mantine/core";
 import { useViewportSize } from "@mantine/hooks";
 

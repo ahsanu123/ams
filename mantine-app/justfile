@@ -1,0 +1,12 @@
+tl: 
+  yarn vitest list          # shows all tests
+
+tr testName:
+  yarn vitest -t "{{testName}}"  --reporter=verbose --silent=false
+
+# run desktop
+rdesktop: 
+  RUST_BACKTRACE=1 yarn tauri dev
+
+orval: 
+  yarn orval

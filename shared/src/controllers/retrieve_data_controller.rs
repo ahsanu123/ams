@@ -19,14 +19,14 @@ pub struct RetrieveDataGetAllProps {
     customer_id: Option<i64>,
 
     #[ts(type = "number", optional)]
-    #[schema(value_type = i32)]
+    #[schema(value_type = u8, minimum = 1, maximum = 12)]
     #[param(value_type = i32, required = false)]
-    start_month: Option<Month>,
+    start_month: Option<u8>,
 
     #[ts(type = "number", optional)]
-    #[schema(value_type = i32)]
+    #[schema(value_type = u8, minimum = 1, maximum = 12)]
     #[param(value_type = i32, required = false)]
-    end_month: Option<Month>,
+    end_month: Option<u8>,
 
     year: Option<i32>,
 }
@@ -140,7 +140,7 @@ impl RetrieveDataControllerTrait for RetrieveDataController {
             } => RETRIEVE_DATA_REPO
                 .lock()
                 .await
-                .get_by_month(year, from, to)
+                .get_by_month(year, from as u32, to as u32)
                 .await
                 .unwrap_or_default(),
 
@@ -176,7 +176,7 @@ impl RetrieveDataControllerTrait for RetrieveDataController {
             } => RETRIEVE_DATA_REPO
                 .lock()
                 .await
-                .get_by_customer_id_and_month(customer_id, year, from, to)
+                .get_by_customer_id_and_month(customer_id, year, from as u32, to as u32)
                 .await
                 .unwrap_or_default(),
 
