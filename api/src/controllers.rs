@@ -1,6 +1,7 @@
 pub mod balance_controller;
 pub mod billing_controller;
 pub mod customer_management_controller;
+pub mod price_controller;
 pub mod retrieve_data_controller;
 
 use utoipa::{
@@ -20,7 +21,7 @@ use utoipa::{
         version = "0.0.1",
         contact(
             name = "Ahsanu Amala",
-            url = "ahsanu.is-a.dev",
+            url = "http://ahsanu.is-a.dev/",
         )
     ),
     paths(
@@ -46,10 +47,12 @@ use utoipa::{
         crate::controllers::customer_management_controller::get_all,
         crate::controllers::customer_management_controller::get_by_id,
         crate::controllers::customer_management_controller::delete,
-        // crate::endpoints::customer_endpoints::add_money,
-        // crate::endpoints::customer_endpoints::get_all_user_money_history,
-        // crate::endpoints::customer_endpoints::delete_customer,
-        //
+        // price controller 
+        crate::controllers::price_controller::get_latest,
+        crate::controllers::price_controller::get_all,
+        crate::controllers::price_controller::update,
+        crate::controllers::price_controller::delete,
+
         // taking_record_endpoint
         // crate::endpoints::taking_record_endpoint::add_new_taking_record,
         // crate::endpoints::taking_record_endpoint::add_new_taking_record_by_date,
@@ -63,10 +66,6 @@ use utoipa::{
         // crate::endpoints::taking_record_endpoint::get_taking_record_by_day,
         // crate::endpoints::taking_record_endpoint::get_taking_record_by_user_id_and_month_range,
         //
-        // dreg_price_endpoint
-        // crate::endpoints::dreg_price_endpoint::get_latest_dreg_price,
-        // crate::endpoints::dreg_price_endpoint::update_dreg_price,
-        // crate::endpoints::dreg_price_endpoint::get_all_dreg_price,
         //
         // payment_history_endpoint
         // crate::endpoints::payment_history_endpoint::get_payment_record_by_user_id,

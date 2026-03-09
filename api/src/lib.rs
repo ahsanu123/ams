@@ -2,7 +2,7 @@ use crate::controllers::{
     balance_controller::BalanceServiceExtensionTrait,
     billing_controller::BillingServiceExtensionTrait,
     customer_management_controller::CustomerManagementServiceExtensionTrait,
-    modified_docs_with_security_schemes,
+    modified_docs_with_security_schemes, price_controller::PriceControllerServiceExtensionTrait,
     retrieve_data_controller::RetrieveDataServiceExtensionTrait,
 };
 use actix_cors::Cors;
@@ -45,13 +45,7 @@ pub async fn start_server() -> std::io::Result<()> {
             .register_customer_controller()
             .register_balance_controller()
             .register_billing_controller()
-            // register all endpoint here to be able to accessed
-            // .register_customer_endpoints()
-            // .register_dregs_price_endpoints()
-            // .register_payment_endpoints()
-            // .register_taking_record_endpoints()
-            // .register_user_management_endpoints()
-            // .register_make_payment_page_endpoints()
+            .register_price_controller()
             //  static file service
             .service(Files::new("/", static_path).index_file("index.html"))
     })

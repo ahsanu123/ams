@@ -1,19 +1,10 @@
-// pub mod customer_money_command;
-// pub mod dreg_price_command;
-// pub mod make_payment_command;
-// pub mod payment_history_command;
-// pub mod production_record_command;
-// pub mod taking_record_command;
-// pub mod user_management_command;
-
-use std::sync::LazyLock;
-
-use tokio::sync::Mutex;
-
 use crate::controllers::{
     balance_controller::BalanceController, billing_controller::BillingController,
-    customer_controller::CustomerController, retrieve_data_controller::RetrieveDataController,
+    customer_controller::CustomerController, price_controller::PriceController,
+    retrieve_data_controller::RetrieveDataController,
 };
+use std::sync::LazyLock;
+use tokio::sync::Mutex;
 
 pub mod balance_controller;
 pub mod billing_controller;
@@ -33,3 +24,6 @@ pub static BALANCE_CONTROLLER: LazyLock<Mutex<BalanceController>> =
 
 pub static BILLING_CONTROLLER: LazyLock<Mutex<BillingController>> =
     LazyLock::new(|| Mutex::new(BillingController));
+
+pub static PRICE_CONTROLLER: LazyLock<Mutex<PriceController>> =
+    LazyLock::new(|| Mutex::new(PriceController));
