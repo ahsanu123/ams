@@ -6,10 +6,10 @@
  * OpenAPI spec version: 0.0.1
  */
 
-export type TransactionType =
-  (typeof TransactionType)[keyof typeof TransactionType];
+export type TransactionType = typeof TransactionType[keyof typeof TransactionType];
+
 
 export const TransactionType = {
-  TopUp: "TopUp",
-  Pay: "Pay",
+  TopUp: 'TopUp',
+  Pay: 'Pay',
 } as const;

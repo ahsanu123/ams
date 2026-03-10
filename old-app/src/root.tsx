@@ -7,25 +7,24 @@ import {
   isRouteErrorResponse,
 } from "react-router";
 import type { Route } from "./+types/root";
-import { MantineProvider } from "@mantine/core";
-import { Notifications } from '@mantine/notifications';
-import { theme } from "./theme";
-import "@mantine/core/styles.css";
-import '@mantine/charts/styles.css';
-import '@mantine/dates/styles.css';
-import '@mantine/notifications/styles.css';
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { IS_INSIDE_TAURI } from "./constants/inside-tauri-env";
+import asmLogo from './svg/ams-icon.svg'
+import { ChakraProvider, createSystem, defaultConfig } from "@chakra-ui/react";
+import { Toaster } from "./utility";
+import { IS_INSIDE_TAURI } from "./constants";
+import { QueryClientProvider } from "@tanstack/react-query";
+import { queryClient } from "./commands";
+import "react-datepicker/dist/react-datepicker.css"
+import "root.css"
 
-const queryClient = new QueryClient();
+const system = createSystem(defaultConfig);
 
 export default function Root() {
   return (
     <QueryClientProvider client={queryClient}>
-      <MantineProvider theme={theme}>
-        <Notifications position='top-left' />
+      <ChakraProvider value={system}>
+        <Toaster />
         <Outlet />
-      </MantineProvider>
+      </ChakraProvider>
     </QueryClientProvider>
   )
 }
@@ -38,7 +37,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
     <html lang="en">
       <head>
         <meta charSet="utf-8" />
-        <link rel="icon" type="image/svg+xml" />
+        <link rel="icon" href={asmLogo} type="image/svg+xml" />
         <title>AMS - Ampas Management System</title>
         <Meta />
         <Links />

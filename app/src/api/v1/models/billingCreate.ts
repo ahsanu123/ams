@@ -6,8 +6,8 @@
  * OpenAPI spec version: 0.0.1
  */
 
-export interface BillingCreate {
+export type BillingCreate = {
   customer_id: number;
   from: string;
   to: string;
-}
+};

@@ -5,10 +5,7 @@
  * 🥔 AMS - Ampas Management System.
  * OpenAPI spec version: 0.0.1
  */
-import {
-  useMutation,
-  useQuery
-} from '@tanstack/react-query';
+import { useMutation, useQuery } from "@tanstack/react-query";
 import type {
   DataTag,
   DefinedInitialDataOptions,
@@ -21,501 +18,538 @@ import type {
   UseMutationOptions,
   UseMutationResult,
   UseQueryOptions,
-  UseQueryResult
-} from '@tanstack/react-query';
+  UseQueryResult,
+} from "@tanstack/react-query";
 
 import type {
+  DeleteRetrieveDataByRetrieveDataIdPathParameters,
   GetAllRetrieveDataParams,
   RetrieveDataCreate,
   RetrieveDataCreateOrUpdate,
-  RetrieveDataCreateWithDate
-} from '../models';
+  RetrieveDataCreateWithDate,
+  RetrieveDataWithCustomerAndPrice,
+} from "../models";
 
+import { fetchMutator } from "../../../utilities/fetch-mutator";
 
-
-
-
-export type postCreateRetrieveDataResponse200 = {
-  data: void
-  status: 200
-}
-
-export type postCreateRetrieveDataResponse404 = {
-  data: void
-  status: 404
-}
-
-export type postCreateRetrieveDataResponseSuccess = (postCreateRetrieveDataResponse200) & {
-  headers: Headers;
-};
-export type postCreateRetrieveDataResponseError = (postCreateRetrieveDataResponse404) & {
-  headers: Headers;
-};
-
-export type postCreateRetrieveDataResponse = (postCreateRetrieveDataResponseSuccess | postCreateRetrieveDataResponseError)
+type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
 
 export const getPostCreateRetrieveDataUrl = () => {
-  return `/retrieve-data/create`
-}
+  return `http://localhost:9090/retrieve-data/create`;
+};
 
-export const postCreateRetrieveData = async (retrieveDataCreate: RetrieveDataCreate, options?: RequestInit): Promise<postCreateRetrieveDataResponse> => {
+export const postCreateRetrieveData = async (
+  retrieveDataCreate: RetrieveDataCreate,
+  options?: RequestInit,
+): Promise<number> => {
+  return fetchMutator<number>(getPostCreateRetrieveDataUrl(), {
+    ...options,
+    method: "POST",
+    headers: { "Content-Type": "application/json", ...options?.headers },
+    body: JSON.stringify(retrieveDataCreate),
+  });
+};
 
-  const res = await fetch(getPostCreateRetrieveDataUrl(),
-    {
-      ...options,
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', ...options?.headers },
-      body: JSON.stringify(
-        retrieveDataCreate,)
-    }
-  )
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: postCreateRetrieveDataResponse['data'] = body ? JSON.parse(body) : {}
-  return { data, status: res.status, headers: res.headers } as postCreateRetrieveDataResponse
-}
-
-
-
-
-export const getPostCreateRetrieveDataMutationOptions = <TError = void,
-  TContext = unknown>(options?: { mutation?: UseMutationOptions<Awaited<ReturnType<typeof postCreateRetrieveData>>, TError, { data: RetrieveDataCreate }, TContext>, fetch?: RequestInit }
-  ): UseMutationOptions<Awaited<ReturnType<typeof postCreateRetrieveData>>, TError, { data: RetrieveDataCreate }, TContext> => {
-
-  const mutationKey = ['postCreateRetrieveData'];
-  const { mutation: mutationOptions, fetch: fetchOptions } = options ?
-    options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
-      options
+export const getPostCreateRetrieveDataMutationOptions = <
+  TError = void,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof postCreateRetrieveData>>,
+    TError,
+    { data: RetrieveDataCreate },
+    TContext
+  >;
+  request?: SecondParameter<typeof fetchMutator>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof postCreateRetrieveData>>,
+  TError,
+  { data: RetrieveDataCreate },
+  TContext
+> => {
+  const mutationKey = ["postCreateRetrieveData"];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
       : { ...options, mutation: { ...options.mutation, mutationKey } }
-    : { mutation: { mutationKey, }, fetch: undefined };
+    : { mutation: { mutationKey }, request: undefined };
 
-
-
-
-  const mutationFn: MutationFunction<Awaited<ReturnType<typeof postCreateRetrieveData>>, { data: RetrieveDataCreate }> = (props) => {
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof postCreateRetrieveData>>,
+    { data: RetrieveDataCreate }
+  > = (props) => {
     const { data } = props ?? {};
 
-    return postCreateRetrieveData(data, fetchOptions)
-  }
+    return postCreateRetrieveData(data, requestOptions);
+  };
 
+  return { mutationFn, ...mutationOptions };
+};
 
+export type PostCreateRetrieveDataMutationResult = NonNullable<
+  Awaited<ReturnType<typeof postCreateRetrieveData>>
+>;
+export type PostCreateRetrieveDataMutationBody = RetrieveDataCreate;
+export type PostCreateRetrieveDataMutationError = void;
 
-
-
-
-  return { mutationFn, ...mutationOptions }
-}
-
-export type PostCreateRetrieveDataMutationResult = NonNullable<Awaited<ReturnType<typeof postCreateRetrieveData>>>
-export type PostCreateRetrieveDataMutationBody = RetrieveDataCreate
-export type PostCreateRetrieveDataMutationError = void
-
-export const usePostCreateRetrieveData = <TError = void,
-  TContext = unknown>(options?: { mutation?: UseMutationOptions<Awaited<ReturnType<typeof postCreateRetrieveData>>, TError, { data: RetrieveDataCreate }, TContext>, fetch?: RequestInit }
-    , queryClient?: QueryClient): UseMutationResult<
+export const usePostCreateRetrieveData = <TError = void, TContext = unknown>(
+  options?: {
+    mutation?: UseMutationOptions<
       Awaited<ReturnType<typeof postCreateRetrieveData>>,
       TError,
       { data: RetrieveDataCreate },
       TContext
-    > => {
-  return useMutation(getPostCreateRetrieveDataMutationOptions(options), queryClient);
-}
-export type postCreateRetrieveDataWithDateResponse200 = {
-  data: void
-  status: 200
-}
-
-export type postCreateRetrieveDataWithDateResponse404 = {
-  data: void
-  status: 404
-}
-
-export type postCreateRetrieveDataWithDateResponseSuccess = (postCreateRetrieveDataWithDateResponse200) & {
-  headers: Headers;
+    >;
+    request?: SecondParameter<typeof fetchMutator>;
+  },
+  queryClient?: QueryClient,
+): UseMutationResult<
+  Awaited<ReturnType<typeof postCreateRetrieveData>>,
+  TError,
+  { data: RetrieveDataCreate },
+  TContext
+> => {
+  return useMutation(
+    getPostCreateRetrieveDataMutationOptions(options),
+    queryClient,
+  );
 };
-export type postCreateRetrieveDataWithDateResponseError = (postCreateRetrieveDataWithDateResponse404) & {
-  headers: Headers;
-};
-
-export type postCreateRetrieveDataWithDateResponse = (postCreateRetrieveDataWithDateResponseSuccess | postCreateRetrieveDataWithDateResponseError)
-
 export const getPostCreateRetrieveDataWithDateUrl = () => {
+  return `http://localhost:9090/retrieve-data/create-with-date`;
+};
 
+export const postCreateRetrieveDataWithDate = async (
+  retrieveDataCreateWithDate: RetrieveDataCreateWithDate,
+  options?: RequestInit,
+): Promise<number> => {
+  return fetchMutator<number>(getPostCreateRetrieveDataWithDateUrl(), {
+    ...options,
+    method: "POST",
+    headers: { "Content-Type": "application/json", ...options?.headers },
+    body: JSON.stringify(retrieveDataCreateWithDate),
+  });
+};
 
-
-
-  return `/retrieve-data/create-with-date`
-}
-
-export const postCreateRetrieveDataWithDate = async (retrieveDataCreateWithDate: RetrieveDataCreateWithDate, options?: RequestInit): Promise<postCreateRetrieveDataWithDateResponse> => {
-
-  const res = await fetch(getPostCreateRetrieveDataWithDateUrl(),
-    {
-      ...options,
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', ...options?.headers },
-      body: JSON.stringify(
-        retrieveDataCreateWithDate,)
-    }
-  )
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: postCreateRetrieveDataWithDateResponse['data'] = body ? JSON.parse(body) : {}
-  return { data, status: res.status, headers: res.headers } as postCreateRetrieveDataWithDateResponse
-}
-
-
-
-
-export const getPostCreateRetrieveDataWithDateMutationOptions = <TError = void,
-  TContext = unknown>(options?: { mutation?: UseMutationOptions<Awaited<ReturnType<typeof postCreateRetrieveDataWithDate>>, TError, { data: RetrieveDataCreateWithDate }, TContext>, fetch?: RequestInit }
-  ): UseMutationOptions<Awaited<ReturnType<typeof postCreateRetrieveDataWithDate>>, TError, { data: RetrieveDataCreateWithDate }, TContext> => {
-
-  const mutationKey = ['postCreateRetrieveDataWithDate'];
-  const { mutation: mutationOptions, fetch: fetchOptions } = options ?
-    options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
-      options
+export const getPostCreateRetrieveDataWithDateMutationOptions = <
+  TError = void,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof postCreateRetrieveDataWithDate>>,
+    TError,
+    { data: RetrieveDataCreateWithDate },
+    TContext
+  >;
+  request?: SecondParameter<typeof fetchMutator>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof postCreateRetrieveDataWithDate>>,
+  TError,
+  { data: RetrieveDataCreateWithDate },
+  TContext
+> => {
+  const mutationKey = ["postCreateRetrieveDataWithDate"];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
       : { ...options, mutation: { ...options.mutation, mutationKey } }
-    : { mutation: { mutationKey, }, fetch: undefined };
+    : { mutation: { mutationKey }, request: undefined };
 
-
-
-
-  const mutationFn: MutationFunction<Awaited<ReturnType<typeof postCreateRetrieveDataWithDate>>, { data: RetrieveDataCreateWithDate }> = (props) => {
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof postCreateRetrieveDataWithDate>>,
+    { data: RetrieveDataCreateWithDate }
+  > = (props) => {
     const { data } = props ?? {};
 
-    return postCreateRetrieveDataWithDate(data, fetchOptions)
-  }
+    return postCreateRetrieveDataWithDate(data, requestOptions);
+  };
 
+  return { mutationFn, ...mutationOptions };
+};
 
+export type PostCreateRetrieveDataWithDateMutationResult = NonNullable<
+  Awaited<ReturnType<typeof postCreateRetrieveDataWithDate>>
+>;
+export type PostCreateRetrieveDataWithDateMutationBody =
+  RetrieveDataCreateWithDate;
+export type PostCreateRetrieveDataWithDateMutationError = void;
 
-
-
-
-  return { mutationFn, ...mutationOptions }
-}
-
-export type PostCreateRetrieveDataWithDateMutationResult = NonNullable<Awaited<ReturnType<typeof postCreateRetrieveDataWithDate>>>
-export type PostCreateRetrieveDataWithDateMutationBody = RetrieveDataCreateWithDate
-export type PostCreateRetrieveDataWithDateMutationError = void
-
-export const usePostCreateRetrieveDataWithDate = <TError = void,
-  TContext = unknown>(options?: { mutation?: UseMutationOptions<Awaited<ReturnType<typeof postCreateRetrieveDataWithDate>>, TError, { data: RetrieveDataCreateWithDate }, TContext>, fetch?: RequestInit }
-    , queryClient?: QueryClient): UseMutationResult<
+export const usePostCreateRetrieveDataWithDate = <
+  TError = void,
+  TContext = unknown,
+>(
+  options?: {
+    mutation?: UseMutationOptions<
       Awaited<ReturnType<typeof postCreateRetrieveDataWithDate>>,
       TError,
       { data: RetrieveDataCreateWithDate },
       TContext
-    > => {
-  return useMutation(getPostCreateRetrieveDataWithDateMutationOptions(options), queryClient);
-}
-export type deleteRetrieveDataByRetrieveDataIdResponse200 = {
-  data: void
-  status: 200
-}
-
-export type deleteRetrieveDataByRetrieveDataIdResponse404 = {
-  data: void
-  status: 404
-}
-
-export type deleteRetrieveDataByRetrieveDataIdResponseSuccess = (deleteRetrieveDataByRetrieveDataIdResponse200) & {
-  headers: Headers;
+    >;
+    request?: SecondParameter<typeof fetchMutator>;
+  },
+  queryClient?: QueryClient,
+): UseMutationResult<
+  Awaited<ReturnType<typeof postCreateRetrieveDataWithDate>>,
+  TError,
+  { data: RetrieveDataCreateWithDate },
+  TContext
+> => {
+  return useMutation(
+    getPostCreateRetrieveDataWithDateMutationOptions(options),
+    queryClient,
+  );
 };
-export type deleteRetrieveDataByRetrieveDataIdResponseError = (deleteRetrieveDataByRetrieveDataIdResponse404) & {
-  headers: Headers;
+export const getDeleteRetrieveDataByRetrieveDataIdUrl = ({
+  retrieveDataId,
+}: DeleteRetrieveDataByRetrieveDataIdPathParameters) => {
+  return `http://localhost:9090/retrieve-data/delete/${retrieveDataId}`;
 };
 
-export type deleteRetrieveDataByRetrieveDataIdResponse = (deleteRetrieveDataByRetrieveDataIdResponseSuccess | deleteRetrieveDataByRetrieveDataIdResponseError)
-
-export const getDeleteRetrieveDataByRetrieveDataIdUrl = (retrieveDataId: number,) => {
-
-
-
-
-  return `/retrieve-data/delete/${retrieveDataId}`
-}
-
-export const deleteRetrieveDataByRetrieveDataId = async (retrieveDataId: number, options?: RequestInit): Promise<deleteRetrieveDataByRetrieveDataIdResponse> => {
-
-  const res = await fetch(getDeleteRetrieveDataByRetrieveDataIdUrl(retrieveDataId),
+export const deleteRetrieveDataByRetrieveDataId = async (
+  { retrieveDataId }: DeleteRetrieveDataByRetrieveDataIdPathParameters,
+  options?: RequestInit,
+): Promise<number> => {
+  return fetchMutator<number>(
+    getDeleteRetrieveDataByRetrieveDataIdUrl({ retrieveDataId }),
     {
       ...options,
-      method: 'DELETE'
+      method: "DELETE",
+    },
+  );
+};
 
-
-    }
-  )
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: deleteRetrieveDataByRetrieveDataIdResponse['data'] = body ? JSON.parse(body) : {}
-  return { data, status: res.status, headers: res.headers } as deleteRetrieveDataByRetrieveDataIdResponse
-}
-
-
-
-
-export const getDeleteRetrieveDataByRetrieveDataIdMutationOptions = <TError = void,
-  TContext = unknown>(options?: { mutation?: UseMutationOptions<Awaited<ReturnType<typeof deleteRetrieveDataByRetrieveDataId>>, TError, { retrieveDataId: number }, TContext>, fetch?: RequestInit }
-  ): UseMutationOptions<Awaited<ReturnType<typeof deleteRetrieveDataByRetrieveDataId>>, TError, { retrieveDataId: number }, TContext> => {
-
-  const mutationKey = ['deleteRetrieveDataByRetrieveDataId'];
-  const { mutation: mutationOptions, fetch: fetchOptions } = options ?
-    options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
-      options
+export const getDeleteRetrieveDataByRetrieveDataIdMutationOptions = <
+  TError = void,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof deleteRetrieveDataByRetrieveDataId>>,
+    TError,
+    { pathParams: DeleteRetrieveDataByRetrieveDataIdPathParameters },
+    TContext
+  >;
+  request?: SecondParameter<typeof fetchMutator>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof deleteRetrieveDataByRetrieveDataId>>,
+  TError,
+  { pathParams: DeleteRetrieveDataByRetrieveDataIdPathParameters },
+  TContext
+> => {
+  const mutationKey = ["deleteRetrieveDataByRetrieveDataId"];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
       : { ...options, mutation: { ...options.mutation, mutationKey } }
-    : { mutation: { mutationKey, }, fetch: undefined };
+    : { mutation: { mutationKey }, request: undefined };
 
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof deleteRetrieveDataByRetrieveDataId>>,
+    { pathParams: DeleteRetrieveDataByRetrieveDataIdPathParameters }
+  > = (props) => {
+    const { pathParams } = props ?? {};
 
+    return deleteRetrieveDataByRetrieveDataId(pathParams, requestOptions);
+  };
 
+  return { mutationFn, ...mutationOptions };
+};
 
-  const mutationFn: MutationFunction<Awaited<ReturnType<typeof deleteRetrieveDataByRetrieveDataId>>, { retrieveDataId: number }> = (props) => {
-    const { retrieveDataId } = props ?? {};
+export type DeleteRetrieveDataByRetrieveDataIdMutationResult = NonNullable<
+  Awaited<ReturnType<typeof deleteRetrieveDataByRetrieveDataId>>
+>;
 
-    return deleteRetrieveDataByRetrieveDataId(retrieveDataId, fetchOptions)
-  }
+export type DeleteRetrieveDataByRetrieveDataIdMutationError = void;
 
-
-
-
-
-
-  return { mutationFn, ...mutationOptions }
-}
-
-export type DeleteRetrieveDataByRetrieveDataIdMutationResult = NonNullable<Awaited<ReturnType<typeof deleteRetrieveDataByRetrieveDataId>>>
-
-export type DeleteRetrieveDataByRetrieveDataIdMutationError = void
-
-export const useDeleteRetrieveDataByRetrieveDataId = <TError = void,
-  TContext = unknown>(options?: { mutation?: UseMutationOptions<Awaited<ReturnType<typeof deleteRetrieveDataByRetrieveDataId>>, TError, { retrieveDataId: number }, TContext>, fetch?: RequestInit }
-    , queryClient?: QueryClient): UseMutationResult<
+export const useDeleteRetrieveDataByRetrieveDataId = <
+  TError = void,
+  TContext = unknown,
+>(
+  options?: {
+    mutation?: UseMutationOptions<
       Awaited<ReturnType<typeof deleteRetrieveDataByRetrieveDataId>>,
       TError,
-      { retrieveDataId: number },
+      { pathParams: DeleteRetrieveDataByRetrieveDataIdPathParameters },
       TContext
-    > => {
-  return useMutation(getDeleteRetrieveDataByRetrieveDataIdMutationOptions(options), queryClient);
-}
-export type getAllRetrieveDataResponse200 = {
-  data: void
-  status: 200
-}
-
-export type getAllRetrieveDataResponse404 = {
-  data: void
-  status: 404
-}
-
-export type getAllRetrieveDataResponseSuccess = (getAllRetrieveDataResponse200) & {
-  headers: Headers;
+    >;
+    request?: SecondParameter<typeof fetchMutator>;
+  },
+  queryClient?: QueryClient,
+): UseMutationResult<
+  Awaited<ReturnType<typeof deleteRetrieveDataByRetrieveDataId>>,
+  TError,
+  { pathParams: DeleteRetrieveDataByRetrieveDataIdPathParameters },
+  TContext
+> => {
+  return useMutation(
+    getDeleteRetrieveDataByRetrieveDataIdMutationOptions(options),
+    queryClient,
+  );
 };
-export type getAllRetrieveDataResponseError = (getAllRetrieveDataResponse404) & {
-  headers: Headers;
-};
-
-export type getAllRetrieveDataResponse = (getAllRetrieveDataResponseSuccess | getAllRetrieveDataResponseError)
-
-export const getGetAllRetrieveDataUrl = (params?: GetAllRetrieveDataParams,) => {
+export const getGetAllRetrieveDataUrl = (params?: GetAllRetrieveDataParams) => {
   const normalizedParams = new URLSearchParams();
 
   Object.entries(params || {}).forEach(([key, value]) => {
-
     if (value !== undefined) {
-      normalizedParams.append(key, value === null ? 'null' : value.toString())
+      normalizedParams.append(key, value === null ? "null" : value.toString());
     }
   });
 
   const stringifiedParams = normalizedParams.toString();
 
-  return stringifiedParams.length > 0 ? `/retrieve-data/get-all?${stringifiedParams}` : `/retrieve-data/get-all`
-}
+  return stringifiedParams.length > 0
+    ? `http://localhost:9090/retrieve-data/get-all?${stringifiedParams}`
+    : `http://localhost:9090/retrieve-data/get-all`;
+};
 
-export const getAllRetrieveData = async (params?: GetAllRetrieveDataParams, options?: RequestInit): Promise<getAllRetrieveDataResponse> => {
-
-  const res = await fetch(getGetAllRetrieveDataUrl(params),
+export const getAllRetrieveData = async (
+  params?: GetAllRetrieveDataParams,
+  options?: RequestInit,
+): Promise<RetrieveDataWithCustomerAndPrice[]> => {
+  return fetchMutator<RetrieveDataWithCustomerAndPrice[]>(
+    getGetAllRetrieveDataUrl(params),
     {
       ...options,
-      method: 'GET'
+      method: "GET",
+    },
+  );
+};
 
-
-    }
-  )
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: getAllRetrieveDataResponse['data'] = body ? JSON.parse(body) : {}
-  return { data, status: res.status, headers: res.headers } as getAllRetrieveDataResponse
-}
-
-
-
-
-
-export const getGetAllRetrieveDataQueryKey = (params?: GetAllRetrieveDataParams,) => {
-  return [
-    `/retrieve-data/get-all`, ...(params ? [params] : [])
-  ] as const;
-}
-
-
-export const getGetAllRetrieveDataQueryOptions = <TData = Awaited<ReturnType<typeof getAllRetrieveData>>, TError = void>(params?: GetAllRetrieveDataParams, options?: { query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof getAllRetrieveData>>, TError, TData>>, fetch?: RequestInit }
+export const getGetAllRetrieveDataQueryKey = (
+  params?: GetAllRetrieveDataParams,
 ) => {
+  return [
+    `http://localhost:9090/retrieve-data/get-all`,
+    ...(params ? [params] : []),
+  ] as const;
+};
 
-  const { query: queryOptions, fetch: fetchOptions } = options ?? {};
-
-  const queryKey = queryOptions?.queryKey ?? getGetAllRetrieveDataQueryKey(params);
-
-
-
-  const queryFn: QueryFunction<Awaited<ReturnType<typeof getAllRetrieveData>>> = ({ signal }) => getAllRetrieveData(params, { signal, ...fetchOptions });
-
-
-
-
-
-  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<Awaited<ReturnType<typeof getAllRetrieveData>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
-}
-
-export type GetAllRetrieveDataQueryResult = NonNullable<Awaited<ReturnType<typeof getAllRetrieveData>>>
-export type GetAllRetrieveDataQueryError = void
-
-
-export function useGetAllRetrieveData<TData = Awaited<ReturnType<typeof getAllRetrieveData>>, TError = void>(
-  params: undefined | GetAllRetrieveDataParams, options: {
-    query: Partial<UseQueryOptions<Awaited<ReturnType<typeof getAllRetrieveData>>, TError, TData>> & Pick<
-      DefinedInitialDataOptions<
+export const getGetAllRetrieveDataQueryOptions = <
+  TData = Awaited<ReturnType<typeof getAllRetrieveData>>,
+  TError = void,
+>(
+  params?: GetAllRetrieveDataParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
         Awaited<ReturnType<typeof getAllRetrieveData>>,
         TError,
-        Awaited<ReturnType<typeof getAllRetrieveData>>
-      >, 'initialData'
-    >, fetch?: RequestInit
-  }
-  , queryClient?: QueryClient
-): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetAllRetrieveData<TData = Awaited<ReturnType<typeof getAllRetrieveData>>, TError = void>(
-  params?: GetAllRetrieveDataParams, options?: {
-    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof getAllRetrieveData>>, TError, TData>> & Pick<
-      UndefinedInitialDataOptions<
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof fetchMutator>;
+  },
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey =
+    queryOptions?.queryKey ?? getGetAllRetrieveDataQueryKey(params);
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof getAllRetrieveData>>
+  > = ({ signal }) => getAllRetrieveData(params, { signal, ...requestOptions });
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof getAllRetrieveData>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type GetAllRetrieveDataQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getAllRetrieveData>>
+>;
+export type GetAllRetrieveDataQueryError = void;
+
+export function useGetAllRetrieveData<
+  TData = Awaited<ReturnType<typeof getAllRetrieveData>>,
+  TError = void,
+>(
+  params: undefined | GetAllRetrieveDataParams,
+  options: {
+    query: Partial<
+      UseQueryOptions<
         Awaited<ReturnType<typeof getAllRetrieveData>>,
         TError,
-        Awaited<ReturnType<typeof getAllRetrieveData>>
-      >, 'initialData'
-    >, fetch?: RequestInit
-  }
-  , queryClient?: QueryClient
-): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetAllRetrieveData<TData = Awaited<ReturnType<typeof getAllRetrieveData>>, TError = void>(
-  params?: GetAllRetrieveDataParams, options?: { query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof getAllRetrieveData>>, TError, TData>>, fetch?: RequestInit }
-  , queryClient?: QueryClient
-): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getAllRetrieveData>>,
+          TError,
+          Awaited<ReturnType<typeof getAllRetrieveData>>
+        >,
+        "initialData"
+      >;
+    request?: SecondParameter<typeof fetchMutator>;
+  },
+  queryClient?: QueryClient,
+): DefinedUseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useGetAllRetrieveData<
+  TData = Awaited<ReturnType<typeof getAllRetrieveData>>,
+  TError = void,
+>(
+  params?: GetAllRetrieveDataParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getAllRetrieveData>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getAllRetrieveData>>,
+          TError,
+          Awaited<ReturnType<typeof getAllRetrieveData>>
+        >,
+        "initialData"
+      >;
+    request?: SecondParameter<typeof fetchMutator>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useGetAllRetrieveData<
+  TData = Awaited<ReturnType<typeof getAllRetrieveData>>,
+  TError = void,
+>(
+  params?: GetAllRetrieveDataParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getAllRetrieveData>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof fetchMutator>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
 
-export function useGetAllRetrieveData<TData = Awaited<ReturnType<typeof getAllRetrieveData>>, TError = void>(
-  params?: GetAllRetrieveDataParams, options?: { query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof getAllRetrieveData>>, TError, TData>>, fetch?: RequestInit }
-  , queryClient?: QueryClient
-): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+export function useGetAllRetrieveData<
+  TData = Awaited<ReturnType<typeof getAllRetrieveData>>,
+  TError = void,
+>(
+  params?: GetAllRetrieveDataParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getAllRetrieveData>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof fetchMutator>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+} {
+  const queryOptions = getGetAllRetrieveDataQueryOptions(params, options);
 
-  const queryOptions = getGetAllRetrieveDataQueryOptions(params, options)
-
-  const query = useQuery(queryOptions, queryClient) as UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
+    TData,
+    TError
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
 
   return { ...query, queryKey: queryOptions.queryKey };
 }
 
-
-
-
-export type postUpdateRetrieveDataResponse200 = {
-  data: void
-  status: 200
-}
-
-export type postUpdateRetrieveDataResponse404 = {
-  data: void
-  status: 404
-}
-
-export type postUpdateRetrieveDataResponseSuccess = (postUpdateRetrieveDataResponse200) & {
-  headers: Headers;
-};
-export type postUpdateRetrieveDataResponseError = (postUpdateRetrieveDataResponse404) & {
-  headers: Headers;
-};
-
-export type postUpdateRetrieveDataResponse = (postUpdateRetrieveDataResponseSuccess | postUpdateRetrieveDataResponseError)
-
 export const getPostUpdateRetrieveDataUrl = () => {
+  return `http://localhost:9090/retrieve-data/update`;
+};
 
-
-
-
-  return `/retrieve-data/update`
-}
-
-export const postUpdateRetrieveData = async (retrieveDataCreateOrUpdate: RetrieveDataCreateOrUpdate, options?: RequestInit): Promise<postUpdateRetrieveDataResponse> => {
-
-  const res = await fetch(getPostUpdateRetrieveDataUrl(),
+export const postUpdateRetrieveData = async (
+  retrieveDataCreateOrUpdate: RetrieveDataCreateOrUpdate,
+  options?: RequestInit,
+): Promise<null | RetrieveDataWithCustomerAndPrice> => {
+  return fetchMutator<null | RetrieveDataWithCustomerAndPrice>(
+    getPostUpdateRetrieveDataUrl(),
     {
       ...options,
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', ...options?.headers },
-      body: JSON.stringify(
-        retrieveDataCreateOrUpdate,)
-    }
-  )
+      method: "POST",
+      headers: { "Content-Type": "application/json", ...options?.headers },
+      body: JSON.stringify(retrieveDataCreateOrUpdate),
+    },
+  );
+};
 
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: postUpdateRetrieveDataResponse['data'] = body ? JSON.parse(body) : {}
-  return { data, status: res.status, headers: res.headers } as postUpdateRetrieveDataResponse
-}
-
-
-
-
-export const getPostUpdateRetrieveDataMutationOptions = <TError = void,
-  TContext = unknown>(options?: { mutation?: UseMutationOptions<Awaited<ReturnType<typeof postUpdateRetrieveData>>, TError, { data: RetrieveDataCreateOrUpdate }, TContext>, fetch?: RequestInit }
-  ): UseMutationOptions<Awaited<ReturnType<typeof postUpdateRetrieveData>>, TError, { data: RetrieveDataCreateOrUpdate }, TContext> => {
-
-  const mutationKey = ['postUpdateRetrieveData'];
-  const { mutation: mutationOptions, fetch: fetchOptions } = options ?
-    options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
-      options
+export const getPostUpdateRetrieveDataMutationOptions = <
+  TError = void,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof postUpdateRetrieveData>>,
+    TError,
+    { data: RetrieveDataCreateOrUpdate },
+    TContext
+  >;
+  request?: SecondParameter<typeof fetchMutator>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof postUpdateRetrieveData>>,
+  TError,
+  { data: RetrieveDataCreateOrUpdate },
+  TContext
+> => {
+  const mutationKey = ["postUpdateRetrieveData"];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
       : { ...options, mutation: { ...options.mutation, mutationKey } }
-    : { mutation: { mutationKey, }, fetch: undefined };
+    : { mutation: { mutationKey }, request: undefined };
 
-
-
-
-  const mutationFn: MutationFunction<Awaited<ReturnType<typeof postUpdateRetrieveData>>, { data: RetrieveDataCreateOrUpdate }> = (props) => {
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof postUpdateRetrieveData>>,
+    { data: RetrieveDataCreateOrUpdate }
+  > = (props) => {
     const { data } = props ?? {};
 
-    return postUpdateRetrieveData(data, fetchOptions)
-  }
+    return postUpdateRetrieveData(data, requestOptions);
+  };
 
+  return { mutationFn, ...mutationOptions };
+};
 
+export type PostUpdateRetrieveDataMutationResult = NonNullable<
+  Awaited<ReturnType<typeof postUpdateRetrieveData>>
+>;
+export type PostUpdateRetrieveDataMutationBody = RetrieveDataCreateOrUpdate;
+export type PostUpdateRetrieveDataMutationError = void;
 
-
-
-
-  return { mutationFn, ...mutationOptions }
-}
-
-export type PostUpdateRetrieveDataMutationResult = NonNullable<Awaited<ReturnType<typeof postUpdateRetrieveData>>>
-export type PostUpdateRetrieveDataMutationBody = RetrieveDataCreateOrUpdate
-export type PostUpdateRetrieveDataMutationError = void
-
-export const usePostUpdateRetrieveData = <TError = void,
-  TContext = unknown>(options?: { mutation?: UseMutationOptions<Awaited<ReturnType<typeof postUpdateRetrieveData>>, TError, { data: RetrieveDataCreateOrUpdate }, TContext>, fetch?: RequestInit }
-    , queryClient?: QueryClient): UseMutationResult<
+export const usePostUpdateRetrieveData = <TError = void, TContext = unknown>(
+  options?: {
+    mutation?: UseMutationOptions<
       Awaited<ReturnType<typeof postUpdateRetrieveData>>,
       TError,
       { data: RetrieveDataCreateOrUpdate },
       TContext
-    > => {
-  return useMutation(getPostUpdateRetrieveDataMutationOptions(options), queryClient);
-}
-
+    >;
+    request?: SecondParameter<typeof fetchMutator>;
+  },
+  queryClient?: QueryClient,
+): UseMutationResult<
+  Awaited<ReturnType<typeof postUpdateRetrieveData>>,
+  TError,
+  { data: RetrieveDataCreateOrUpdate },
+  TContext
+> => {
+  return useMutation(
+    getPostUpdateRetrieveDataMutationOptions(options),
+    queryClient,
+  );
+};

@@ -6,7 +6,9 @@
  * OpenAPI spec version: 0.0.1
  */
 
-export type RetrieveDataCreate = {
-  amount: number;
+export interface CustomerUpdate {
   customer_id: number;
-};
+  customer_name: string;
+  is_active: boolean;
+  is_admin: boolean;
+}

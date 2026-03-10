@@ -6,9 +6,9 @@
  * OpenAPI spec version: 0.0.1
  */
 
-export interface CustomerUpdate {
+export type CustomerUpdate = {
   customer_id: number;
   customer_name: string;
   is_active: boolean;
   is_admin: boolean;
-}
+};

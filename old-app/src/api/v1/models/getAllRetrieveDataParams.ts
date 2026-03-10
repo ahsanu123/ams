@@ -6,7 +6,9 @@
  * OpenAPI spec version: 0.0.1
  */
 
-export type RetrieveDataCreate = {
-  amount: number;
-  customer_id: number;
+export type GetAllRetrieveDataParams = {
+  customer_id?: number;
+  start_month?: number;
+  end_month?: number;
+  year?: number;
 };

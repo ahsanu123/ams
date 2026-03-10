@@ -6,7 +6,8 @@
  * OpenAPI spec version: 0.0.1
  */
 
-export type RetrieveDataCreate = {
+export interface RetrieveDataCreateWithDate {
   amount: number;
   customer_id: number;
-};
+  date: string;
+}

@@ -5,12 +5,12 @@
  * 🥔 AMS - Ampas Management System.
  * OpenAPI spec version: 0.0.1
  */
-import type { TransactionType } from "./transactionType";
+import type { TransactionType } from './transactionType';
 
-export type BalanceCreateOrUpdateWithoutChangedValue = {
+export interface BalanceCreateOrUpdateWithoutChangedValue {
   balance_id: number;
   customer_id: number;
   date: string;
   transaction_type: TransactionType;
   value: number;
-};
+}

@@ -6,7 +6,8 @@
  * OpenAPI spec version: 0.0.1
  */
 
-export type RetrieveDataCreate = {
-  amount: number;
+export interface BillingCreate {
   customer_id: number;
-};
+  from: string;
+  to: string;
+}
