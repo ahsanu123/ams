@@ -107,7 +107,7 @@ impl ToActiveModel<ams_entity::balance::ActiveModel> for BalanceCreateOrUpdate {
     }
 }
 
-#[derive(Debug, Serialize, Deserialize, Clone, TS)]
+#[derive(Debug, Serialize, Deserialize, Clone, ToSchema, TS)]
 #[ts(export)]
 pub struct BalanceWithCustomer {
     pub balance_id: i64,

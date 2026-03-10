@@ -15,13 +15,7 @@ import '@mantine/charts/styles.css';
 import '@mantine/dates/styles.css';
 import '@mantine/notifications/styles.css';
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-// import type { Route } from "./+types/root";
-// import asmLogo from './svg/ams-icon.svg'
-// import { ChakraProvider, createSystem, defaultConfig } from "@chakra-ui/react";
-// import { Toaster } from "./utility";
 // import { IS_INSIDE_TAURI } from "./constants";
-// import { QueryClientProvider } from "@tanstack/react-query";
-// import { queryClient } from "./commands";
 
 const queryClient = new QueryClient();
 
@@ -29,7 +23,7 @@ export default function Root() {
   return (
     <QueryClientProvider client={queryClient}>
       <MantineProvider theme={theme}>
-        <Notifications />
+        <Notifications position='top-left' />
         <Outlet />
       </MantineProvider>
     </QueryClientProvider>

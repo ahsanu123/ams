@@ -23,6 +23,7 @@ import type {
 
 import type {
   BalanceCreateOrUpdateWithoutChangedValue,
+  BalanceWithCustomer,
   GetAllBalanceParams,
   GetLatestBalanceByCustomerIdPathParameters,
 } from "../models";
@@ -38,8 +39,8 @@ export const getPostCreateBalanceUrl = () => {
 export const postCreateBalance = async (
   balanceCreateOrUpdateWithoutChangedValue: BalanceCreateOrUpdateWithoutChangedValue,
   options?: RequestInit,
-): Promise<void> => {
-  return fetchMutator<void>(getPostCreateBalanceUrl(), {
+): Promise<number> => {
+  return fetchMutator<number>(getPostCreateBalanceUrl(), {
     ...options,
     method: "POST",
     headers: { "Content-Type": "application/json", ...options?.headers },
@@ -130,8 +131,8 @@ export const getGetAllBalanceUrl = (params?: GetAllBalanceParams) => {
 export const getAllBalance = async (
   params?: GetAllBalanceParams,
   options?: RequestInit,
-): Promise<void> => {
-  return fetchMutator<void>(getGetAllBalanceUrl(params), {
+): Promise<BalanceWithCustomer[]> => {
+  return fetchMutator<BalanceWithCustomer[]>(getGetAllBalanceUrl(params), {
     ...options,
     method: "GET",
   });
@@ -272,8 +273,8 @@ export const getGetLatestBalanceByCustomerIdUrl = ({
 export const getLatestBalanceByCustomerId = async (
   { customerId }: GetLatestBalanceByCustomerIdPathParameters,
   options?: RequestInit,
-): Promise<void> => {
-  return fetchMutator<void>(
+): Promise<BalanceWithCustomer> => {
+  return fetchMutator<BalanceWithCustomer>(
     getGetLatestBalanceByCustomerIdUrl({ customerId }),
     {
       ...options,

@@ -44,6 +44,10 @@ pub trait CustomerControllerTrait {
         props: CustomerGetAllProp,
     ) -> impl Future<Output = Result<Vec<Customer>, CustomerControllerErr>>;
 
+    fn get_first_customer(
+        &mut self,
+    ) -> impl Future<Output = Result<Customer, CustomerControllerErr>>;
+
     fn update(
         &mut self,
         customer: CustomerUpdate,
@@ -155,6 +159,17 @@ impl CustomerControllerTrait for CustomerController {
             .lock()
             .await
             .delete(customer_id)
+            .await
+            .map_err(|_| CustomerControllerErr::CustomerNotFound)?;
+
+        Ok(result)
+    }
+
+    async fn get_first_customer(&mut self) -> Result<Customer, CustomerControllerErr> {
+        let result = CUSTOMER_REPO
+            .lock()
+            .await
+            .get_first_customer()
             .await
             .map_err(|_| CustomerControllerErr::CustomerNotFound)?;
 

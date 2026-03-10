@@ -9,8 +9,9 @@ use chrono::NaiveDateTime;
 use itertools::{self, Itertools};
 use serde::{Deserialize, Serialize};
 use ts_rs::TS;
+use utoipa::{IntoParams, ToSchema};
 
-#[derive(Debug, Serialize, Deserialize, Clone, TS)]
+#[derive(Debug, Serialize, Deserialize, Clone, ToSchema, TS)]
 #[ts(export)]
 pub struct BillingInfoWithBalance {
     #[ts(type = "Date")]
@@ -31,7 +32,7 @@ pub struct BillingInfoWithBalance {
     pub amount: i64,
 }
 
-#[derive(Debug, Serialize, Deserialize, Clone, TS)]
+#[derive(Debug, Serialize, Deserialize, Clone, ToSchema, TS)]
 #[ts(export)]
 pub struct BillingInfo {
     #[ts(type = "Date")]

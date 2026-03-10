@@ -1,3 +1,4 @@
+import { useGetFirstCustomer } from "@/api/v1/customer-management-controller/customer-management-controller";
 import BottomInformation from "@/components/BottomInformation";
 import BottomCornerLeftInfo from "@/components/BottomLeftInformation";
 import RightSideBar from "@/components/RightSideBar";

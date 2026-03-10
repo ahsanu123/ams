@@ -7,7 +7,7 @@ use crate::{
     },
     repositories::{PRICE_REPO, RETRIEVE_DATA_REPO, base_repository_trait::BaseRepository},
 };
-use chrono::Month;
+use chrono::{Datelike, NaiveDateTime};
 use serde::{Deserialize, Serialize};
 use ts_rs::TS;
 use utoipa::{IntoParams, ToSchema};
@@ -17,6 +17,9 @@ use utoipa::{IntoParams, ToSchema};
 #[ts(export)]
 pub struct RetrieveDataGetAllProps {
     customer_id: Option<i64>,
+
+    #[ts(type = "Date", optional)]
+    month: Option<NaiveDateTime>,
 
     #[ts(type = "number", optional)]
     #[schema(value_type = u8, minimum = 1, maximum = 12)]
@@ -124,6 +127,7 @@ impl RetrieveDataControllerTrait for RetrieveDataController {
                 customer_id: Some(customer_id),
                 start_month: None,
                 end_month: None,
+                month: None,
                 year: None,
             } => RETRIEVE_DATA_REPO
                 .lock()
@@ -136,6 +140,7 @@ impl RetrieveDataControllerTrait for RetrieveDataController {
                 customer_id: None,
                 start_month: Some(from),
                 end_month: Some(to),
+                month: None,
                 year: Some(year),
             } => RETRIEVE_DATA_REPO
                 .lock()
@@ -148,6 +153,7 @@ impl RetrieveDataControllerTrait for RetrieveDataController {
                 customer_id: None,
                 start_month: None,
                 end_month: None,
+                month: None,
                 year: Some(year),
             } => RETRIEVE_DATA_REPO
                 .lock()
@@ -160,6 +166,7 @@ impl RetrieveDataControllerTrait for RetrieveDataController {
                 customer_id: Some(customer_id),
                 start_month: None,
                 end_month: None,
+                month: None,
                 year: Some(year),
             } => RETRIEVE_DATA_REPO
                 .lock()
@@ -172,11 +179,25 @@ impl RetrieveDataControllerTrait for RetrieveDataController {
                 customer_id: Some(customer_id),
                 start_month: Some(from),
                 end_month: Some(to),
+                month: None,
                 year: Some(year),
             } => RETRIEVE_DATA_REPO
                 .lock()
                 .await
-                .get_by_customer_id_and_month(customer_id, year, from as u32, to as u32)
+                .get_by_customer_id_and_month_range(customer_id, year, from as u32, to as u32)
+                .await
+                .unwrap_or_default(),
+
+            RetrieveDataGetAllProps {
+                customer_id: Some(customer_id),
+                start_month: None,
+                end_month: None,
+                month: Some(month),
+                year: None,
+            } => RETRIEVE_DATA_REPO
+                .lock()
+                .await
+                .get_by_customer_id_and_month(customer_id, month)
                 .await
                 .unwrap_or_default(),
 

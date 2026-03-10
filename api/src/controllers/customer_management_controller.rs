@@ -32,6 +32,7 @@ where
         self.service(create)
             .service(update)
             .service(get_all)
+            .service(get_first_customer)
             .service(get_by_id)
             .service(delete)
     }
@@ -42,7 +43,7 @@ where
     tag = TAG_NAME,
     path = "/customer/create/{customer_name}",
     responses(
-        (status = 200, description = "success"),
+        (status = 200, description = "success", body = i64),
         (status = NOT_FOUND, description = "not found")
     ),
     params(
@@ -69,7 +70,7 @@ pub async fn create(_passkey: PassKey, customer_name: Path<String>) -> impl Resp
     tag = TAG_NAME,
     path = "/customer/update",
     responses(
-        (status = 200, description = "success"),
+        (status = 200, description = "success", body = i64),
         (status = NOT_FOUND, description = "not found")
     ),
     request_body(
@@ -84,6 +85,26 @@ pub async fn update(_passkey: PassKey, request: Json<CustomerUpdate>) -> impl Re
 
     match result {
         Ok(id) => HttpResponse::Ok().json(id),
+        Err(err) => HttpResponse::BadRequest().json(err),
+    }
+}
+
+#[utoipa::path(
+    get,
+    tag = TAG_NAME,
+    path = "/customer/first",
+    responses(
+        (status = 200, description = "success", body = Customer),
+        (status = NOT_FOUND, description = "not found")
+    ),
+    operation_id = "getFirstCustomer", 
+)]
+#[get("/customer/first")]
+pub async fn get_first_customer(_passkey: PassKey) -> impl Responder {
+    let result = CUSTOMER_CONTROLLER.lock().await.get_first_customer().await;
+
+    match result {
+        Ok(customer) => HttpResponse::Ok().json(customer),
         Err(err) => HttpResponse::BadRequest().json(err),
     }
 }
@@ -114,7 +135,7 @@ pub async fn get_all(_passkey: PassKey, query: Query<CustomerGetAllProp>) -> imp
     tag = TAG_NAME,
     path = "/customer/{customer_id}",
     responses(
-        (status = 200, description = "success"),
+        (status = 200, description = "success", body = Option<Customer>),
         (status = NOT_FOUND, description = "not found")
     ),
     params(
@@ -141,7 +162,7 @@ pub async fn get_by_id(_passkey: PassKey, customer_id: Path<i64>) -> impl Respon
     tag = TAG_NAME,
     path = "/customer/{customer_id}",
     responses(
-        (status = 200, description = "success"),
+        (status = 200, description = "success", body = u64),
         (status = NOT_FOUND, description = "not found")
     ),
     params(

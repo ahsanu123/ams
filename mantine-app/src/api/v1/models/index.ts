@@ -7,7 +7,10 @@
  */
 
 export * from "./balanceCreateOrUpdateWithoutChangedValue";
+export * from "./balanceWithCustomer";
 export * from "./billingCreate";
+export * from "./billingInfo";
+export * from "./billingInfoWithBalance";
 export * from "./customer";
 export * from "./customerUpdate";
 export * from "./deleteCustomerByCustomerIdPathParameters";

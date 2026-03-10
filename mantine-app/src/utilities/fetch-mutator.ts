@@ -37,13 +37,11 @@ const getUrl = (contextUrl: string): string => {
 };
 
 // FIXME: fix Authorization
-// NOTE: Add headers
 const getHeaders = (headers?: HeadersInit): HeadersInit => {
   return {
     ...headers,
     Authorization: 'token',
     'dev': "1",
-    'Content-Type': 'multipart/form-data',
   };
 };
 

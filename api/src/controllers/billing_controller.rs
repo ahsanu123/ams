@@ -11,7 +11,10 @@ use ams_shared::{
         BILLING_CONTROLLER,
         billing_controller::{BillingControllerTrait, BillingGetByProps, BillingInfoGetAllProps},
     },
-    models::billing::BillingCreate,
+    models::billing::{
+        BillingCreate,
+        billing_info::{BillingInfo, BillingInfoWithBalance},
+    },
 };
 
 static TAG_NAME: &str = "Billing Controller";
@@ -37,7 +40,7 @@ where
     tag = TAG_NAME,
     path = "/billing-info/get-all",
     responses(
-        (status = 200, description = "success"),
+        (status = 200, description = "success", body = Vec<BillingInfo>),
         (status = NOT_FOUND, description = "not found")
     ),
     params(BillingInfoGetAllProps),
@@ -65,7 +68,7 @@ pub async fn get_all_billing_info(
     tag = TAG_NAME,
     path = "/billing/create",
     responses(
-        (status = 200, description = "success"),
+        (status = 200, description = "success", body = BillingInfo),
         (status = NOT_FOUND, description = "not found")
     ),
     request_body(
@@ -89,7 +92,7 @@ pub async fn create(_passkey: PassKey, request: Json<BillingCreate>) -> impl Res
     tag = TAG_NAME,
     path = "/billing/get_by",
     responses(
-        (status = 200, description = "success"),
+        (status = 200, description = "success", body = Vec<BillingInfoWithBalance>),
         (status = NOT_FOUND, description = "not found")
     ),
     params(BillingGetByProps),
@@ -110,7 +113,7 @@ pub async fn get_by(_passkey: PassKey, query: Query<BillingGetByProps>) -> impl 
     tag = TAG_NAME,
     path = "/billing/get-all",
     responses(
-        (status = 200, description = "success"),
+        (status = 200, description = "success", body = Vec<BillingInfoWithBalance>),
         (status = NOT_FOUND, description = "not found")
     ),
     operation_id = "getAllBilling", 

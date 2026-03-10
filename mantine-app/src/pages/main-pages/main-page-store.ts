@@ -1,4 +1,4 @@
-import { Customer } from '@/bindings/Customer'
+import { Customer } from '@/api/v1/models'
 import { create } from 'zustand'
 import { immer } from 'zustand/middleware/immer'
 
@@ -15,7 +15,7 @@ const mainPageStoreDefaultValue: MainPageState = {
 }
 
 
-export const useSidebarStore = create<MainPageStore>()(
+export const useMainPageStore = create<MainPageStore>()(
   immer((set, get) => ({
     ...mainPageStoreDefaultValue,
 

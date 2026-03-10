@@ -1,5 +1,4 @@
-import { RetrieveDataWithCustomerAndPrice } from "@/api/v1/models";
-import { Customer } from "@/bindings/Customer";
+import { Customer, RetrieveDataWithCustomerAndPrice } from "@/api/v1/models";
 import { RetrieveData } from "@/bindings/RetrieveData";
 import { generateCalendarObjectWithRetrieveData, ICalendarDateObject } from "@/utilities/generate-calendar-object";
 import { useLayoutStore } from "@/utilities/layout-store";

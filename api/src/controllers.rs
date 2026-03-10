@@ -45,6 +45,7 @@ use utoipa::{
         crate::controllers::customer_management_controller::create,
         crate::controllers::customer_management_controller::update,
         crate::controllers::customer_management_controller::get_all,
+        crate::controllers::customer_management_controller::get_first_customer,
         crate::controllers::customer_management_controller::get_by_id,
         crate::controllers::customer_management_controller::delete,
         // price controller 

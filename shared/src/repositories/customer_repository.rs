@@ -72,6 +72,19 @@ impl CustomerRepository {
 
         Ok(data)
     }
+
+    pub async fn get_first_customer(&mut self) -> Result<Customer, CustomerRepositoryErr> {
+        let conn = get_database_connection().await;
+
+        let data = CustomerDb::find()
+            .order_by_id_asc()
+            .one(conn)
+            .await
+            .map_err(|_| CustomerRepositoryErr::FailToGetAll)?
+            .ok_or(CustomerRepositoryErr::FailToGetAll)?;
+
+        Ok(data.into())
+    }
 }
 
 impl BaseRepositoryWithCRUType for CustomerRepository {

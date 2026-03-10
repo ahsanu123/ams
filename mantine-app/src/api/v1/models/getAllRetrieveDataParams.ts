@@ -8,6 +8,7 @@
 
 export type GetAllRetrieveDataParams = {
   customer_id?: number;
+  month?: string;
   start_month?: number;
   end_month?: number;
   year?: number;

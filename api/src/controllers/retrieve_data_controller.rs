@@ -45,7 +45,7 @@ where
     tag = TAG_NAME,
     path = "/retrieve-data/create",
     responses(
-        (status = 200, description = "success"),
+        (status = 200, description = "success", body = i64),
         (status = NOT_FOUND, description = "not found")
     ),
     request_body(
@@ -73,7 +73,7 @@ pub async fn create(_passkey: PassKey, request: Json<RetrieveDataCreate>) -> imp
     tag = TAG_NAME,
     path = "/retrieve-data/create-with-date",
     responses(
-        (status = 200, description = "success"),
+        (status = 200, description = "success", body = i64),
         (status = NOT_FOUND, description = "not found")
     ),
     request_body(
@@ -104,7 +104,7 @@ pub async fn create_with_date(
     tag = TAG_NAME,
     path = "/retrieve-data/update",
     responses(
-        (status = 200, description = "success"),
+        (status = 200, description = "success", body = Option<RetrieveDataWithCustomerAndPrice>),
         (status = NOT_FOUND, description = "not found")
     ),
     request_body(
@@ -163,7 +163,7 @@ pub async fn get_all(_passkey: PassKey, request: Query<RetrieveDataGetAllProps>)
         ("retrieve_data_id" = i64, Path, description = "id to delete"),
     ),
     responses(
-        (status = 200, description = "success"),
+        (status = 200, description = "success", body = u64),
         (status = NOT_FOUND, description = "not found")
     ),
     operation_id = "deleteRetrieveDataByRetrieveDataId"

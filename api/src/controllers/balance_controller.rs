@@ -12,7 +12,7 @@ use ams_shared::{
         BALANCE_CONTROLLER,
         balance_controller::{BalanceControllerTrait, BalanceGetAllProps},
     },
-    models::balance::BalanceCreateOrUpdateWithoutChangedValue,
+    models::balance::{BalanceCreateOrUpdateWithoutChangedValue, BalanceWithCustomer},
 };
 
 static TAG_NAME: &str = "Balance Controller";
@@ -39,7 +39,7 @@ where
     tag = TAG_NAME,
     path = "/balance",
     responses(
-        (status = 200, description = "success"),
+        (status = 200, description = "success", body = i64),
         (status = NOT_FOUND, description = "not found")
     ),
     request_body(
@@ -66,7 +66,7 @@ pub async fn add_balance(
     tag = TAG_NAME,
     path = "/balance/latest/{customer_id}",
     responses(
-        (status = 200, description = "success"),
+        (status = 200, description = "success", body = BalanceWithCustomer),
         (status = NOT_FOUND, description = "not found")
     ),
     params(
@@ -96,7 +96,7 @@ pub async fn get_latest_by_customer_id(
     tag = TAG_NAME,
     path = "/balance/get-all",
     responses(
-        (status = 200, description = "success"),
+        (status = 200, description = "success", body = Vec<BalanceWithCustomer>),
         (status = NOT_FOUND, description = "not found")
     ),
     params(BalanceGetAllProps),

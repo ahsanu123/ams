@@ -41,8 +41,8 @@ export const getPostCreateRetrieveDataUrl = () => {
 export const postCreateRetrieveData = async (
   retrieveDataCreate: RetrieveDataCreate,
   options?: RequestInit,
-): Promise<void> => {
-  return fetchMutator<void>(getPostCreateRetrieveDataUrl(), {
+): Promise<number> => {
+  return fetchMutator<number>(getPostCreateRetrieveDataUrl(), {
     ...options,
     method: "POST",
     headers: { "Content-Type": "application/json", ...options?.headers },
@@ -123,8 +123,8 @@ export const getPostCreateRetrieveDataWithDateUrl = () => {
 export const postCreateRetrieveDataWithDate = async (
   retrieveDataCreateWithDate: RetrieveDataCreateWithDate,
   options?: RequestInit,
-): Promise<void> => {
-  return fetchMutator<void>(getPostCreateRetrieveDataWithDateUrl(), {
+): Promise<number> => {
+  return fetchMutator<number>(getPostCreateRetrieveDataWithDateUrl(), {
     ...options,
     method: "POST",
     headers: { "Content-Type": "application/json", ...options?.headers },
@@ -211,8 +211,8 @@ export const getDeleteRetrieveDataByRetrieveDataIdUrl = ({
 export const deleteRetrieveDataByRetrieveDataId = async (
   { retrieveDataId }: DeleteRetrieveDataByRetrieveDataIdPathParameters,
   options?: RequestInit,
-): Promise<void> => {
-  return fetchMutator<void>(
+): Promise<number> => {
+  return fetchMutator<number>(
     getDeleteRetrieveDataByRetrieveDataIdUrl({ retrieveDataId }),
     {
       ...options,
@@ -475,13 +475,16 @@ export const getPostUpdateRetrieveDataUrl = () => {
 export const postUpdateRetrieveData = async (
   retrieveDataCreateOrUpdate: RetrieveDataCreateOrUpdate,
   options?: RequestInit,
-): Promise<void> => {
-  return fetchMutator<void>(getPostUpdateRetrieveDataUrl(), {
-    ...options,
-    method: "POST",
-    headers: { "Content-Type": "application/json", ...options?.headers },
-    body: JSON.stringify(retrieveDataCreateOrUpdate),
-  });
+): Promise<null | RetrieveDataWithCustomerAndPrice> => {
+  return fetchMutator<null | RetrieveDataWithCustomerAndPrice>(
+    getPostUpdateRetrieveDataUrl(),
+    {
+      ...options,
+      method: "POST",
+      headers: { "Content-Type": "application/json", ...options?.headers },
+      body: JSON.stringify(retrieveDataCreateOrUpdate),
+    },
+  );
 };
 
 export const getPostUpdateRetrieveDataMutationOptions = <

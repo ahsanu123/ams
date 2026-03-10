@@ -23,6 +23,8 @@ import type {
 
 import type {
   BillingCreate,
+  BillingInfo,
+  BillingInfoWithBalance,
   GetAllBillingInfoParams,
   GetBillingByPropsParams,
 } from "../models";
@@ -50,8 +52,8 @@ export const getGetAllBillingInfoUrl = (params?: GetAllBillingInfoParams) => {
 export const getAllBillingInfo = async (
   params?: GetAllBillingInfoParams,
   options?: RequestInit,
-): Promise<void> => {
-  return fetchMutator<void>(getGetAllBillingInfoUrl(params), {
+): Promise<BillingInfo[]> => {
+  return fetchMutator<BillingInfo[]>(getGetAllBillingInfoUrl(params), {
     ...options,
     method: "GET",
   });
@@ -213,8 +215,8 @@ export const getPostCreateBillingUrl = () => {
 export const postCreateBilling = async (
   billingCreate: BillingCreate,
   options?: RequestInit,
-): Promise<void> => {
-  return fetchMutator<void>(getPostCreateBillingUrl(), {
+): Promise<BillingInfo> => {
+  return fetchMutator<BillingInfo>(getPostCreateBillingUrl(), {
     ...options,
     method: "POST",
     headers: { "Content-Type": "application/json", ...options?.headers },
@@ -289,8 +291,10 @@ export const getGetAllBillingUrl = () => {
   return `http://localhost:9090/billing/get-all`;
 };
 
-export const getAllBilling = async (options?: RequestInit): Promise<void> => {
-  return fetchMutator<void>(getGetAllBillingUrl(), {
+export const getAllBilling = async (
+  options?: RequestInit,
+): Promise<BillingInfoWithBalance[]> => {
+  return fetchMutator<BillingInfoWithBalance[]>(getGetAllBillingUrl(), {
     ...options,
     method: "GET",
   });
@@ -431,11 +435,14 @@ export const getGetBillingByPropsUrl = (params?: GetBillingByPropsParams) => {
 export const getBillingByProps = async (
   params?: GetBillingByPropsParams,
   options?: RequestInit,
-): Promise<void> => {
-  return fetchMutator<void>(getGetBillingByPropsUrl(params), {
-    ...options,
-    method: "GET",
-  });
+): Promise<BillingInfoWithBalance[]> => {
+  return fetchMutator<BillingInfoWithBalance[]>(
+    getGetBillingByPropsUrl(params),
+    {
+      ...options,
+      method: "GET",
+    },
+  );
 };
 
 export const getGetBillingByPropsQueryKey = (

@@ -43,8 +43,8 @@ export const getPostCreateCustomerByCustomerNameUrl = ({
 export const postCreateCustomerByCustomerName = async (
   { customerName }: PostCreateCustomerByCustomerNamePathParameters,
   options?: RequestInit,
-): Promise<void> => {
-  return fetchMutator<void>(
+): Promise<number> => {
+  return fetchMutator<number>(
     getPostCreateCustomerByCustomerNameUrl({ customerName }),
     {
       ...options,
@@ -122,6 +122,151 @@ export const usePostCreateCustomerByCustomerName = <
     queryClient,
   );
 };
+export const getGetFirstCustomerUrl = () => {
+  return `http://localhost:9090/customer/first`;
+};
+
+export const getFirstCustomer = async (
+  options?: RequestInit,
+): Promise<Customer> => {
+  return fetchMutator<Customer>(getGetFirstCustomerUrl(), {
+    ...options,
+    method: "GET",
+  });
+};
+
+export const getGetFirstCustomerQueryKey = () => {
+  return [`http://localhost:9090/customer/first`] as const;
+};
+
+export const getGetFirstCustomerQueryOptions = <
+  TData = Awaited<ReturnType<typeof getFirstCustomer>>,
+  TError = void,
+>(options?: {
+  query?: Partial<
+    UseQueryOptions<Awaited<ReturnType<typeof getFirstCustomer>>, TError, TData>
+  >;
+  request?: SecondParameter<typeof fetchMutator>;
+}) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey = queryOptions?.queryKey ?? getGetFirstCustomerQueryKey();
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof getFirstCustomer>>
+  > = ({ signal }) => getFirstCustomer({ signal, ...requestOptions });
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof getFirstCustomer>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type GetFirstCustomerQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getFirstCustomer>>
+>;
+export type GetFirstCustomerQueryError = void;
+
+export function useGetFirstCustomer<
+  TData = Awaited<ReturnType<typeof getFirstCustomer>>,
+  TError = void,
+>(
+  options: {
+    query: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getFirstCustomer>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getFirstCustomer>>,
+          TError,
+          Awaited<ReturnType<typeof getFirstCustomer>>
+        >,
+        "initialData"
+      >;
+    request?: SecondParameter<typeof fetchMutator>;
+  },
+  queryClient?: QueryClient,
+): DefinedUseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useGetFirstCustomer<
+  TData = Awaited<ReturnType<typeof getFirstCustomer>>,
+  TError = void,
+>(
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getFirstCustomer>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getFirstCustomer>>,
+          TError,
+          Awaited<ReturnType<typeof getFirstCustomer>>
+        >,
+        "initialData"
+      >;
+    request?: SecondParameter<typeof fetchMutator>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useGetFirstCustomer<
+  TData = Awaited<ReturnType<typeof getFirstCustomer>>,
+  TError = void,
+>(
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getFirstCustomer>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof fetchMutator>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+
+export function useGetFirstCustomer<
+  TData = Awaited<ReturnType<typeof getFirstCustomer>>,
+  TError = void,
+>(
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getFirstCustomer>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof fetchMutator>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+} {
+  const queryOptions = getGetFirstCustomerQueryOptions(options);
+
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
+    TData,
+    TError
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
 export const getGetAllCustomerByPropsUrl = (
   params?: GetAllCustomerByPropsParams,
 ) => {
@@ -307,8 +452,8 @@ export const getPostUpdateCustomerUrl = () => {
 export const postUpdateCustomer = async (
   customerUpdate: CustomerUpdate,
   options?: RequestInit,
-): Promise<void> => {
-  return fetchMutator<void>(getPostUpdateCustomerUrl(), {
+): Promise<number> => {
+  return fetchMutator<number>(getPostUpdateCustomerUrl(), {
     ...options,
     method: "POST",
     headers: { "Content-Type": "application/json", ...options?.headers },
@@ -391,11 +536,14 @@ export const getGetCustomerByCustomerIdUrl = ({
 export const getCustomerByCustomerId = async (
   { customerId }: GetCustomerByCustomerIdPathParameters,
   options?: RequestInit,
-): Promise<void> => {
-  return fetchMutator<void>(getGetCustomerByCustomerIdUrl({ customerId }), {
-    ...options,
-    method: "GET",
-  });
+): Promise<null | Customer> => {
+  return fetchMutator<null | Customer>(
+    getGetCustomerByCustomerIdUrl({ customerId }),
+    {
+      ...options,
+      method: "GET",
+    },
+  );
 };
 
 export const getGetCustomerByCustomerIdQueryKey = ({
@@ -563,11 +711,14 @@ export const getDeleteCustomerByCustomerIdUrl = ({
 export const deleteCustomerByCustomerId = async (
   { customerId }: DeleteCustomerByCustomerIdPathParameters,
   options?: RequestInit,
-): Promise<void> => {
-  return fetchMutator<void>(getDeleteCustomerByCustomerIdUrl({ customerId }), {
-    ...options,
-    method: "DELETE",
-  });
+): Promise<number> => {
+  return fetchMutator<number>(
+    getDeleteCustomerByCustomerIdUrl({ customerId }),
+    {
+      ...options,
+      method: "DELETE",
+    },
+  );
 };
 
 export const getDeleteCustomerByCustomerIdMutationOptions = <

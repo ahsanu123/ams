@@ -18,7 +18,7 @@ use ams_entity::price::Model as PriceModel;
 use ams_entity::retrieve_data as retrieve_data_db;
 use ams_entity::retrieve_data::Model as RetrieveDataModel;
 use ams_entity::{customer, price};
-use chrono::{Datelike, Month, NaiveDate};
+use chrono::{Datelike, Month, Months, NaiveDate, NaiveDateTime};
 use sea_orm::{prelude::*, query::*};
 
 pub enum RetrieveDataRepositoryErr {
@@ -135,6 +135,34 @@ impl RetrieveDataRepository {
     }
 
     pub async fn get_by_customer_id_and_month(
+        &mut self,
+        customer_id: i64,
+        month: NaiveDateTime,
+    ) -> Result<Vec<RetrieveDataWithCustomerAndPrice>, RetrieveDataRepositoryErr> {
+        let conn = get_database_connection().await;
+
+        let start_date = NaiveDate::from_ymd_opt(month.year(), month.month(), 1)
+            .ok_or(RetrieveDataRepositoryErr::FailToGetByMonth)?
+            .and_hms_opt(0, 0, 0)
+            .unwrap();
+
+        let end_date = start_date + Months::new(1);
+
+        let data = RetrieveDataDb::find()
+            .filter(retrieve_data_db::Column::CustomerId.eq(customer_id))
+            .filter(retrieve_data_db::Column::Date.between(start_date, end_date))
+            .find_also_related(price::Entity)
+            .find_also_related(customer::Entity)
+            .all(conn)
+            .await
+            .map_err(|_| RetrieveDataRepositoryErr::FailToGetByCustomerIdAndMonth)?;
+
+        let retrieves_data = self.map_retrieve_data_db_to_final_model(data).await?;
+
+        Ok(retrieves_data)
+    }
+
+    pub async fn get_by_customer_id_and_month_range(
         &mut self,
         customer_id: i64,
         year: i32,
