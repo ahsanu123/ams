@@ -4,9 +4,9 @@ import { usePostCreateRetrieveData } from "@/api/v1/retrieve-data-controller/ret
 import CustomerPicker from "@/components/CustomerPicker";
 import VirtualKeypad from "@/components/VirtualKeypad";
 import { useSidebarStore } from "@/global-stores/right-sidebar-store";
+import { useMainPageStore } from "@/pages/main-pages/main-page-store";
 import { notifications } from "@mantine/notifications";
 import { useEffect, useState } from "react";
-import { useMainPageStore } from "../main-page-store";
 
 export default function MainPageCustomerPicker() {
 

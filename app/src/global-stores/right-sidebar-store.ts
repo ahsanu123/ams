@@ -8,6 +8,7 @@ export enum SideBarComponentType {
   AdminLogin,
   Statistics,
   MainPageCustomerPicker,
+  AdminMenu
 }
 
 interface SideBarState {

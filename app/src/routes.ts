@@ -19,11 +19,13 @@ export enum SecretRoutes {
 export enum AdminRoutes {
   AdminRoot = "/admin",
 
-  ReportPage = "/report-page",
-  MakePaymentPage = "/make-payment-page",
-  ListPaymentPage = "/list-payment-page",
+  ReportPage = "/report",
+  PaymentPage = "/payment",
+  ListPaymentPage = "/list-payment",
   UpdateTakingRecord = "/update-taking-record",
-  UserManagementPage = "/user-management-page",
+  CustomerManagementPage = "/customer-management",
+  PricesPage = "/prices",
+  GreetPage = "/greeting"
 }
 
 export default [
@@ -31,6 +33,27 @@ export default [
     index("./pages/main-pages/MainPage.tsx", {
       id: AppRoutes.Root
     }),
+
+    ...prefix(AdminRoutes.AdminRoot, [
+
+      route(AdminRoutes.CustomerManagementPage, "./pages/customer-management-page/CustomerManagementPage.tsx", {
+        id: `${AdminRoutes.AdminRoot}${AdminRoutes.CustomerManagementPage}`
+      }),
+
+      route(AdminRoutes.PaymentPage, "./pages/payment-page/PaymentPage.tsx", {
+        id: `${AdminRoutes.AdminRoot}${AdminRoutes.PaymentPage}`
+      }),
+
+      route(AdminRoutes.PricesPage, "./pages/prices-page/PricesPage.tsx", {
+        id: `${AdminRoutes.AdminRoot}${AdminRoutes.PricesPage}`
+      }),
+
+      route(AdminRoutes.GreetPage, "./pages/admin-greet-page/AdminGreetPage.tsx", {
+        id: `${AdminRoutes.AdminRoot}${AdminRoutes.GreetPage}`
+      }),
+
+    ])
+
   ]),
   // =========================================================
   // Customer Routes

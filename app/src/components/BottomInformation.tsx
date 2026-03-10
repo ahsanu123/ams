@@ -8,7 +8,7 @@ interface BottomInformation {
 }
 
 export default function BottomInformation(_props: BottomInformation) {
-  const setDisplayedComponentType = useSidebarStore(store => store.setDisplayedComponent);
+  const setSidebarComponent = useSidebarStore(store => store.setDisplayedComponent);
   return (
     <Flex
       p={"2px 10px"}
@@ -28,7 +28,7 @@ export default function BottomInformation(_props: BottomInformation) {
         <ActionIcon
           size={"60px"}
           variant="filled"
-          onClick={() => setDisplayedComponentType(SideBarComponentType.Statistics)}
+          onClick={() => setSidebarComponent(SideBarComponentType.Statistics)}
         >
           <IoStatsChart size={"60px"} />
         </ActionIcon>
@@ -36,7 +36,7 @@ export default function BottomInformation(_props: BottomInformation) {
         <ActionIcon
           size={"60px"}
           variant="filled"
-          onClick={() => setDisplayedComponentType(SideBarComponentType.AdminLogin)}
+          onClick={() => setSidebarComponent(SideBarComponentType.AdminLogin)}
         >
           <MdAdminPanelSettings size={"60px"} />
         </ActionIcon>

@@ -3,7 +3,9 @@ import { Group, Stack, Title, Text } from "@mantine/core";
 import { ReactNode } from "react";
 import VirtualKeypad from "./VirtualKeypad";
 import { SideBarComponentType, useSidebarStore } from "@/global-stores/right-sidebar-store";
-import MainPageCustomerPicker from "@/pages/main-pages/components/MainPageCustomerPicker";
+import MainPageCustomerPicker from "@/sidebars-component/MainPageCustomerPicker";
+import AdminLoginSidebar from "@/sidebars-component/AdminLoginSidebar";
+import AdminMenuSidebar from "@/sidebars-component/AdminMenuSidebar";
 
 interface ReactNodeWithId {
   id: string,
@@ -17,7 +19,7 @@ const routeToSideBarMap = new Map<SideBarComponentType, ReactNodeWithId>([
   }],
   [SideBarComponentType.AdminLogin, {
     id: "admin-login",
-    component: () => <VirtualKeypad handleOnConfirm={() => undefined} />
+    component: () => <AdminLoginSidebar />,
   }],
   [SideBarComponentType.Statistics, {
     id: "statistic",
@@ -26,6 +28,10 @@ const routeToSideBarMap = new Map<SideBarComponentType, ReactNodeWithId>([
   [SideBarComponentType.MainPageCustomerPicker, {
     id: "main-page-customer-picker",
     component: () => <MainPageCustomerPicker />
+  }],
+  [SideBarComponentType.AdminMenu, {
+    id: "admin-menu",
+    component: () => <AdminMenuSidebar />
   }],
 ]);
 
