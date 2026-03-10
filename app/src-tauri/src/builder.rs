@@ -1,6 +1,6 @@
 use crate::commands::{
-    customer_command, dreg_price_command, make_payment_page_command, payment_history_command,
-    taking_record_command, user_management_command,
+    balance_controller, billing_controller, customer_management_controller, price_controller,
+    retrieve_data_controller,
 };
 use std::env;
 
@@ -10,45 +10,35 @@ pub fn build_and_run() {
             std::thread::spawn(ams_api::start_server_blocking);
             Ok(())
         })
-        // .plugin(tauri_plugin_log::Builder::new().build())
         .plugin(tauri_plugin_opener::init())
         .invoke_handler(tauri::generate_handler![
-            // customer_command
-            customer_command::delete_customer,
-            customer_command::get_all_user_money_history,
-            customer_command::add_money,
-            // dreg_price_command
-            dreg_price_command::get_latest_dreg_price,
-            dreg_price_command::update_dreg_price,
-            dreg_price_command::get_all_dreg_price,
-            // make_payment_page_command
-            make_payment_page_command::payment_page_get_page_model,
-            make_payment_page_command::payment_page_make_payment,
-            // payment_history_command
-            payment_history_command::get_payment_record_by_user_id,
-            payment_history_command::get_month_summary,
-            payment_history_command::get_payment_record_by_user_id_and_month,
-            payment_history_command::update_payment_record,
-            payment_history_command::update_bulk_payment_record,
-            // taking_record_command
-            taking_record_command::get_taking_record_by_day,
-            taking_record_command::upsert_taking_record_by_date,
-            taking_record_command::delete_taking_record_by_id,
-            taking_record_command::add_new_taking_record,
-            taking_record_command::add_new_taking_record_by_date,
-            taking_record_command::get_taking_record_by_user_id,
-            taking_record_command::upsert_taking_record,
-            taking_record_command::get_taking_record_by_month,
-            taking_record_command::get_taking_record_by_user_id_and_month_range,
-            taking_record_command::get_taking_record_by_user_id_and_month,
-            taking_record_command::get_taking_record_by_user_id_and_year,
-            // user_management_command
-            user_management_command::create_new_user,
-            user_management_command::insert_new_user,
-            user_management_command::get_all_user,
-            user_management_command::get_all_active_user,
-            user_management_command::upsert_user,
-            user_management_command::get_by_user_id,
+            // price_command
+            price_controller::price_get_latest,
+            price_controller::price_update,
+            price_controller::price_get_all,
+            price_controller::price_delete,
+            // customer_management_command
+            customer_management_controller::customer_management_create,
+            customer_management_controller::customer_management_update,
+            customer_management_controller::customer_management_get_first_customer,
+            customer_management_controller::customer_management_get_all,
+            customer_management_controller::customer_management_get_by_id,
+            customer_management_controller::customer_management_delete,
+            // billing_command
+            billing_controller::get_all_billing_info,
+            billing_controller::billing_create,
+            billing_controller::billing_get_by,
+            billing_controller::get_all_billing,
+            // balance_command
+            balance_controller::balance_add_balance,
+            balance_controller::balance_get_latest_by_customer_id,
+            balance_controller::balance_get_all,
+            // retrieve_data_command
+            retrieve_data_controller::retrieve_data_create,
+            retrieve_data_controller::retrieve_data_create_with_date,
+            retrieve_data_controller::retrieve_data_update,
+            retrieve_data_controller::retrieve_data_get_all,
+            retrieve_data_controller::retrieve_data_delete,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

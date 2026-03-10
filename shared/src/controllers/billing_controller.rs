@@ -27,8 +27,10 @@ pub struct BillingInfoGetAllProps {
     month: Option<i32>,
 
     #[ts(type = "Date")]
+    #[param(nullable)]
     from: Option<NaiveDateTime>,
     #[ts(type = "Date")]
+    #[param(nullable)]
     to: Option<NaiveDateTime>,
 }
 

@@ -6,6 +6,7 @@ import { SideBarComponentType, useSidebarStore } from "@/global-stores/right-sid
 import MainPageCustomerPicker from "@/sidebars-component/MainPageCustomerPicker";
 import AdminLoginSidebar from "@/sidebars-component/AdminLoginSidebar";
 import AdminMenuSidebar from "@/sidebars-component/AdminMenuSidebar";
+import PaymentPageCustomerPicker from "@/sidebars-component/PaymentPageCustomerPicker";
 
 interface ReactNodeWithId {
   id: string,
@@ -32,6 +33,10 @@ const routeToSideBarMap = new Map<SideBarComponentType, ReactNodeWithId>([
   [SideBarComponentType.AdminMenu, {
     id: "admin-menu",
     component: () => <AdminMenuSidebar />
+  }],
+  [SideBarComponentType.PaymentPageCustomerPicker, {
+    id: "payment-page-customer-picker",
+    component: () => <PaymentPageCustomerPicker />
   }],
 ]);
 
