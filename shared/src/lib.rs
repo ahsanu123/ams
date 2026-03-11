@@ -7,14 +7,6 @@ pub mod controllers;
 
 use std::env;
 
-// pub use commands::customer_money_command::CustomerMoneyCommandTrait;
-// pub use commands::dreg_price_command::DregPriceCommandTrait;
-// pub use commands::make_payment_command::MakePaymentCommandTrait;
-// pub use commands::payment_history_command::PaymentHistoryCommandTrait;
-// pub use commands::production_record_command::ProductionRecordCommandTrait;
-// pub use commands::taking_record_command::TakingRecordCommandTrait;
-// pub use commands::user_management_command::UserManagementCommandTrait;
-
 use crate::helper::ENV_VAR;
 use crate::helper::environment_variable::EnvironmentVariable;
 

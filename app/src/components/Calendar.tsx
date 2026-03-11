@@ -12,6 +12,8 @@ interface CalendarProps {
   date?: Date,
   retrievesData?: RetrieveDataWithCustomerAndPrice[],
   customer?: Customer,
+  isShowDateGrid?: boolean,
+  gridComponent?: () => ReactNode,
   rightTopMenu?: () => ReactNode,
   onPrevMonth?: (date: Date) => void,
   onNextMonth?: (date: Date) => void,
@@ -24,6 +26,8 @@ export default function Calendar(props: CalendarProps) {
     date = new Date(),
     retrievesData,
     customer,
+    isShowDateGrid = true,
+    gridComponent,
     onPrevMonth,
     onNextMonth,
     onDateClick,
@@ -125,35 +129,38 @@ export default function Calendar(props: CalendarProps) {
         </Group>
       </Flex>
 
-      <Grid columns={7}>
-        {
-          calendarObjs.staticDays.map((day, index) => (
-            <Grid.Col
-              key={index}
-              span={1}
-            >
-              <Center>
-                <Text
-                  size="xl"
-                  fw={'bold'}
-                >
-                  {day}
-                </Text>
-              </Center>
-            </Grid.Col>
-          ))
-        }
-        {
-          calendarObjs.dates.map((dateObj, index) => (
-            <Grid.Col
-              key={index}
-              span={1}
-            >
-              {pickCard(dateObj)}
-            </Grid.Col>
-          ))
-        }
-      </Grid>
+      {isShowDateGrid ? (
+        <Grid columns={7}>
+          {
+            calendarObjs.staticDays.map((day, index) => (
+              <Grid.Col
+                key={index}
+                span={1}
+              >
+                <Center>
+                  <Text
+                    size="xl"
+                    fw={'bold'}
+                  >
+                    {day}
+                  </Text>
+                </Center>
+              </Grid.Col>
+            ))
+          }
+          {
+            calendarObjs.dates.map((dateObj, index) => (
+              <Grid.Col
+                key={index}
+                span={1}
+              >
+                {pickCard(dateObj)}
+              </Grid.Col>
+            ))
+          }
+        </Grid>
+      )
+        : (gridComponent?.())}
     </Stack>
   )
 }

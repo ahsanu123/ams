@@ -1,6 +1,12 @@
-import { format } from "date-fns";
+import { format, parseISO } from "date-fns";
 import { id } from "date-fns/locale";
 
-export function formatDateId(date: Date, pattern: string = "PPPPp") {
-  return format(date, pattern, { locale: id })
+export function formatDateId(date: Date | string, pattern: string = "PPPPp") {
+  if (typeof (date) === 'string') {
+    return format(parseISO(date), pattern, { locale: id })
+  }
+  else {
+    return format(date, pattern, { locale: id })
+  }
 }
+

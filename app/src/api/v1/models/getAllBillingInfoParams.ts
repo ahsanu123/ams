@@ -10,6 +10,12 @@ export type GetAllBillingInfoParams = {
   customer_id?: number;
   year?: number;
   month?: number;
-  from?: string;
-  to?: string;
+  /**
+   * @nullable
+   */
+  from?: string | null;
+  /**
+   * @nullable
+   */
+  to?: string | null;
 };
