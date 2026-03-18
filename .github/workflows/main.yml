@@ -6,59 +6,6 @@ on:
     branches: [release]
 
 jobs:
-  build_armv7:
-    runs-on: ubuntu-latest
-    name: Build on Ubuntu armv7
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Build inside armv7 environment
-        id: runcmd
-        uses: uraimo/run-on-arch-action@v3
-        with:
-          arch: armv7
-          distro: ubuntu24.04
-          githubToken: ${{ github.token }}
-          run: |
-            echo "📦 Installing system dependencies..."
-            apt-get update
-            apt-get install -y \
-              libwebkit2gtk-4.1-dev \
-              build-essential \
-              curl \
-              wget \
-              file \
-              libxdo-dev \
-              libssl-dev \
-              just \
-              libayatana-appindicator3-dev \
-              librsvg2-dev
-
-            echo "🦀 Installing Rust..."
-            curl https://sh.rustup.rs -sSf | sh -s -- -y
-            source $HOME/.cargo/env
-            # rustup target add armv7-unknown-linux-gnueabihf
-            rustup default stable
-
-            echo "🟢 Installing Node & Yarn..."
-            curl -fsSL https://deb.nodesource.com/setup_20.x | bash -
-            apt-get install -y nodejs
-            npm install -g yarn
-
-            echo "🚀 Building Tauri app..."
-            cd app && yarn install
-            cd ../incubator && just
-
-            echo "BUILD_DONE"
-
-      - name: Upload armv7 binary
-        uses: actions/upload-artifact@v4
-        with:
-          name: ams-release-armv7
-          path: | 
-            incubator
-
   build_aarch64:
     runs-on: ubuntu-latest
     name: Build on Ubuntu aarch64
