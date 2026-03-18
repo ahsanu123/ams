@@ -7,8 +7,7 @@ use crate::{
         to_active_model_trait::ToActiveModel,
     },
     repositories::{
-        base_repository_trait::{BaseRepository, BaseRepositoryErr, BaseRepositoryWithCRUType},
-        billing_repository::BillingRepository,
+        base_repository_trait::{BaseRepositoryErr, BaseRepositoryWithCRUType},
         database_connection::get_database_connection,
         generic_crud_repository::GenericCrudRepository,
     },
@@ -24,10 +23,7 @@ use ams_entity::prelude::BalanceBilling as BalanceBillingDb;
 use ams_entity::prelude::Billing as BillingDb;
 use ams_entity::prelude::Customer as CustomerDb;
 use chrono::NaiveDate;
-use sea_orm::{
-    ColumnTrait, EntityTrait, JoinType, QueryFilter, QuerySelect, Related, RelationTrait,
-    TransactionTrait,
-};
+use sea_orm::{ColumnTrait, EntityTrait, JoinType, QueryFilter, QuerySelect, RelationTrait};
 
 pub enum BalanceBillingRepositoryErr {
     FailToGetByCustomerId,

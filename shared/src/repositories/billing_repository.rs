@@ -1,21 +1,13 @@
-use std::collections::HashMap;
-
 use crate::{
     models::{
         billing::{
             Billing, BillingCreate, BillingUpdate,
             billing_info::{BillingInfo, BillingInfoWithBalance},
-            billing_with_retrieve_data::BillingWithRetrieveData,
         },
         customer::Customer,
-        price::Price,
-        retrieve_data::{
-            RetrieveData, retrieve_data_with_customer_and_price::RetrieveDataWithCustomerAndPrice,
-        },
     },
     repositories::{
         base_repository_trait::{BaseRepositoryErr, BaseRepositoryWithCRUType},
-        database_connection::get_database_connection,
         generic_crud_repository::GenericCrudRepository,
     },
     sqls::billing::{
@@ -25,18 +17,9 @@ use crate::{
         update_by_billing,
     },
 };
-use ams_entity::billing_retrieve_data as billing_retrieve_data_db;
 use ams_entity::prelude::Billing as BillingDb;
 use ams_entity::prelude::Customer as CustomerDb;
-use ams_entity::prelude::Price as PriceDb;
-use ams_entity::prelude::RetrieveData as RetrieveDataDb;
-use ams_entity::retrieve_data as retrieve_data_db;
 use chrono::{Datelike, NaiveDate, NaiveDateTime};
-use itertools::Itertools;
-use sea_orm::{
-    ColumnTrait, EntityTrait, ExprTrait, JoinType, QueryFilter, QuerySelect, RelationTrait,
-    prelude::Expr,
-};
 
 #[derive(Debug)]
 pub enum BillingRepositoryErr {

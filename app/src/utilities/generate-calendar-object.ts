@@ -11,7 +11,7 @@ import {
   addDays,
   addMonths,
 } from "date-fns";
-import { da, id } from "date-fns/locale"
+import { id } from "date-fns/locale"
 
 export enum Day {
   Sunday = 0,

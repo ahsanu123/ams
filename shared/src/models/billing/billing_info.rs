@@ -1,15 +1,12 @@
-use crate::{
-    models::{
-        balance::BalanceWithCustomer, customer::Customer, price::Price,
-        retrieve_data::retrieve_data_with_customer_and_price::RetrieveDataWithCustomerAndPrice,
-    },
-    sqls::billing::{get_billing_info_by_date, get_billing_info_by_date_and_customer_id},
+use crate::models::{
+    balance::BalanceWithCustomer,
+    retrieve_data::retrieve_data_with_customer_and_price::RetrieveDataWithCustomerAndPrice,
 };
 use chrono::NaiveDateTime;
-use itertools::{self, Itertools};
+use itertools::Itertools as _;
 use serde::{Deserialize, Serialize};
 use ts_rs::TS;
-use utoipa::{IntoParams, ToSchema};
+use utoipa::ToSchema;
 
 #[derive(Debug, Serialize, Deserialize, Clone, ToSchema, TS)]
 #[ts(export)]
@@ -50,14 +47,6 @@ pub struct BillingInfo {
 
     pub bill: f32,
     pub amount: i64,
-}
-
-impl From<get_billing_info_by_date::GetQueryResult>
-    for (BillingInfo, Vec<RetrieveDataWithCustomerAndPrice>)
-{
-    fn from(value: get_billing_info_by_date::GetQueryResult) -> Self {
-        todo!()
-    }
 }
 
 #[cfg(test)]

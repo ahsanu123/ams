@@ -1,4 +1,4 @@
-import { Customer, CustomerUpdate } from '@/api/v1/models'
+import { Customer } from '@/api/v1/models'
 import { addMonths, subMonths } from 'date-fns'
 import { create } from 'zustand'
 import { immer } from 'zustand/middleware/immer'

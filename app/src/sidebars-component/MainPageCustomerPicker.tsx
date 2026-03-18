@@ -1,4 +1,4 @@
-import { useGetAllCustomerByProps, usePostUpdateCustomer } from "@/api/v1/customer-management-controller/customer-management-controller";
+import { useGetAllCustomerByProps } from "@/api/v1/customer-management-controller/customer-management-controller";
 import { Customer } from "@/api/v1/models";
 import { usePostCreateRetrieveData } from "@/api/v1/retrieve-data-controller/retrieve-data-controller";
 import CustomerPicker from "@/components/CustomerPicker";

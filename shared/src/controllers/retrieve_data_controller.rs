@@ -7,7 +7,7 @@ use crate::{
     },
     repositories::{PRICE_REPO, RETRIEVE_DATA_REPO, base_repository_trait::BaseRepository},
 };
-use chrono::{Datelike, NaiveDateTime};
+use chrono::NaiveDateTime;
 use serde::{Deserialize, Serialize};
 use ts_rs::TS;
 use utoipa::{IntoParams, ToSchema};

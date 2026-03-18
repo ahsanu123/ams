@@ -2,7 +2,7 @@ use chrono::{Local, NaiveDateTime};
 use sea_orm::ActiveValue::{NotSet, Set};
 use serde::{Deserialize, Serialize};
 use ts_rs::TS;
-use utoipa::{IntoParams, ToSchema};
+use utoipa::ToSchema;
 
 use crate::models::to_active_model_trait::ToActiveModel;
 

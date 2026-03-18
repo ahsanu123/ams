@@ -1,11 +1,11 @@
 use crate::{
     models::{
-        balance::{self, BalanceCreateOrUpdate, BalanceWithCustomer},
+        balance::{BalanceCreateOrUpdate, BalanceWithCustomer},
         customer::Customer,
         to_active_model_trait::ToActiveModel,
     },
     repositories::{
-        base_repository_trait::{BaseRepository, BaseRepositoryErr, BaseRepositoryWithCRUType},
+        base_repository_trait::{BaseRepositoryErr, BaseRepositoryWithCRUType},
         database_connection::get_database_connection,
         generic_crud_repository::GenericCrudRepository,
     },

@@ -1,8 +1,6 @@
 // FIXME: correct this
-
 import { notifications } from "@mantine/notifications";
 import { format, isValid, parseISO } from "date-fns";
-import { throwDeprecation } from "node:process";
 
 const DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss"
 

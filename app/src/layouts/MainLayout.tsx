@@ -3,7 +3,7 @@ import BottomInformation from "@/components/BottomInformation";
 import BottomCornerLeftInfo from "@/components/BottomLeftInformation";
 import RightSideBar from "@/components/RightSideBar";
 import { useLayoutStore } from "@/utilities/layout-store";
-import { Box, Notification } from "@mantine/core"
+import { Box } from "@mantine/core"
 import { useElementSize, useViewportSize } from "@mantine/hooks"
 import { useEffect } from "react";
 import { Outlet } from "react-router"

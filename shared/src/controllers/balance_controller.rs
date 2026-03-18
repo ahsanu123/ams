@@ -5,16 +5,10 @@ use utoipa::{IntoParams, ToSchema};
 
 use crate::{
     models::{
-        balance::{
-            BalanceCreateOrUpdate, BalanceCreateOrUpdateWithoutChangedValue, BalanceWithCustomer,
-            TransactionType,
-        },
-        billing::{
-            Billing, BillingCreate, BillingUpdate,
-            billing_with_retrieve_data::BillingWithRetrieveData,
-        },
+        balance::{BalanceCreateOrUpdateWithoutChangedValue, BalanceWithCustomer, TransactionType},
+        billing::{Billing, BillingUpdate},
     },
-    repositories::{BALANCE_REPO, BILLING_REPO, base_repository_trait::BaseRepositoryWithCRUType},
+    repositories::{BALANCE_REPO, base_repository_trait::BaseRepositoryWithCRUType},
 };
 
 #[derive(Debug, Serialize, Deserialize, ToSchema, IntoParams, Clone, TS)]

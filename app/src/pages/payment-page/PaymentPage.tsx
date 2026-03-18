@@ -2,7 +2,7 @@ import Calendar from "@/components/Calendar";
 import { Box, Button, Text, Center, Divider, Flex, LoadingOverlay, Stack, Table, Title } from "@mantine/core";
 import { FaCalendarAlt } from "react-icons/fa";
 import { MdPayments } from "react-icons/md";
-import { AreaChart, RadarChart } from '@mantine/charts';
+import { RadarChart } from '@mantine/charts';
 import { usePaymentPageStore } from "./payment-page-store";
 import { MonthPicker } from '@mantine/dates';
 import { useEffect, useState } from "react";
@@ -12,7 +12,7 @@ import { formatDateTimeWithoutZ } from "@/utilities/date-to-string-without-z";
 import { useGetAllBillingInfo } from "@/api/v1/billing-controller/billing-controller";
 import { formatDateId } from "@/utilities/format-date-id";
 import { formatAsRupiah } from "@/utilities/format-as-rupiah";
-import { format, parseISO } from "date-fns";
+import { parseISO } from "date-fns";
 import { PiEmptyDuotone } from "react-icons/pi";
 
 export default function PaymentPage() {
