@@ -12,10 +12,11 @@ use crate::{
 };
 use ams_entity::prelude::RetrieveData as RetrieveDataDb;
 use ams_entity::retrieve_data as retrieve_data_db;
+use anyhow::Result;
 use chrono::NaiveDateTime;
 use sea_orm::{
-    ColumnTrait, DatabaseBackend, DbErr, EntityTrait, FromQueryResult, Order, QueryFilter,
-    QueryOrder, Statement,
+    ColumnTrait, DatabaseBackend, EntityTrait, FromQueryResult, Order, QueryFilter, QueryOrder,
+    Statement,
 };
 
 #[derive(Debug, Clone, FromQueryResult)]
@@ -46,10 +47,7 @@ pub struct GetQueryResult {
 
 const GET_BILLING_INFO_BY_DATE: &str = include_str!("./get_billing_info_by_date.sql");
 
-pub async fn query(
-    start_date: NaiveDateTime,
-    end_date: NaiveDateTime,
-) -> Result<Vec<BillingInfo>, DbErr> {
+pub async fn query(start_date: NaiveDateTime, end_date: NaiveDateTime) -> Result<Vec<BillingInfo>> {
     let conn = get_database_connection().await;
 
     let stmt = Statement::from_sql_and_values(

@@ -12,10 +12,11 @@ use crate::{
 };
 use ams_entity::prelude::RetrieveData as RetrieveDataDb;
 use ams_entity::retrieve_data as retrieve_data_db;
+use anyhow::Result;
 use chrono::NaiveDateTime;
 use sea_orm::{
-    ColumnTrait, DatabaseBackend, DbErr, EntityTrait, FromQueryResult, Order, QueryFilter,
-    QueryOrder, Statement,
+    ColumnTrait, DatabaseBackend, EntityTrait, FromQueryResult, Order, QueryFilter, QueryOrder,
+    Statement,
 };
 
 #[derive(Debug, Clone, FromQueryResult)]
@@ -44,20 +45,15 @@ pub struct GetQueryResult {
     pub to: NaiveDateTime,
 }
 
-const GET_BILLING_INFO_BY_DATE_AND_CUSTOMER_ID: &str =
-    include_str!("./get_billing_info_by_date_and_customer_id.sql");
+const GET_BILLING_INFO_BY_CUSTOMER_ID: &str = include_str!("./get_billing_info_by_customer_id.sql");
 
-pub async fn query(
-    start_date: NaiveDateTime,
-    end_date: NaiveDateTime,
-    customer_id: i64,
-) -> Result<Vec<BillingInfo>, DbErr> {
+pub async fn query(customer_id: i64) -> Result<Vec<BillingInfo>> {
     let conn = get_database_connection().await;
 
     let stmt = Statement::from_sql_and_values(
         DatabaseBackend::Sqlite,
-        GET_BILLING_INFO_BY_DATE_AND_CUSTOMER_ID,
-        [start_date.into(), end_date.into(), customer_id.into()],
+        GET_BILLING_INFO_BY_CUSTOMER_ID,
+        [customer_id.into()],
     );
 
     let query_results = GetQueryResult::find_by_statement(stmt).all(conn).await?;
@@ -107,7 +103,6 @@ pub async fn query(
 
     let retrieves_data = RetrieveDataDb::find()
         .filter(retrieve_data_db::Column::CustomerId.eq(customer_id))
-        .filter(retrieve_data_db::Column::Date.between(start_date, end_date))
         .order_by(retrieve_data_db::Column::Date, Order::Desc)
         .all(conn)
         .await?

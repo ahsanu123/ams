@@ -1,7 +1,4 @@
-use crate::{
-    models::{customer::Customer, to_active_model_trait::ToActiveModel},
-    sqls::billing::{self, query_result::GetQueryResult},
-};
+use crate::models::{customer::Customer, to_active_model_trait::ToActiveModel};
 use chrono::{Local, NaiveDateTime};
 use sea_orm::ActiveValue::*;
 use serde::{Deserialize, Serialize};

@@ -1,18 +1,12 @@
-use std::{collections::HashMap, hash::Hash};
-
 use crate::{
     models::{
-        balance::{BalanceWithCustomer, BalanceWithCustomerExtensionMethodTrait},
-        billing::billing_info::{BillingInfo, BillingInfoWithBalance},
-        customer::Customer,
-        price::Price,
-        retrieve_data::{
-            RetrieveData, retrieve_data_with_customer_and_price::RetrieveDataWithCustomerAndPrice,
-        },
+        balance::BalanceWithCustomer, billing::billing_info::BillingInfoWithBalance,
+        customer::Customer, price::Price,
+        retrieve_data::retrieve_data_with_customer_and_price::RetrieveDataWithCustomerAndPrice,
     },
     repositories::database_connection::get_database_connection,
-    shared_fn::assign_to_parrent_arr::assign_to_parent_arr,
 };
+use ams_entity::balance as balance_db;
 use ams_entity::balance_billing as balance_billing_db;
 use ams_entity::billing_retrieve_data as billing_retrieve_data_db;
 use ams_entity::customer as customer_db;
@@ -23,13 +17,14 @@ use ams_entity::prelude::Customer as CustomerDb;
 use ams_entity::prelude::Price as PriceDb;
 use ams_entity::prelude::RetrieveData as RetrieveDataDb;
 use ams_entity::retrieve_data as retrieve_data_db;
-use ams_entity::{balance as balance_db, price};
+use anyhow::Result;
 use chrono::NaiveDateTime;
 use itertools::Itertools;
 use sea_orm::{
-    ColumnTrait, DatabaseBackend, DbErr, EntityTrait, FromQueryResult, JoinType, Order,
-    QueryFilter, QueryOrder, QuerySelect, RelationTrait, Statement,
+    ColumnTrait, DatabaseBackend, DbErr, EntityTrait, FromQueryResult, JoinType, QueryFilter,
+    QueryOrder, QuerySelect, RelationTrait, Statement,
 };
+use std::collections::HashMap;
 
 #[derive(Debug, Clone, FromQueryResult)]
 pub struct GetQueryResult {
@@ -50,12 +45,16 @@ pub struct GetQueryResult {
     pub to: NaiveDateTime,
 }
 
-const GET_ALL_BILLING: &str = include_str!("./get_all_billing.sql");
+const GET_BILLING_BY_CUSTOMER_ID: &str = include_str!("./get_billing_by_customer_id.sql");
 
-pub async fn query() -> Result<Vec<BillingInfoWithBalance>, DbErr> {
+pub async fn query(customer_id: i64) -> Result<Vec<BillingInfoWithBalance>> {
     let conn = get_database_connection().await;
 
-    let stmt = Statement::from_sql_and_values(DatabaseBackend::Sqlite, GET_ALL_BILLING, []);
+    let stmt = Statement::from_sql_and_values(
+        DatabaseBackend::Sqlite,
+        GET_BILLING_BY_CUSTOMER_ID,
+        [customer_id.into()],
+    );
 
     let query_results = GetQueryResult::find_by_statement(stmt).all(conn).await?;
 

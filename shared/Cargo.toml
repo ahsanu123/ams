@@ -26,3 +26,4 @@ ts-rs = "12.0.1"
 utoipa = {version = "5.4.0", features = [
   "chrono"
 ]}
+anyhow = "1.0.102"

@@ -1,10 +1,28 @@
+use crate::repositories::database_connection::get_database_connection;
+use anyhow::Result;
 use chrono::NaiveDateTime;
 use sea_orm::{DatabaseBackend, DbErr, FromQueryResult, Statement};
 
-use crate::{
-    repositories::database_connection::get_database_connection,
-    sqls::billing::query_result::GetQueryResult,
-};
+#[derive(Debug, Clone, Copy, FromQueryResult)]
+pub struct GetQueryResult {
+    pub billing_id: i64,
+    pub customer_id: i64,
+    pub date: NaiveDateTime,
+
+    pub from: NaiveDateTime,
+    pub to: NaiveDateTime,
+    pub amount: i64,
+    pub bill: f64,
+}
+
+#[derive(Debug, Clone, Copy, FromQueryResult)]
+pub struct CreateQueryResult {
+    pub customer_id: i64,
+    pub date: NaiveDateTime,
+
+    pub from: NaiveDateTime,
+    pub to: NaiveDateTime,
+}
 
 const GET_BY_YEAR_SP: &str = include_str!("./get_by_year.sql");
 

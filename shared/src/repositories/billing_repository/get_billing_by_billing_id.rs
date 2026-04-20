@@ -1,15 +1,12 @@
 use crate::{
     models::{
         balance::{BalanceWithCustomer, BalanceWithCustomerExtensionMethodTrait},
-        billing::billing_info::{BillingInfo, BillingInfoWithBalance},
+        billing::billing_info::BillingInfoWithBalance,
         customer::Customer,
         price::Price,
-        retrieve_data::{
-            RetrieveData, retrieve_data_with_customer_and_price::RetrieveDataWithCustomerAndPrice,
-        },
+        retrieve_data::retrieve_data_with_customer_and_price::RetrieveDataWithCustomerAndPrice,
     },
     repositories::database_connection::get_database_connection,
-    shared_fn::assign_to_parrent_arr::assign_to_parent_arr,
 };
 use ams_entity::balance as balance_db;
 use ams_entity::balance_billing as balance_billing_db;
@@ -20,6 +17,7 @@ use ams_entity::prelude::Customer as CustomerDb;
 use ams_entity::prelude::Price as PriceDb;
 use ams_entity::prelude::RetrieveData as RetrieveDataDb;
 use ams_entity::retrieve_data as retrieve_data_db;
+use anyhow::Result;
 use chrono::NaiveDateTime;
 use sea_orm::{
     ColumnTrait, DatabaseBackend, DbErr, EntityTrait, FromQueryResult, JoinType, Order,
@@ -47,7 +45,7 @@ pub struct GetQueryResult {
 
 const GET_BILLING_BY_BILLING_ID: &str = include_str!("./get_billing_by_billing_id.sql");
 
-pub async fn query(billing_id: i64) -> Result<BillingInfoWithBalance, DbErr> {
+pub async fn query(billing_id: i64) -> Result<BillingInfoWithBalance> {
     let conn = get_database_connection().await;
 
     let stmt = Statement::from_sql_and_values(

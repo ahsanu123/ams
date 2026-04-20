@@ -62,6 +62,7 @@ version = "0.2.0"
 dependencies = [
  "ams_entity",
  "ams_macro",
+ "anyhow",
  "async-once-cell",
  "chrono",
  "dotenvy",
@@ -84,6 +85,12 @@ checksum = "819e7219dbd41043ac279b19830f2efc897156490d7fd6ea916720117ee66311"
 dependencies = [
  "libc",
 ]
+
+[[package]]
+name = "anyhow"
+version = "1.0.102"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "7f202df86484c868dbad7eaa557ef785d5c66295e41b460ef922eca0723b842c"
 
 [[package]]
 name = "arrayvec"
