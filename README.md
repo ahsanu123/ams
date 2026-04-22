@@ -19,7 +19,7 @@
    <summary><h2>Shema</h2></summary>
 
 ![schema](./schema.svg)
-   
+![hardware_schematic](./hardware/docs/ams_hardware.svg)
  </details>
  
 <sub> Work In Progress, Made With ❤️ By Ah...</sub>
