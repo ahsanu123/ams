@@ -2,6 +2,7 @@
 ./incubator/ams
 
 *-backups/
+*.lck
 
 *:Zone.Identifier
 # Logs
