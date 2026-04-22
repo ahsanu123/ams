@@ -1,6 +1,8 @@
 
 ./incubator/ams
 
+*-backups/
+
 *:Zone.Identifier
 # Logs
 logs
